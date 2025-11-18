@@ -1,0 +1,68 @@
+name: Auto link issue to PR
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+permissions:
+  pull-requests: write
+  contents: read
+  issues: read
+
+jobs:
+  link-issue:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set PR title & body from issue
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const branch = pr.head.ref; // 예: feat/2-login-page
+
+            // 브랜치 이름에서 첫 번째 숫자 찾기 (이걸 이슈 번호로 사용)
+            const match = branch.match(/(\d+)/);
+            if (!match) {
+              core.info('브랜치 이름에서 이슈 번호를 찾지 못했어요.');
+              return;
+            }
+
+            const issue_number = parseInt(match[1], 10);
+
+            // 이슈 정보 가져오기
+            const { data: issue } = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+            });
+
+            const newTitle = `[#${issue_number}] ${issue.title}`;
+
+            // PR 제목을 이슈 제목 기반으로 변경
+            if (pr.title !== newTitle) {
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                title: newTitle,
+              });
+            }
+
+            // PR 본문에 "Closes #번호" 자동 추가
+            const closesLine = `Closes #${issue_number}`;
+            let body = pr.body || '';
+
+            if (!body.includes(closesLine)) {
+              body = body.trim() + `\n\n${closesLine}\n`;
+
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                body,
+              });
+            }
+
+            core.info(`PR 제목/본문을 이슈 #${issue_number} 기준으로 업데이트 했어요.`);
