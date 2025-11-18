@@ -13,7 +13,7 @@ Part3 5팀 프로젝트 레포지토리입니다.
 ```bash
 git clone https://github.com/TEAM3-5/The‑Julge.git
 cd The‑Julge
-```
+```ㅁㄴㄹㄴㅁㅇㄹㅁㄴㅇㄹㅇㅁㄴㄹㅁㄴㅇㄹ
 
 ### 2. 의존성 설치
 
