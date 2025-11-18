@@ -4,6 +4,8 @@ import NavBar from '@/components/common/NavBar';
 import { useRouter } from 'next/navigation';
 import type { ReactNode } from 'react';
 import './globals.css';
+import type { ReactNode } from 'react';
+import { spoqa } from './fonts';
 
 export default function RootLayout({
   children,
@@ -40,7 +42,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="ko">
+    <html lang="ko" className={spoqa.variable}>
       <body>
         <NavBar
           isLoggedIn={isLoggedIn}

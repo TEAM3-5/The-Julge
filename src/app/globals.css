@@ -1,9 +1,6 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-thejulge:
-    'Spoqa Han Sans Neo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-
   /* gray */
   --color-gray-black: #111322;
   --color-gray-50: #7d7986;
@@ -30,14 +27,6 @@
 
   /* custom */
   --color-kakao: #fee500;
-}
-
-@layer base {
-  html {
-    /* 기본 폰트, 기본 색 지정 */
-    font-family: var(--font-thejulge);
-    color: var(--color-gray-black);
-  }
 }
 
 @layer utilities {
