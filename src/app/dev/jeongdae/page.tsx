@@ -1,6 +1,6 @@
 export default function Jeongdae() {
   return (
-    <div className="min-h-screen bg-gray-5 py-12 flex flex-col gap-y-8">
+    <>
       <div className="w-full max-w-2xl mx-auto">
         <h1 className="mb-4 text-xl font-semibold text-gray-black">컬러 팔레트</h1>
         <div className="w-full max-w-2xl rounded-lg bg-white shadow p-6 space-y-6">
@@ -68,7 +68,7 @@ export default function Jeongdae() {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 
