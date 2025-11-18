@@ -56,6 +56,53 @@ export default function Jeongdae() {
         </div>
       </div>
       <div className="w-full max-w-2xl mx-auto">
+        <h1 className="mb-4 text-xl font-semibold text-gray-black">폰트 크기</h1>
+        <div className="w-full max-w-2xl rounded-lg bg-white shadow p-6 space-y-6">
+          <h3 className="text-xs font-medium text-gray-40 mb-6">
+            폰트 ( tj- 로 시작 ) - the julge 줄임
+          </h3>
+          <div>
+            <h1 className="tj-h1">제목 / Heading 1</h1>
+            <p className="text-sm font-semibold text-gray-50">tj-h1</p>
+          </div>
+
+          <div>
+            <h2 className="tj-h2">제목 / Heading 2</h2>
+            <p className="text-sm font-semibold text-gray-50">tj-h2</p>
+          </div>
+
+          <div>
+            <h3 className="tj-h3">제목 / Heading 3</h3>
+            <p className="text-sm font-semibold text-gray-50">tj-h3</p>
+          </div>
+
+          <div>
+            <p className="tj-body1-bold">본문 1 / Body 1 Bold</p>
+            <p className="text-sm font-semibold text-gray-50">tj-body1-bold</p>
+          </div>
+
+          <div>
+            <p className="tj-body1">본문 1 / Body 1</p>
+            <p className="text-sm font-semibold text-gray-50">tj-body1</p>
+          </div>
+
+          <div>
+            <p className="tj-body2-bold">본문 2 / Body 1 bold</p>
+            <p className="text-sm font-semibold text-gray-50">tj-body2-bold</p>
+          </div>
+
+          <div>
+            <p className="tj-body2">본문 2 / Body 1</p>
+            <p className="text-sm font-semibold text-gray-50">tj-body2</p>
+          </div>
+
+          <div>
+            <p className="tj-caption">캡션 텍스트 / Caption</p>
+            <p className="text-sm font-semibold text-gray-50">tj-caption</p>
+          </div>
+        </div>
+      </div>
+      <div className="w-full max-w-2xl mx-auto">
         <h1 className="mb-4 text-xl font-semibold text-gray-black">컴포넌트</h1>
         <div className="w-full max-w-2xl rounded-lg bg-white shadow p-6 space-y-6">
           <div>
