@@ -9,7 +9,7 @@ export default function Jeongdae() {
               배경색 ( bg- 로 시작 ) / 폰트색 ( font- 로 시작 )
             </h3>
             <h2 className="text-sm font-semibold text-gray-50">Gray</h2>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-x-3 gap-y-4">
               <ColorChip name="gray-black" className="bg-gray-black" />
               <ColorChip name="gray-50" className="bg-gray-50" />
               <ColorChip name="gray-40" className="bg-gray-40" />
@@ -23,7 +23,7 @@ export default function Jeongdae() {
 
           <div className="space-y-3">
             <h2 className="text-sm font-semibold text-gray-50">Red</h2>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-x-3 gap-y-4">
               <ColorChip name="red-40" className="bg-red-40" />
               <ColorChip name="red-30" className="bg-red-30" />
               <ColorChip name="red-20" className="bg-red-20" />
@@ -33,7 +33,7 @@ export default function Jeongdae() {
 
           <div className="space-y-3">
             <h2 className="text-sm font-semibold text-gray-50">Blue</h2>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-x-3 gap-y-4">
               <ColorChip name="blue-20" className="bg-blue-20" />
               <ColorChip name="blue-10" className="bg-blue-10" />
             </div>
@@ -41,7 +41,7 @@ export default function Jeongdae() {
 
           <div className="space-y-3">
             <h2 className="text-sm font-semibold text-gray-50">Green</h2>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-x-3 gap-y-4">
               <ColorChip name="green-20" className="bg-green-20 text-white" />
               <ColorChip name="green-10" className="bg-green-10" />
             </div>
@@ -79,7 +79,7 @@ type ColorChipProps = {
 
 function ColorChip({ name, className = '' }: ColorChipProps) {
   return (
-    <div className="flex flex-col items-center gap-1">
+    <div className="flex flex-col items-end gap-1">
       <div className={`h-10 w-24 rounded-md border border-gray-20 ${className}`} />
       <span className="text-xs text-gray-50">{name}</span>
     </div>
