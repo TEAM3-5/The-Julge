@@ -32,6 +32,12 @@
   --color-kakao: #fee500;
 }
 
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
+}
+
 @layer utilities {
   /* h1 */
   .tj-h1 {
