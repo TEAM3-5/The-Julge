@@ -1,13 +1,126 @@
+'use client';
+
+import { useSearchParams } from 'next/navigation';
+import Table from '@/components/common/Table';
+import type { ShiftRow } from '@/features/shifts/model';
+import { Pagination } from '@/components/pagination/Pagination';
+
+// 임시 더미 데이터 (나중에 API 데이터로)
+const MOCK_ROWS: ShiftRow[] = [
+  {
+    id: 1,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'PENDING',
+  },
+  {
+    id: 2,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'APPROVED',
+  },
+  {
+    id: 3,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'REJECTED',
+  },
+  {
+    id: 4,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'WAITING',
+  },
+  {
+    id: 5,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'WAITING',
+  },
+  {
+    id: 6,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'WAITING',
+  },
+  {
+    id: 7,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'REJECTED',
+  },
+  {
+    id: 8,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'PENDING',
+  },
+  {
+    id: 9,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'PENDING',
+  },
+  {
+    id: 10,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'APPROVED',
+  },
+  {
+    id: 11,
+    storeName: '너구리네 라면집',
+    dateText: '2023.01.12 10:00 ~ 12:00 (2시간)',
+    wageText: '12,500원',
+    status: 'WAITING',
+  },
+];
+const ROWS_PER_PAGE = 5;
+
 export default function Jeongdae() {
+  const searchParams = useSearchParams();
+  const pageParam = searchParams.get('page');
+  const rawPage = pageParam ? Number(pageParam) || 1 : 1;
+
+  const totalPages = Math.max(1, Math.ceil(MOCK_ROWS.length / ROWS_PER_PAGE));
+  const currentPage = Math.min(Math.max(rawPage, 1), totalPages);
+
+  const pageRows = MOCK_ROWS.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE);
+
+  const handleApprove = (id: number) => {
+    console.log('approve', id);
+  };
+
+  const handleReject = (id: number) => {
+    console.log('reject', id);
+  };
   return (
     <>
-      <div className="w-full max-w-2xl mx-auto">
+      <section className="w-full">
         <h1 className="mb-4 text-xl font-semibold text-gray-black">컬러 팔레트</h1>
-        <div className="w-full max-w-2xl rounded-lg bg-white shadow p-6 space-y-6">
+        <div className="w-full rounded-lg bg-white shadow p-6 space-y-2">
+          <h3 className="text-xs font-medium text-gray-40 mb-6">
+            배경색 ( bg- 로 시작 ) / 폰트색 ( font- 로 시작 )
+          </h3>
+
           <div className="space-y-3">
-            <h3 className="text-xs font-medium text-gray-40 mb-6">
-              배경색 ( bg- 로 시작 ) / 폰트색 ( font- 로 시작 )
-            </h3>
+            <h2 className="text-sm font-semibold text-gray-50">Primary</h2>
+            <div className="flex flex-wrap gap-x-3 gap-y-4">
+              <ColorChip name="primary" className="bg-primary" />
+            </div>
+          </div>
+
+          <div className="space-y-3">
             <h2 className="text-sm font-semibold text-gray-50">Gray</h2>
             <div className="flex flex-wrap gap-x-3 gap-y-4">
               <ColorChip name="gray-black" className="bg-gray-black" />
@@ -54,10 +167,10 @@ export default function Jeongdae() {
             </div>
           </div>
         </div>
-      </div>
-      <div className="w-full max-w-2xl mx-auto">
+      </section>
+      <section className="w-full">
         <h1 className="mb-4 text-xl font-semibold text-gray-black">폰트 크기</h1>
-        <div className="w-full max-w-2xl rounded-lg bg-white shadow p-6 space-y-6">
+        <div className="w-full rounded-lg bg-white shadow p-6 space-y-6">
           <h3 className="text-xs font-medium text-gray-40 mb-6">
             폰트 ( tj- 로 시작 ) - the julge 줄임
           </h3>
@@ -101,20 +214,34 @@ export default function Jeongdae() {
             <p className="text-sm font-semibold text-gray-50">tj-caption</p>
           </div>
         </div>
-      </div>
-      <div className="w-full max-w-2xl mx-auto">
+      </section>
+      <section className="w-full">
         <h1 className="mb-4 text-xl font-semibold text-gray-black">컴포넌트</h1>
-        <div className="w-full max-w-2xl rounded-lg bg-white shadow p-6 space-y-6">
+        <div className="w-full rounded-lg bg-white shadow p-6 space-y-6">
           <div>
             <h2 className="text-sm font-semibold text-gray-50">Table</h2>
-            <p className="text-xs font-semibold text-gray-40">테이블 컴포넌트</p>
+
+            <Table rows={pageRows} onApprove={handleApprove} onReject={handleReject} />
+
+            {totalPages > 1 && (
+              <div className="mt-4 flex justify-center">
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  hrefBuilder={(p) => `?page=${p}`}
+                  maxPageButtons={7}
+                  mode="full"
+                />
+              </div>
+            )}
           </div>
+
           <div>
             <h2 className="text-sm font-semibold text-gray-50">Filter</h2>
             <p className="text-xs font-semibold text-gray-40">필터 컴포넌트</p>
           </div>
         </div>
-      </div>
+      </section>
     </>
   );
 }
