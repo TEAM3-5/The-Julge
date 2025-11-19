@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 
 @theme {
+  /* primary */
+  --color-primary: #ea3c12;
+
   /* gray */
   --color-gray-black: #111322;
   --color-gray-50: #7d7986;
@@ -27,6 +30,12 @@
 
   /* custom */
   --color-kakao: #fee500;
+}
+
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
 }
 
 @layer utilities {

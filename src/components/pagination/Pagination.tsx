@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import React from "react";
-import { usePagination } from "@/hooks/usePagination";
-import { PaginationButton } from "./PaginationButton";
+import React from 'react';
+import { usePagination } from '@/hooks/usePagination';
+import { PaginationButton } from './PaginationButton';
 
-type PaginationMode = "simple" | "full";
+type PaginationMode = 'simple' | 'full';
 
 type PaginationProps = {
-  currentPage: number;                    /** 현재 페이지 (1부터 시작) */
-  totalPages: number;                     /** 전체 페이지 수 */
-  onPageChange?: (page: number) => void;  /** 페이지 변경 콜백 */
-  hrefBuilder?: (page: number) => string; /** 페이지별 링크 생성 */
-  maxPageButtons?: number;                /** 가운데에 보여줄 최대 페이지 버튼 수 */
+  currentPage: number /** 현재 페이지 (1부터 시작) */;
+  totalPages: number /** 전체 페이지 수 */;
+  onPageChange?: (page: number) => void /** 페이지 변경 콜백 */;
+  hrefBuilder?: (page: number) => string /** 페이지별 링크 생성 */;
+  maxPageButtons?: number /** 가운데에 보여줄 최대 페이지 버튼 수 */;
   mode?: PaginationMode;
-  size?: "sm" | "md" | "lg";
+  size?: 'sm' | 'md' | 'lg';
   className?: string;
 };
 
 /** 여러 className 문자열을 합쳐주는 유틸 함수 */
 const cn = (...classes: Array<string | false | null | undefined>) =>
-  classes.filter(Boolean).join(" ");
+  classes.filter(Boolean).join(' ');
 
 /**
  * 공용 Pagination 컴포넌트
@@ -38,9 +38,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   const safeTotalPages = Math.max(totalPages, 0);
   // currentPage를 1~totalPages 범위로 보정
   const safeCurrentPage =
-    safeTotalPages > 0
-    ? Math.min(Math.max(currentPage, 1), safeTotalPages)
-    : 1;
+    safeTotalPages > 0 ? Math.min(Math.max(currentPage, 1), safeTotalPages) : 1;
 
   // 페이지 번호 배열 계산
   const pageNumbers = usePagination({
@@ -64,16 +62,12 @@ export const Pagination: React.FC<PaginationProps> = ({
   const isLast = safeCurrentPage === safeTotalPages;
 
   // hrefbuilder가 있으면 링크 문자열 생성, 없으면 undefined 반환
-  const buildHref = (page: number) =>
-    hrefBuilder ? hrefBuilder(page) : undefined;
+  const buildHref = (page: number) => (hrefBuilder ? hrefBuilder(page) : undefined);
 
   return (
     <nav
       aria-label="Pagination"
-      className={cn(
-        "flex items-center justify-center gap-[2px]",
-        className
-      )}
+      className={cn('flex items-center justify-center gap-[2px]', className)}
     >
       {/* 이전 화살표 */}
       <PaginationButton
@@ -81,11 +75,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         direction="prev"
         disabled={isFirst}
         href={!isFirst && hrefBuilder ? buildHref(safeCurrentPage - 1) : undefined}
-        onClick={
-          !hrefBuilder && !isFirst
-            ? () => handleChange(safeCurrentPage - 1)
-            : undefined
-        }
+        onClick={!hrefBuilder && !isFirst ? () => handleChange(safeCurrentPage - 1) : undefined}
       />
 
       {/* 숫자 버튼 */}
@@ -106,11 +96,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         direction="next"
         disabled={isLast}
         href={!isLast && hrefBuilder ? buildHref(safeCurrentPage + 1) : undefined}
-        onClick={
-          !hrefBuilder && !isLast
-            ? () => handleChange(safeCurrentPage + 1)
-            : undefined
-        }
+        onClick={!hrefBuilder && !isLast ? () => handleChange(safeCurrentPage + 1) : undefined}
       />
     </nav>
   );
