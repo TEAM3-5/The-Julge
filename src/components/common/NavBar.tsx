@@ -1,36 +1,47 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useState, type KeyboardEvent, type ChangeEvent } from 'react';
 
 type UserRole = 'OWNER' | 'WORKER' | null;
 
 interface NavBarProps {
   isLoggedIn: boolean;
-  role: UserRole; // 'OWNER' | 'WORKER' | null = 'WORKER'
-  onClickMainPage: () => void;
-  onClickMyPage: () => void;
-  onClickLogout: () => void;
-  onClickAlarm: () => void;
-  onSearch: (keyword: string) => void;
+  role: UserRole;
 }
 
-export default function NavBar({
-  isLoggedIn,
-  role,
-  onClickMainPage,
-  onClickMyPage,
-  onClickLogout,
-  onClickAlarm,
-  onSearch,
-}: NavBarProps) {
+export default function NavBar({ isLoggedIn, role }: NavBarProps) {
+  const router = useRouter();
   const [keyword, setKeyword] = useState('');
+
+  const handleMainPage = () => {
+    router.push('/');
+  };
+
+  const handleMyPage = () => {
+    if (!isLoggedIn) return router.push('/login');
+    if (role === 'WORKER') router.push('/worker/profile');
+    else router.push('/owner/my-store');
+  };
+
+  const handleLogout = () => {
+    // TODO: 로그아웃 로직 + 이동
+  };
+
+  const handleAlarm = () => {
+    // TODO: 알림 모달 열기
+  };
+
+  const handleSearch = (raw: string) => {
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    router.push(`/jobs?search=${encodeURIComponent(trimmed)}`);
+  };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      const trimmed = keyword.trim();
-      if (!trimmed) return;
-      onSearch(trimmed); // 부모에게 검색어 전달
+      handleSearch(keyword);
     }
   };
 
@@ -39,7 +50,6 @@ export default function NavBar({
   };
 
   const myLabel = !isLoggedIn ? '로그인' : role === 'OWNER' ? '내 가게' : '내 프로필';
-
   const secondLabel = isLoggedIn ? '로그아웃' : '회원가입';
 
   return (
@@ -51,7 +61,7 @@ export default function NavBar({
           width={109}
           height={20}
           className="cursor-pointer"
-          onClick={onClickMainPage}
+          onClick={handleMainPage}
         />
         <div className="flex gap-2.5 bg-gray-10 rounded-[10px] mt-[15px] mb-[15px] p-2.5 w-[450px]">
           <Image
@@ -60,11 +70,7 @@ export default function NavBar({
             width={20}
             height={20}
             className="cursor-pointer"
-            onClick={() => {
-              const trimmed = keyword.trim();
-              if (!trimmed) return;
-              onSearch(trimmed);
-            }}
+            onClick={() => handleSearch(keyword)}
           />
           <input
             placeholder="가게 이름으로 찾아보세요"
@@ -76,10 +82,10 @@ export default function NavBar({
         </div>
       </div>
       <div className="flex items-center gap-10">
-        <button type="button" className="cursor-pointer select-none" onClick={onClickMyPage}>
+        <button type="button" className="cursor-pointer select-none" onClick={handleMyPage}>
           {myLabel}
         </button>
-        <button type="button" className="cursor-pointer select-none" onClick={onClickLogout}>
+        <button type="button" className="cursor-pointer select-none" onClick={handleLogout}>
           {secondLabel}
         </button>
         {isLoggedIn && (
@@ -89,7 +95,7 @@ export default function NavBar({
             width={24}
             height={24}
             className="cursor-pointer"
-            onClick={onClickAlarm}
+            onClick={handleAlarm}
           />
         )}
       </div>
