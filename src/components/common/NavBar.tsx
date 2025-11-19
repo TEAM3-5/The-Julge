@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, type KeyboardEvent, type ChangeEvent } from 'react';
 
-type UserRole = 'OWNER' | 'WORKER' | null;
+export type UserRole = 'OWNER' | 'MEMBER' | 'GUEST';
 
 interface NavBarProps {
   isLoggedIn: boolean;
@@ -14,6 +14,7 @@ interface NavBarProps {
 export default function NavBar({ isLoggedIn, role }: NavBarProps) {
   const router = useRouter();
   const [keyword, setKeyword] = useState('');
+  const [alertCount, setAlertCount] = useState(0);
 
   const handleMainPage = () => {
     router.push('/');
@@ -21,22 +22,23 @@ export default function NavBar({ isLoggedIn, role }: NavBarProps) {
 
   const handleMyPage = () => {
     if (!isLoggedIn) return router.push('/login');
-    if (role === 'WORKER') router.push('/worker/profile');
-    else router.push('/owner/my-store');
+    if (role === 'MEMBER') router.push('/member/profile');
+    else router.push('/owner/store');
   };
 
   const handleLogout = () => {
-    // TODO: 로그아웃 로직 + 이동
+    // TODO: 로그아웃 로직 + 공고 리스트 페이지 이동
+    router.push('/posts');
   };
 
   const handleAlarm = () => {
     // TODO: 알림 모달 열기
   };
 
-  const handleSearch = (raw: string) => {
-    const trimmed = raw.trim();
+  const handleSearch = (keyword: string) => {
+    const trimmed = keyword.trim();
     if (!trimmed) return;
-    router.push(`/jobs?search=${encodeURIComponent(trimmed)}`);
+    router.push(`/posts?search=${encodeURIComponent(trimmed)}`);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -49,7 +51,17 @@ export default function NavBar({ isLoggedIn, role }: NavBarProps) {
     setKeyword(e.target.value);
   };
 
-  const myLabel = !isLoggedIn ? '로그인' : role === 'OWNER' ? '내 가게' : '내 프로필';
+  switch (role) {
+    case 'OWNER':
+      break;
+    case 'MEMBER':
+      break;
+    case 'GUEST':
+      break;
+    default:
+      throw new Error('Invalid user role');
+  }
+  const firstLabel = !isLoggedIn ? '로그인' : role === 'OWNER' ? '내 가게' : '내 프로필';
   const secondLabel = isLoggedIn ? '로그아웃' : '회원가입';
 
   return (
@@ -82,15 +94,27 @@ export default function NavBar({ isLoggedIn, role }: NavBarProps) {
         </div>
       </div>
       <div className="flex items-center gap-10">
-        <button type="button" className="cursor-pointer select-none" onClick={handleMyPage}>
-          {myLabel}
+        <button
+          type="button"
+          className="cursor-pointer select-none tj-body1-bold"
+          onClick={handleMyPage}
+        >
+          {firstLabel}
         </button>
-        <button type="button" className="cursor-pointer select-none" onClick={handleLogout}>
+        <button
+          type="button"
+          className="cursor-pointer select-none tj-body1-bold"
+          onClick={handleLogout}
+        >
           {secondLabel}
         </button>
         {isLoggedIn && (
           <Image
-            src="/images/notification.svg"
+            src={
+              alertCount > 0
+                ? '/images/notification(active).svg'
+                : '/images/notification(inactive).svg'
+            }
             alt="알림 열람 아이콘"
             width={24}
             height={24}
