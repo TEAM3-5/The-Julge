@@ -23,9 +23,9 @@ export function Button({
   children: ReactNode;
   onClick?: () => void;
 }) {
-  const primaryStyle = `w-fit bg-[#EA3C12] text-white  rounded-md cursor-pointer`;
-  const disabledStyle = `w-fit bg-gray-40 text-white rounded-md cursor-not-allowed`;
-  const outlineStyle = `w-fit bg-white border border-[#EA3C12] text-[#EA3C12] rounded-md cursor-pointer`;
+  const primaryStyle = 'w-fit bg-primary text-white  rounded-md';
+  const disabledStyle = 'w-fit bg-gray-40 text-white rounded-md cursor-not-allowed';
+  const outlineStyle = 'w-fit bg-white border border-primary text-primary rounded-md';
 
   const variantStyle = disabled
     ? disabledStyle
