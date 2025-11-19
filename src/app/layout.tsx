@@ -14,8 +14,8 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <main>
           <div>{children}</div>
         </main>
+        <footer className="flex justify-center">footer 자리입니당</footer>
       </body>
-      <footer className="flex justify-center">footer 자리입니당</footer>
     </html>
   );
 }
