@@ -1,34 +1,42 @@
 'use client';
 
-import { useState } from 'react';
 import Input from '../common/Input';
+import useLoginForm from '@/hooks/useLoginForm';
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [emailError, setEmailError] = useState(false);
+  const {
+    email,
+    emailError,
+    emailErrorMessage,
+    password,
+    passwordError,
+    passwordErrorMessage,
+    handleEmailChange,
+    handleEmailBlur,
+    handlePasswordChange,
+    handlePasswordBlur,
+  } = useLoginForm();
+
   return (
     <div>
       <Input
         type="email"
         label="이메일"
         value={email}
-        onChange={(e) => {
-          setEmail(e.target.value);
-          setEmailError(false);
-        }}
-        onBlur={(e) =>
-          e.target.value && !isValidEmail(e.target.value)
-            ? setEmailError(true)
-            : setEmailError(false)
-        }
+        onChange={handleEmailChange}
+        onBlur={handleEmailBlur}
         error={emailError}
-        errorMessage="잘못된 이메일입니다."
+        errorMessage={emailErrorMessage}
+      />
+      <Input
+        type="password"
+        label="비밀번호"
+        value={password}
+        onChange={handlePasswordChange}
+        onBlur={handlePasswordBlur}
+        error={passwordError}
+        errorMessage={passwordErrorMessage}
       />
     </div>
   );
-}
-
-function isValidEmail(email: string) {
-  const EMAIL_PATTERN = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  return EMAIL_PATTERN.test(email);
 }
