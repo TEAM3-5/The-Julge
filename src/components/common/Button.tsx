@@ -23,6 +23,7 @@ interface ButtonProps {
   onClick?: () => void;
 }
 
+export default function Button({
   type = 'button',
   variant = 'primary',
   btnColor = 'primary',
