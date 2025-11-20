@@ -1,4 +1,5 @@
-import { Button } from '@/components/common/Button';
+import Button from '@/components/common/Button';
+import LoginForm from '@/components/login/LoginForm';
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <Button variant="outline" size="small">
         로그인 하기
       </Button>
+      <LoginForm />
     </>
   );
 }

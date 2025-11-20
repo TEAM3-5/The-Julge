@@ -8,7 +8,7 @@ const sizeStyles: Record<ButtonSize, string> = {
   small: 'px-[12px] py-[8px] tj-caption',
 };
 
-export function Button({
+export default function Button({
   type = 'button',
   variant = 'primary',
   size = 'large',
