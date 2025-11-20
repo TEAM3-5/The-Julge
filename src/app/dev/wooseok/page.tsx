@@ -14,7 +14,7 @@ export default function Home() {
         신청 불가
       </Button>
       <Button size="small">로그인 하기</Button>
-      <Button variant="outline" size="small">
+      <Button variant="outline" size="small" btnColor="blue">
         로그인 하기
       </Button>
     </>
