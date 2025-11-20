@@ -1,9 +1,9 @@
 'use client';
 
 import Input from '../common/Input';
-import useLogin from '@/hooks/useLogin';
+import useSignup from '@/hooks/useSignup';
 
-export default function LoginForm() {
+export default function SignupForm() {
   const {
     email,
     emailError,
@@ -11,11 +11,16 @@ export default function LoginForm() {
     password,
     passwordError,
     passwordErrorMessage,
+    passwordCheck,
+    passwordCheckError,
+    passwordCheckErrorMessage,
     handleEmailChange,
     handleEmailBlur,
     handlePasswordChange,
     handlePasswordBlur,
-  } = useLogin();
+    handlePasswordCheckChange,
+    handlePasswordCheckBlur,
+  } = useSignup();
 
   return (
     <div>
@@ -36,6 +41,15 @@ export default function LoginForm() {
         onBlur={handlePasswordBlur}
         error={passwordError}
         errorMessage={passwordErrorMessage}
+      />
+      <Input
+        type="password"
+        label="비밀번호 확인"
+        value={passwordCheck}
+        onChange={handlePasswordCheckChange}
+        onBlur={handlePasswordCheckBlur}
+        error={passwordCheckError}
+        errorMessage={passwordCheckErrorMessage}
       />
     </div>
   );

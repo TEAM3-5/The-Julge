@@ -6,7 +6,7 @@ function isValidEmail(email: string) {
   return EMAIL_PATTERN.test(email);
 }
 
-export default function useLoginForm() {
+export default function useLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [emailError, setEmailError] = useState(false);
@@ -23,7 +23,7 @@ export default function useLoginForm() {
     const value = e.target.value;
     if (value && !isValidEmail(value)) {
       setEmailError(true);
-      setEmailErrorMessage('잘못된 이메일입니다.');
+      setEmailErrorMessage('이메일 형식으로 작성해 주세요.');
     } else {
       setEmailError(false);
       setEmailErrorMessage('');
