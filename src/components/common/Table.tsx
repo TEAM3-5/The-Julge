@@ -1,5 +1,6 @@
 'use client';
 
+import Button from '@/components/common/Button';
 import type { ShiftRow, ShiftStatus } from '@/features/shifts/model';
 
 type TableProps = {
@@ -9,8 +10,6 @@ type TableProps = {
 };
 
 export default function Table({ rows, onApprove, onReject }: TableProps) {
-  const pageRows = rows;
-
   return (
     <section className="rounded-xl border border-gray-20 bg-white">
       <div className="overflow-x-auto">
@@ -24,7 +23,7 @@ export default function Table({ rows, onApprove, onReject }: TableProps) {
             </tr>
           </thead>
           <tbody>
-            {rows.map((row, idx) => (
+            {rows.map((row) => (
               <tr key={row.id} className="border-b border-gray-10 last:border-b-0">
                 <Td>{row.storeName}</Td>
                 <Td>{row.dateText}</Td>
@@ -34,7 +33,6 @@ export default function Table({ rows, onApprove, onReject }: TableProps) {
                     status={row.status}
                     onApprove={() => onApprove(row.id)}
                     onReject={() => onReject(row.id)}
-                    isFirstRow={idx === 0}
                   />
                 </Td>
               </tr>
@@ -63,57 +61,51 @@ type TdProps = {
 };
 
 function Td({ children, className = '' }: TdProps) {
-  return <td className={`tj-body1 py-4 px-6 align-middle ${className}`}>{children}</td>;
+  return (
+    <td className={`h-[60px] tj-body1 px-6 text-gray-black align-middle ${className}`}>
+      {children}
+    </td>
+  );
 }
 
 type StatusCellProps = {
   status: ShiftStatus;
   onApprove?: () => void;
   onReject?: () => void;
-  isFirstRow?: boolean;
 };
 
-function StatusCell({ status, onApprove, onReject, isFirstRow }: StatusCellProps) {
+function StatusCell({ status, onApprove, onReject }: StatusCellProps) {
   if (status === 'PENDING') {
     return (
       <div className="flex justify-start gap-2">
-        <button
-          type="button"
-          onClick={onReject}
-          className="transition tj-body2 rounded-md border border-primary px-4 py-1 text-primary hover:bg-primary hover:text-white"
-        >
+        <Button variant="outline" size="medium" onClick={onReject}>
           거절하기
-        </button>
-        <button
-          type="button"
-          onClick={onApprove}
-          className="transition tj-body2 rounded-md border border-blue-20 px-4 py-1 text-blue-20 hover:bg-blue-20 hover:text-white"
-        >
+        </Button>
+        <Button variant="outline" size="medium" onClick={onApprove} btnColor="blue">
           승인하기
-        </button>
+        </Button>
       </div>
     );
   }
 
   if (status === 'APPROVED') {
-    return (
-      <span className="tj-body2 inline-flex rounded-full bg-blue-10 px-4 py-1 text-blue-20">
-        승인 완료
-      </span>
-    );
-  }
-
-  if (status === 'REJECTED') {
-    return (
-      <span className="tj-body2 inline-flex rounded-full bg-red-10 px-4 py-1 text-red-40">
-        거절
-      </span>
-    );
+    return <ApproveStatus className="bg-blue-10 text-blue-20">승인 완료</ApproveStatus>;
+  } else if (status === 'REJECTED') {
+    return <ApproveStatus className="bg-red-10 text-red-40">거절</ApproveStatus>;
   } else {
-    return (
-      <span className="tj-body2 inline-flex rounded-full bg-green-10 px-4 py-1 text-green-20">
-        대기중
-      </span>
-    );
+    return <ApproveStatus className="bg-green-10 text-green-20">대기중</ApproveStatus>;
   }
 }
+
+function ApproveStatus({ children, className = '' }: ApproveStatus) {
+  return (
+    <span className={`tj-body2-bold inline-flex rounded-full px-[10px] py-[6px] ${className}`}>
+      {children}
+    </span>
+  );
+}
+
+type ApproveStatus = {
+  children: React.ReactNode;
+  className?: string;
+};

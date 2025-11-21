@@ -3,7 +3,7 @@ interface InputProps {
   label: string;
   value: string;
   showUnit?: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   error?: boolean;
   errorMessage?: string;
