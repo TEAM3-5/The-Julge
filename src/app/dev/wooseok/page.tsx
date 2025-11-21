@@ -1,4 +1,5 @@
 import Button from '@/components/common/Button';
+import DateInput from '@/components/date/DateInput';
 import HourlyPayInput from '@/components/hourlypay/HourlyPayInput';
 import LoginForm from '@/components/login/LoginForm';
 import SignupForm from '@/components/signup/SignupForm';
@@ -28,6 +29,7 @@ export default function Home() {
       <LoginForm />
       <SignupForm />
       <HourlyPayInput />
+      <DateInput />
     </>
   );
 }
