@@ -12,14 +12,19 @@ export default function Home() {
       <Button variant="outline" size="medium">
         로그인 하기
       </Button>
+
       <Button size="medium">로그인 하기</Button>
       <Button size="medium" disabled>
         신청 불가
       </Button>
-      <Button size="small">로그인 하기</Button>
-      <Button variant="outline" size="small">
-        로그인 하기
+
+      <Button size="small" className="w-25">
+        예
       </Button>
+      <Button variant="outline" size="small" className="w-25">
+        아니오
+      </Button>
+
       <LoginForm />
       <SignupForm />
       <HourlyPayInput />
