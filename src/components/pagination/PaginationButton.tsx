@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import React from 'react';
+import Image from 'next/image';
 
 /** 여러 className 문자열을 합쳐주는 유틸 함수 */
 const cn = (...classes: Array<string | false | null | undefined>) =>
@@ -99,9 +100,9 @@ export const PaginationButton: React.FC<PaginationButtonProps> = (props) => {
   // 방향에 따라 아이콘과 aria-label 설정
   const icon =
     direction === 'prev' ? (
-      <img src="/icons/icon-page-left.svg" alt="이전 페이지" width={16} height={16} />
+      <Image src="/icons/icon-page-left.svg" alt="이전 페이지" width={16} height={16} />
     ) : (
-      <img src="/icons/icon-page-right.svg" alt="이전 페이지" width={16} height={16} />
+      <Image src="/icons/icon-page-right.svg" alt="이전 페이지" width={16} height={16} />
     );
   const ariaLabel = direction === 'prev' ? '이전 페이지' : '다음 페이지';
 
