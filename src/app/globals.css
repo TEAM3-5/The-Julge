@@ -79,3 +79,15 @@
     @apply text-[12px] font-normal leading-[16px];
   }
 }
+
+/* 크롬, 사파리, 엣지 (웹킷 계열) 숫자 input 스피너 제거 */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* 파이어폭스 숫자 input 스피너 제거 */
+input[type='number'] {
+  -moz-appearance: textfield;
+}

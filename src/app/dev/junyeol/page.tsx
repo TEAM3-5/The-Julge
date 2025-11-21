@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { Pagination } from "@/components/pagination/Pagination";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 import { ActionModal } from "@/components/modal/ActionModal";
-import { useModal } from "@/hooks/useModal";
+import { useModal } from "@/hooks/UseModal";
 
 export default function JunyeolPage() {
   const searchParams = useSearchParams();
