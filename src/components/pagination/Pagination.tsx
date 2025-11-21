@@ -67,7 +67,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   return (
     <nav
       aria-label="Pagination"
-      className={cn('flex items-center justify-center gap-[2px]', className)}
+      className={cn('flex items-center justify-center gap-0.5', className)}
     >
       {/* 이전 화살표 */}
       <PaginationButton
