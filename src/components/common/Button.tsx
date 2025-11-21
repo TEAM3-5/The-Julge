@@ -4,9 +4,9 @@ type ButtonSize = 'large' | 'medium' | 'small';
 type OutlineButtonColor = 'primary' | 'blue';
 
 const sizeStyles: Record<ButtonSize, string> = {
-  large: 'w-fit px-[136px] py-3.5 tj-body1-bold rounded-md',
-  medium: 'w-fit px-[20px] py-[10px] tj-body2-bold rounded-md',
-  small: 'w-fit px-[12px] py-[8px] tj-caption rounded-md',
+  large: 'px-[136px] py-3.5 tj-body1-bold rounded-md',
+  medium: 'px-[20px] py-[10px] tj-body2-bold rounded-md',
+  small: 'px-[12px] py-[8px] tj-caption rounded-md',
 };
 const outlineColors: Record<OutlineButtonColor, string> = {
   primary: 'border-primary text-primary',
@@ -21,9 +21,11 @@ interface ButtonProps {
   disabled?: boolean;
   children: ReactNode;
   onClick?: () => void;
+  className?: string;
+  fullWidth?: boolean;
 }
 
-export function Button({
+export default function Button({
   type = 'button',
   variant = 'primary',
   btnColor = 'primary',
@@ -31,6 +33,8 @@ export function Button({
   disabled,
   children,
   onClick,
+  className,
+  fullWidth = false,
 }: ButtonProps) {
   const primaryStyle = 'bg-primary text-white ';
   const disabledStyle = 'bg-gray-40 text-white cursor-not-allowed';
@@ -41,7 +45,12 @@ export function Button({
     : variant === 'outline'
       ? outlineStyle
       : primaryStyle;
-  const btnStyle = `${sizeStyles[size]} ${variantStyle}`;
+
+  // className에 'w-'로 시작하는 속성 있으면 w-fit 속성 제거
+  const hasCustomWidth = className?.split(' ').some((cls) => cls.startsWith('w-')) ?? false;
+
+  const btnWidth = fullWidth ? 'w-full' : hasCustomWidth ? '' : 'w-fit';
+  const btnStyle = `${btnWidth} ${sizeStyles[size]} ${variantStyle} ${className ?? ''}`;
 
   return (
     <button type={type} disabled={disabled} className={btnStyle} onClick={onClick}>
