@@ -23,19 +23,25 @@ export function Button({
   children: ReactNode;
   onClick?: () => void;
 }) {
-  const primaryStyle = 'w-fit bg-primary text-white  rounded-md';
+  const primaryStyle  = 'w-fit bg-primary text-white rounded-md';
   const disabledStyle = 'w-fit bg-gray-40 text-white rounded-md cursor-not-allowed';
-  const outlineStyle = 'w-fit bg-white border border-primary text-primary rounded-md';
+  const outlineStyle  = 'w-fit bg-white border border-primary text-primary rounded-md';
 
   const variantStyle = disabled
     ? disabledStyle
     : variant === 'outline'
       ? outlineStyle
       : primaryStyle;
+
   const btnStyle = `${sizeStyles[size]} ${variantStyle}`;
 
   return (
-    <button type={type} disabled={disabled} className={btnStyle} onClick={onClick}>
+    <button
+      type={type}
+      disabled={disabled}
+      className={btnStyle}
+      onClick={onClick}
+    >
       {children}
     </button>
   );
