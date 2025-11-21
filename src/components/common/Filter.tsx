@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import Input from '@/components/common/Input';
+import DateInput from '@/components/date/DateInput';
 
 const AREAS = [
   '서울시 종로구',
@@ -91,8 +92,7 @@ export default function Filter() {
           </div>
         </section>
         <section className="flex flex-col gap-y-[12px]">
-          <h3 className="th-body1">시작일</h3>
-          날짜 컴포넌트 필요
+          <DateInput />
         </section>
         <section className="flex flex-col gap-y-[12px]">
           <h3 className="th-body1">금액</h3>
