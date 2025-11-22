@@ -26,7 +26,7 @@ export type PostCardProps = {
  */
 const SIZE_STYLE = {
   large: {
-    card: "w-[312px] h-[348px] p-4 rounded-[12px]",
+    card: "w-[312px] h-[348px] p-3 rounded-[12px]",
     imageWrapper: "w-[280px] h-[160px]",
     title: "tj-h3",
     meta: "tj-body2",

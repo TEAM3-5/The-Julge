@@ -68,9 +68,9 @@ export default function JunyeolPage() {
         onConfirm={handleReject}
       />
 
-      <div className="mx-auto max-w-[1080px] py-10">
+      <div className="py-10">
         {/* 윗줄: 큰 카드 2개 */}
-        <div className="mb-8 flex gap-6">
+        <div className="mb-8 flex justify-center gap-6">
           <PostCard
             status="active"
             size="large"
@@ -85,7 +85,7 @@ export default function JunyeolPage() {
         </div>
 
         {/* 아랫줄: 작은 카드 2개 */}
-        <div className="flex gap-6">
+        <div className="flex justify-center gap-6">
           <PostCard
             status="active"
             size="small"
