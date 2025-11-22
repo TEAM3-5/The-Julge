@@ -28,7 +28,7 @@ export default function JunyeolPage() {
     locationText: "서울시 송파구",
     wage: 15000,
     wageBadgeText: "기존 시급보다 100%",
-    thumbnailUrl: "/images/logo.svg",
+    thumbnailUrl: "/images/dotori.svg",
   };
 
   return (
@@ -69,13 +69,38 @@ export default function JunyeolPage() {
       />
 
       <div className="mx-auto max-w-[1080px] py-10">
-        <section className="flex justify-center gap-4">
-          <PostCard status="active" size="large" {...MOCK_POST} />
-          <PostCard status="inactive" size="large" {...MOCK_POST} />
-        </section>
+        {/* 윗줄: 큰 카드 2개 */}
+        <div className="mb-8 flex gap-6">
+          <PostCard
+            status="active"
+            size="large"
+            {...MOCK_POST}
+          />
+          <PostCard
+            status="inactive"
+            size="large"
+            {...MOCK_POST}
+            wageBadgeText="50%" // 비활성 뱃지 텍스트
+          />
+        </div>
+
+        {/* 아랫줄: 작은 카드 2개 */}
+        <div className="flex gap-6">
+          <PostCard
+            status="active"
+            size="small"
+            {...MOCK_POST}
+          />
+          <PostCard
+            status="inactive"
+            size="small"
+            {...MOCK_POST}
+            wageBadgeText="50%"
+          />
+        </div>
       </div>
-      
-  </div>
-      
+
+    </div>
+
   );
 }
