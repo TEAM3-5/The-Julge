@@ -1,60 +1,79 @@
-import { ReactNode } from 'react';
+import { ComponentPropsWithRef, forwardRef } from 'react';
 
-type ButtonSize = 'large' | 'medium' | 'small';
+type NativeButtonProps = Omit<ComponentPropsWithRef<'button'>, 'className'>;
 type OutlineButtonColor = 'primary' | 'blue';
 
-const sizeStyles: Record<ButtonSize, string> = {
-  large: 'px-[136px] py-3.5 tj-body1-bold rounded-md',
-  medium: 'px-[20px] py-[10px] tj-body2-bold rounded-md',
-  small: 'px-[12px] py-[8px] tj-caption rounded-md',
-};
 const outlineColors: Record<OutlineButtonColor, string> = {
   primary: 'border-primary text-primary',
   blue: 'border-blue-20 text-blue-20',
 };
-
-interface ButtonProps {
-  type?: 'button' | 'submit' | 'reset';
+type CustomButtonProps = {
   variant?: 'primary' | 'outline';
-  btnColor?: OutlineButtonColor;
-  size?: ButtonSize;
-  disabled?: boolean;
-  children: ReactNode;
-  onClick?: () => void;
-  className?: string;
+  size?: 'small' | 'medium' | 'large';
+  isLoading?: boolean;
   fullWidth?: boolean;
-}
+  className?: string; // 추가로 스타일 더 줄 수 있게
+  btnColor?: OutlineButtonColor;
+};
 
-export default function Button({
-  type = 'button',
-  variant = 'primary',
-  btnColor = 'primary',
-  size = 'large',
-  disabled,
-  children,
-  onClick,
-  className,
-  fullWidth = false,
-}: ButtonProps) {
-  const primaryStyle = 'bg-primary text-white ';
-  const disabledStyle = 'bg-gray-40 text-white cursor-not-allowed';
-  const outlineStyle = `bg-white border ${outlineColors[btnColor]}`;
+export type ButtonProps = CustomButtonProps & NativeButtonProps;
 
-  const variantStyle = disabled
-    ? disabledStyle
-    : variant === 'outline'
-      ? outlineStyle
-      : primaryStyle;
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      variant = 'primary',
+      size = 'large',
+      isLoading = false,
+      fullWidth = false,
+      className,
+      disabled,
+      type = 'button',
+      btnColor = 'primary',
+      children,
+      ...rest
+    },
+    ref,
+  ) => {
+    // 공통 베이스 스타일
+    const baseClass =
+      'inline-flex items-center justify-center rounded-md disabled:cursor-not-allowed disabled:bg-gray-40 disabled:text-white disabled:border-gray-40';
 
-  // className에 'w-'로 시작하는 속성 있으면 w-fit 속성 제거
-  const hasCustomWidth = className?.split(' ').some((cls) => cls.startsWith('w-')) ?? false;
+    // variant에 따라 색 결정
+    const outlineBaseClass = `bg-white border ${outlineColors[btnColor] ?? outlineColors.primary}`;
 
-  const btnWidth = fullWidth ? 'w-full' : hasCustomWidth ? '' : 'w-fit';
-  const btnStyle = `${btnWidth} ${sizeStyles[size]} ${variantStyle} ${className ?? ''}`;
+    const variantClass = variant === 'outline' ? outlineBaseClass : 'bg-primary text-white';
 
-  return (
-    <button type={type} disabled={disabled} className={btnStyle} onClick={onClick}>
-      {children}
-    </button>
-  );
-}
+    // size에 따라 높이/패딩/폰트 크기 결정
+    const sizeClass =
+      size === 'small'
+        ? 'px-[12px] py-[8px] tj-caption'
+        : size === 'medium'
+          ? 'px-[20px] py-[10px] tj-body2-bold'
+          : 'px-[136px] py-3.5 tj-body1-bold';
+
+    // className에 'w-'로 시작하는 속성이 있으면 w-fit 제거
+    const hasCustomWidth = className?.split(/\s+/).some((cls) => cls.startsWith('w-')) ?? false;
+    // fullWidth 여부
+    const widthClass = fullWidth ? 'w-full' : hasCustomWidth ? '' : 'w-fit';
+
+    const mergedClassName = [baseClass, variantClass, sizeClass, widthClass, className]
+      .filter(Boolean)
+      .join(' ');
+
+    return (
+      <button
+        ref={ref}
+        type={type}
+        disabled={disabled || isLoading}
+        className={mergedClassName}
+        {...rest}
+      >
+        {isLoading ? '로딩 중...' : children}
+      </button>
+    );
+  },
+);
+
+Button.displayName = 'Button';
+
+export default Button;
