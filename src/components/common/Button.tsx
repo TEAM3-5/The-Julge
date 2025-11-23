@@ -16,6 +16,12 @@ type CustomButtonProps = {
   btnColor?: OutlineButtonColor;
 };
 
+const sizeStyles = {
+  small: 'px-[12px] py-[8px] tj-caption',
+  medium: 'px-[20px] py-[10px] tj-body2-bold',
+  large: 'px-[136px] py-3.5 tj-body1-bold',
+} as const;
+
 export type ButtonProps = CustomButtonProps & NativeButtonProps;
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -40,16 +46,9 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     // variant에 따라 색 결정
     const outlineBaseClass = `bg-white border ${outlineColors[btnColor] ?? outlineColors.primary}`;
-
     const variantClass = variant === 'outline' ? outlineBaseClass : 'bg-primary text-white';
 
-    // size에 따라 높이/패딩/폰트 크기 결정
-    const sizeClass =
-      size === 'small'
-        ? 'px-[12px] py-[8px] tj-caption'
-        : size === 'medium'
-          ? 'px-[20px] py-[10px] tj-body2-bold'
-          : 'px-[136px] py-3.5 tj-body1-bold';
+    const sizeClass = sizeStyles[size];
 
     // className에 'w-'로 시작하는 속성이 있으면 w-fit 제거
     const hasCustomWidth = className?.split(/\s+/).some((cls) => cls.startsWith('w-')) ?? false;
