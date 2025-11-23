@@ -12,11 +12,24 @@ const minimumPay = MIN_PAY_BY_YEAR[currentYear] ?? 0;
 const formattedMinimumPay = minimumPay.toLocaleString('ko-KR');
 
 export const hourlyPaySchema = z.object({
-  hourlyPay: z.coerce
-    .number()
-    .int('시급을 올바르게 입력해주세요.')
-    .min(minimumPay, `${currentYear}년 최저시급(${formattedMinimumPay}원) 이상 입력해주세요.`)
-    .max(1000000, '너무 큰 시급입니다.'),
+  hourlyPay: z
+    .preprocess(
+      (raw) => {
+        if (raw === '') {
+          return undefined;
+        }
+        return raw;
+      },
+      z.coerce
+        .number()
+        .refine((value) => !Number.isNaN(value), {
+          message: '시급을 입력해주세요.', // ✅ 빈 값 + NaN일 때 이 메시지
+        })
+        .int('시급을 올바르게 입력해주세요.')
+        .min(minimumPay, `${currentYear}년 최저시급(${formattedMinimumPay}원) 이상 입력해주세요.`)
+        .max(1000000, '너무 큰 시급입니다.'),
+    )
+    .optional(),
 });
 
 export type HourlyPayFormValues = z.infer<typeof hourlyPaySchema>;
