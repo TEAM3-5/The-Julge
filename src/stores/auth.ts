@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { setAuthToken } from '@/lib/api';
 
-type Role = 'owner' | 'member' | 'guest';
+type Role = 'owner' | 'member';
 
 type User = {
   id: string;
@@ -12,7 +12,7 @@ type User = {
 
 // Zustand 스토어가 돌 때 상태
 type AuthState = {
-  user: User | null;
+  user: User | null; // user가 null이면 게스트 상태로
   token: string | null;
   isLoggedIn: boolean;
   setAuth: (user: User, token: string) => void;
