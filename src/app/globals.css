@@ -54,6 +54,11 @@
     @apply text-[20px] font-bold leading-normal;
   }
 
+  /* h4 */
+  .tj-h4 {
+    @apply text-[18px] font-bold leading-normal;
+  }
+
   /* body 1 - bold */
   .tj-body1-bold {
     @apply text-[16px] font-bold leading-[20px];

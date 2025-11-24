@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import Input from '@/components/common/Input';
-import DateInput from '@/components/date/DateInput';
+// import Input from '@/components/common/Input';
+// import DateInput from '@/components/date/DateInput';
 
 const AREAS = [
   '서울시 종로구',
@@ -34,7 +34,7 @@ const AREAS = [
 ];
 export default function Filter() {
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-  const [amount, setAmount] = useState('');
+  const [_amount, _setAmount] = useState('');
 
   const handleSelectArea = (area: string) => {
     setSelectedAreas((prev) =>
@@ -91,13 +91,11 @@ export default function Filter() {
             ))}
           </div>
         </section>
-        <section className="flex flex-col gap-y-[12px]">
-          <DateInput />
-        </section>
+        <section className="flex flex-col gap-y-[12px]">{/* <DateInput /> */}</section>
         <section className="flex flex-col gap-y-[12px]">
           <h3 className="th-body1">금액</h3>
           <div>
-            <Input label="" value={amount} onChange={(e) => setAmount(e.target.value)} showUnit />
+            {/* <Input label="" value={amount} onChange={(e) => setAmount(e.target.value)} showUnit /> */}
           </div>
         </section>
       </div>

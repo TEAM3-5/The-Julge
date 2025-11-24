@@ -5,6 +5,7 @@ import { Pagination } from "@/components/pagination/Pagination";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 import { ActionModal } from "@/components/modal/ActionModal";
 import { useModal } from "@/hooks/UseModal";
+import { PostCard } from "@/components/post/postCard";
 
 export default function JunyeolPage() {
   const searchParams = useSearchParams();
@@ -19,6 +20,15 @@ export default function JunyeolPage() {
   const handleReject = () => {
     // 실제 거절 API 호출 등
     console.log("거절 확정");
+  };
+
+  const MOCK_POST = {
+    title: "도토리식당",
+    scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+    locationText: "서울시 송파구",
+    wage: 15000,
+    wageBadgeText: "기존 시급보다 100%",
+    thumbnailUrl: "/images/dotori.svg",
   };
 
   return (
@@ -57,6 +67,37 @@ export default function JunyeolPage() {
         onClose={actionModal.close}
         onConfirm={handleReject}
       />
+
+      <div className="py-10">
+        <div className="mb-8 flex justify-center gap-6">
+          <PostCard
+            status="active"
+            size="large"
+            {...MOCK_POST}
+          />
+          <PostCard
+            status="inactive"
+            size="large"
+            {...MOCK_POST}
+            wageBadgeText="50%"
+          />
+        </div>
+
+        <div className="flex justify-center gap-6">
+          <PostCard
+            status="active"
+            size="small"
+            {...MOCK_POST}
+          />
+          <PostCard
+            status="inactive"
+            size="small"
+            {...MOCK_POST}
+          />
+        </div>
+      </div>
+
     </div>
+
   );
 }
