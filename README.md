@@ -14,7 +14,7 @@ Part3 5팀 더줄게 프로젝트 레포지토리입니다. 서비스와 협업 
 - **런타임/언어**: Next 16(App Router), React 19, TypeScript
 - **스타일**: Tailwind CSS 4
 - **폼/유효성**: react-hook-form, zod, @hookform/resolvers
-- **도구/유틸**: dayjs (날짜), Vercel 배포 예정
+- **도구/유틸**: axios(API 클라이언트), dayjs (날짜), Vercel 배포 예정
 - **품질/포맷**: ESLint(+eslint-config-next, @typescript-eslint/parser & plugin, eslint-config-prettier, eslint-plugin-prettier), Prettier
 - **커밋/훅**: Husky(pre-commit/prepare), Commitlint(+config-conventional)
 - **빌드/타입체크 스크립트**: `build`, `type-check`, `lint`, `format`
@@ -24,6 +24,7 @@ Part3 5팀 더줄게 프로젝트 레포지토리입니다. 서비스와 협업 
 - React 타입 유틸: `ComponentPropsWithRef<'button' | 'input'>`, `Omit` 등으로 기본 DOM props 확장 후 재사용(`Button`, `Input`)
 - `forwardRef`: 버튼·인풋 컴포넌트에서 ref 전달
 - 폼: `react-hook-form` + `zodResolver` 조합으로 상태/검증 구성
+- API: `src/lib/api.ts`에서 axios 인스턴스 생성
 - 유틸: `dayjs`로 날짜 핸들링
 - 커스텀 훅: `usePagination`, `UseModal`로 페이징·모달 제어
 
