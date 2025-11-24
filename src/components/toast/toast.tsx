@@ -32,16 +32,13 @@ export function Toast({ isOpen, message, variant = "info" }: ToastProps) {
 
   /**
    * variant에 따라 배경/텍스트 색상 분기
-   * - error   : red-30/white
-   * - success : green-20/white
-   * - info    : gray-30/black
    */
-  const variantClass =
-    variant === "error"
-      ? "bg-red-30 text-white"
-      : variant === "success"
-      ? "bg-green-20 text-white"
-      : "bg-gray-30 text-black";
+  const variantClasses: Record<ToastVariant, string> = {
+    error: "bg-red-30 text-white",
+    success: "bg-green-20 text-white",
+    info: "bg-gray-30 text-black",
+  };
+  const variantClass = variantClasses[variant];
 
   /**
    * createPortal
@@ -52,6 +49,7 @@ export function Toast({ isOpen, message, variant = "info" }: ToastProps) {
     // 전체 화면을 덮는 래퍼 (클릭 막기 위해 pointer-events-none)
     <div className="fixed inset-x-0 bottom-12 z-9999 flex justify-center pointer-events-none">
       <div
+        role="status"
         className={[
           // pointer-events-auto로 클릭 가능하게 설정(배경 클릭 막기 위해)
           "pointer-events-auto",
