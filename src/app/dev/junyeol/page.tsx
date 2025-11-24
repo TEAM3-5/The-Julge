@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useState } from "react";
 import { Pagination } from "@/components/pagination/Pagination";
 import { ConfirmModal } from "@/components/modal/ConfirmModal";
 import { ActionModal } from "@/components/modal/ActionModal";
@@ -8,14 +8,16 @@ import { useModal } from "@/hooks/UseModal";
 import { PostCard } from "@/components/post/postCard";
 
 export default function JunyeolPage() {
-  const searchParams = useSearchParams();
-  const pageParam = searchParams.get("page");
-  const rawPage = pageParam ? Number(pageParam) || 1 : 1;
+  const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 21;
-  const currentPage = Math.min(Math.max(rawPage, 1), totalPages);
 
   const confirmModal = useModal();
   const actionModal = useModal();
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // 페이지에 맞게 데이터를 다시 불러오거나 리스트 상태 업데이트 처리
+  }
 
   const handleReject = () => {
     // 실제 거절 API 호출 등
@@ -36,7 +38,7 @@ export default function JunyeolPage() {
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
-        hrefBuilder={(p) => `?page=${p}`}
+        onPageChange={handlePageChange}
         maxPageButtons={7}
       />
 
