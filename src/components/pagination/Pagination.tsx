@@ -4,26 +4,22 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePagination } from '@/hooks/usePagination';
 
-/** 네모 숫자 버튼 */
+/** 네모 숫자 버튼 props */
 type NumberButtonProps = {
+  /** 버튼에 표시될 페이지 번호 */
   page: number;
+  /** 현재 페이지 활성화 여부 */
   isActive: boolean;
+  /** 제공되면 Link로 렌더링할 href */
   href?: string;
+  /** 버튼 클릭 시 호출될 콜백 */
   onClick?: () => void;
 };
 
 function NumberButton({ page, isActive, href, onClick }: NumberButtonProps) {
-  // 기본 클래스
-  let classes = 'inline-flex items-center justify-center w-10 h-10 rounded-[4px] tj-body2';
-
-  // 활성/비활성에 따른 스타일 추가
-  if (isActive) {
-    classes += ' bg-primary text-white';
-  } else {
-    classes += ' text-gray-black hover:bg-gray-100';
-  }
-
-  const content = <span>{page}</span>;
+  const classes = `inline-flex items-center justify-center w-10 h-10 rounded-[4px] tj-body2 ${
+    isActive ? 'bg-red-30 text-white' : 'text-gray-black hover:bg-gray-100'
+  }`;
 
   if (href) {
     return (
@@ -34,7 +30,7 @@ function NumberButton({ page, isActive, href, onClick }: NumberButtonProps) {
         className={classes}
         onClick={onClick}
       >
-        {content}
+        <span>{page}</span>
       </Link>
     );
   }
@@ -46,16 +42,20 @@ function NumberButton({ page, isActive, href, onClick }: NumberButtonProps) {
       className={classes}
       onClick={onClick}
     >
-      {content}
+      <span>{page}</span>
     </button>
   );
 }
 
-/** 좌우 화살표 버튼 */
+/** 좌우 화살표 버튼 props */
 type ArrowButtonProps = {
+  /** 화살표 방향 ('prev' 또는 'next') */
   direction: 'prev' | 'next';
+  /** 버튼 비활성화 여부 */
   disabled: boolean;
+  /** 제공되면 Link로 렌더링할 href */
   href?: string;
+  /** 버튼 클릭 시 호출될 콜백 */
   onClick?: () => void;
 };
 
@@ -79,14 +79,9 @@ function ArrowButton({ direction, disabled, href, onClick }: ArrowButtonProps) {
 
   const ariaLabel = direction === 'prev' ? '이전 페이지' : '다음 페이지';
 
-  // 기본 클래스
-  let classes = 'flex items-center justify-center w-10 h-10';
-
-  if (disabled) {
-    classes += ' opacity-40 cursor-not-allowed';
-  } else {
-    classes += ' text-gray-black';
-  }
+  const classes = `flex items-center justify-center w-10 h-10 ${
+    disabled ? 'opacity-40 cursor-not-allowed' : 'text-gray-black'
+  }`;
 
   const content = (
     <span className="inline-flex items-center justify-center w-5 h-5">
@@ -160,6 +155,9 @@ export function Pagination({
   // 1페이지 이하일 땐 굳이 안 보여줌
   if (safeTotalPages <= 1) return null;
 
+  const prevPage = safeCurrentPage - 1;
+  const nextPage = safeCurrentPage + 1;
+
   const isFirst = safeCurrentPage === 1;
   const isLast = safeCurrentPage === safeTotalPages;
 
@@ -173,7 +171,7 @@ export function Pagination({
     onPageChange(page);
   };
 
-  // nav 클래스도 유틸 없이 처리
+  // nav 클래스 (유틸 없이 처리)
   const navClassName = className
     ? `flex items-center justify-center gap-0.5 ${className}`
     : 'flex items-center justify-center gap-0.5';
@@ -184,12 +182,8 @@ export function Pagination({
       <ArrowButton
         direction="prev"
         disabled={isFirst}
-        href={!isFirst ? buildHref(safeCurrentPage - 1) : undefined}
-        onClick={
-          !hrefBuilder
-            ? () => handleChange(safeCurrentPage - 1)
-            : undefined
-        }
+        href={!isFirst ? buildHref(prevPage) : undefined}
+        onClick={!hrefBuilder ? () => handleChange(prevPage) : undefined}
       />
 
       {/* 숫자 버튼 */}
@@ -198,7 +192,7 @@ export function Pagination({
           key={page}
           page={page}
           isActive={page === safeCurrentPage}
-          href={hrefBuilder ? buildHref(page) : undefined}
+          href={buildHref(page)}
           onClick={!hrefBuilder ? () => handleChange(page) : undefined}
         />
       ))}
@@ -207,12 +201,8 @@ export function Pagination({
       <ArrowButton
         direction="next"
         disabled={isLast}
-        href={!isLast ? buildHref(safeCurrentPage + 1) : undefined}
-        onClick={
-          !hrefBuilder
-            ? () => handleChange(safeCurrentPage + 1)
-            : undefined
-        }
+        href={!isLast ? buildHref(nextPage) : undefined}
+        onClick={!hrefBuilder ? () => handleChange(nextPage) : undefined}
       />
     </nav>
   );
