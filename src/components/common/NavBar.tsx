@@ -14,7 +14,7 @@ interface NavBarProps {
 export default function NavBar({ isLoggedIn, role }: NavBarProps) {
   const router = useRouter();
   const [keyword, setKeyword] = useState('');
-  const [alertCount, setAlertCount] = useState(0);
+  // const [alertCount, setAlertCount] = useState(0);
 
   const handleMainPage = () => {
     router.push('/');
@@ -31,9 +31,9 @@ export default function NavBar({ isLoggedIn, role }: NavBarProps) {
     router.push('/posts');
   };
 
-  const handleAlarm = () => {
-    // TODO: 알림 모달 열기
-  };
+  // const handleAlarm = () => {
+  //   // TODO: 알림 모달 열기
+  // };
 
   const handleSearch = (keyword: string) => {
     const trimmed = keyword.trim();
@@ -108,7 +108,7 @@ export default function NavBar({ isLoggedIn, role }: NavBarProps) {
         >
           {secondLabel}
         </button>
-        {isLoggedIn && (
+        {/* {isLoggedIn && (
           <Image
             src={
               alertCount > 0
@@ -121,7 +121,7 @@ export default function NavBar({ isLoggedIn, role }: NavBarProps) {
             className="cursor-pointer"
             onClick={handleAlarm}
           />
-        )}
+        )} */}
       </div>
     </div>
   );
