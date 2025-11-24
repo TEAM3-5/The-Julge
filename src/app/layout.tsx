@@ -10,7 +10,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   const role: UserRole = 'OWNER';
 
   return (
-    <html lang="ko" className={spoqa.variable}>
+    <html lang="ko" className={spoqa.className}>
       <body className="min-h-screen flex flex-col">
         <NavBar isLoggedIn={isLoggedIn} role={role} />
         <main className="flex-1">
