@@ -4,6 +4,7 @@ import { UserRole } from '@/components/common/NavBar';
 import './globals.css';
 import { spoqa } from './fonts';
 import Footer from '@/components/common/Footer';
+import { ToastProvider } from "@/components/toast/toastProvider";
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   const isLoggedIn = false; // 임시
@@ -12,11 +13,13 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <html lang="ko" className={spoqa.className}>
       <body className="min-h-screen flex flex-col">
-        <NavBar isLoggedIn={isLoggedIn} role={role} />
-        <main className="flex-1">
-          <div>{children}</div>
-        </main>
-        <Footer />
+        <ToastProvider>
+          <NavBar isLoggedIn={isLoggedIn} role={role} />
+          <main className="flex-1">
+            <div>{children}</div>
+          </main>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );
