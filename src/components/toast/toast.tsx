@@ -50,12 +50,9 @@ export function Toast({ isOpen, message, variant = "info" }: ToastProps) {
     <div className="fixed inset-x-0 bottom-12 z-9999 flex justify-center pointer-events-none">
       <div
         role="status"
-        className={[
+        className={
           // pointer-events-auto로 클릭 가능하게 설정(배경 클릭 막기 위해)
-          "pointer-events-auto",
-          "flex items-center justify-center rounded-[5px] tj-body1 px-4 py-2.5",
-          variantClass,
-        ].join(" ")}
+          `pointer-events-auto flex items-center justify-center rounded-[5px] tj-body1 px-4 py-2.5 ${variantClass}`}
       >
         {message}
       </div>
