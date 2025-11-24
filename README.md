@@ -38,18 +38,16 @@ Part3 5팀 더줄게 프로젝트 레포지토리입니다. 서비스와 협업 
       public/        # 비로그인 접근 가능
       member/        # 일반회원 전용
       owner/         # 사장님 전용
-      playground/    # 처음 세팅 이름 dev로 만들어져서 추후 컴포넌트 완료시 변경필요
+      playground/    # 처음 세팅 이름 dev로 만들어져서 추후 리팩토링 때 컴포넌트 완료시 변경필요
       fonts/         # 웹폰트 파일
       layout.tsx
       page.tsx
     components/      # 재사용 UI 컴포넌트
       common/        # 버튼, 인풋, 테이블, 필터, Nav 등
-      pagination/
-      modal/
-      layout/
     hooks/           # 커스텀 훅(usePagination, UseModal 등)
     features/        # 도메인 로직(shifts 등)
     constants/       # 공통 상수
+    stores/          # 전역상태관리
     styles/          # 스타일 리소스
     lib/             # 유틸/확장 모듈
 ```
