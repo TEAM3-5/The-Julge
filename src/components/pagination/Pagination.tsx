@@ -16,8 +16,9 @@ type NumberButtonProps = {
 
 function NumberButton({ page, isActive, href, onClick }: NumberButtonProps) {
   // 활성/비활성 상태에 따른 색상 변경
-  const classes = `inline-flex items-center justify-center w-10 h-10 rounded-[4px] tj-body2 ${isActive ? 'bg-red-30 text-white' : 'text-gray-black hover:bg-gray-100'
-    }`;
+  const classes = `inline-flex items-center justify-center w-10 h-10 rounded-[4px] tj-body2 ${isActive 
+    ? 'bg-red-30 text-white' 
+    : 'text-gray-black hover:bg-gray-100'}`;
 
   // href가 있으면 Link로 렌더링
   if (href) {
@@ -79,8 +80,9 @@ function ArrowButton({ direction, disabled, href, onClick }: ArrowButtonProps) {
   const ariaLabel = direction === 'prev' ? '이전 페이지' : '다음 페이지';
 
   // 비활성 여부에 따라 스타일 분기
-  const classes = `flex items-center justify-center w-10 h-10 ${disabled ? 'opacity-40 cursor-not-allowed' : 'text-gray-black'
-    }`;
+  const classes = `flex items-center justify-center w-10 h-10 ${disabled 
+    ? 'opacity-40 cursor-not-allowed' 
+    : 'text-gray-black'}`;
 
   const content = (
     <span className="inline-flex items-center justify-center w-5 h-5">
