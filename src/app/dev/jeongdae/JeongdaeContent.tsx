@@ -228,7 +228,6 @@ export default function JeongdaeContent() {
                   totalPages={totalPages}
                   hrefBuilder={(p) => `?page=${p}`}
                   maxPageButtons={7}
-                  mode="full"
                 />
               </div>
             )}

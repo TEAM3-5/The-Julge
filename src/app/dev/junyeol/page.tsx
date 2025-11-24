@@ -38,7 +38,6 @@ export default function JunyeolPage() {
         totalPages={totalPages}
         hrefBuilder={(p) => `?page=${p}`}
         maxPageButtons={7}
-        mode="full"
       />
 
       <div className="flex flex-col items-center justify-center gap-4 p-8">
