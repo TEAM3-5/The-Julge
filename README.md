@@ -34,11 +34,13 @@ Part3 5팀 더줄게 프로젝트 레포지토리입니다. 서비스와 협업 
   public/            # 정적 자산
   src/
     app/             # App Router 엔트리, 글로벌 스타일, 폰트 로드
+      public/        # 비로그인 접근 가능
+      member/        # 일반회원 전용
+      owner/         # 사장님 전용
+      playground/    # 처음 세팅 이름 dev로 만들어져서 추후 컴포넌트 완료시 변경필요
+      fonts/         # 웹폰트 파일
       layout.tsx
       page.tsx
-      login/
-      dev/
-      fonts/         # 웹폰트 파일
     components/      # 재사용 UI 컴포넌트
       common/        # 버튼, 인풋, 테이블, 필터, Nav 등
       pagination/
