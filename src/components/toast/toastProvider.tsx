@@ -7,6 +7,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useEffect,
   ReactNode,
 } from "react";
 import { Toast, ToastVariant } from "./toast";
@@ -83,6 +84,15 @@ export function ToastProvider({ children }: ToastProviderProps) {
     },
     []
   );
+
+  // Provider 언마운트 시 타이머 정리
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+      }
+    };
+  }, []);
 
   // Context에 내려줄 값 메모이제이션
   const value = useMemo(
