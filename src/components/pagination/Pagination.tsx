@@ -181,7 +181,7 @@ export function Pagination({
 
   return (
     <nav aria-label="Pagination"
-      className={`flex items-center justify-center gap-0.5 ${className ? ` **:${className}` : ''}`}
+      className={`flex items-center justify-center gap-0.5${className ? ` ${className}` : ''}`}
     >
       {/* 이전 화살표 */}
       <ArrowButton
