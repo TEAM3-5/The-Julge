@@ -14,7 +14,6 @@ type User = {
 type AuthState = {
   user: User | null; // user가 null이면 게스트 상태로
   token: string | null;
-  isLoggedIn: boolean;
   setAuth: (user: User, token: string) => void;
   clearAuth: () => void;
 };
@@ -23,19 +22,18 @@ type AuthState = {
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   token: null,
-  isLoggedIn: false,
 
   // 로그인 성공시
   setAuth: (user, token) => {
     // Zustand 상태 업데이트
-    set({ user, token, isLoggedIn: true });
-    // axios 인스턴스 header 토큰 제거
+    set({ user, token });
+    // axios 인스턴스 header 토큰 설정
     setAuthToken(token);
   },
 
   // 로그아웃시
   clearAuth: () => {
-    set({ user: null, token: null, isLoggedIn: false });
+    set({ user: null, token: null });
     setAuthToken(null);
   },
 }));
