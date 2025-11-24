@@ -69,7 +69,6 @@ export default function JunyeolPage() {
       />
 
       <div className="py-10">
-        {/* 윗줄: 큰 카드 2개 */}
         <div className="mb-8 flex justify-center gap-6">
           <PostCard
             status="active"
@@ -80,11 +79,10 @@ export default function JunyeolPage() {
             status="inactive"
             size="large"
             {...MOCK_POST}
-            wageBadgeText="50%" // 비활성 뱃지 텍스트
+            wageBadgeText="50%"
           />
         </div>
 
-        {/* 아랫줄: 작은 카드 2개 */}
         <div className="flex justify-center gap-6">
           <PostCard
             status="active"
@@ -95,7 +93,6 @@ export default function JunyeolPage() {
             status="inactive"
             size="small"
             {...MOCK_POST}
-            wageBadgeText="50%"
           />
         </div>
       </div>
