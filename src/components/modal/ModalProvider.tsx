@@ -72,35 +72,37 @@ function ModalRoot({
 }) {
   if (!state.type || !state.props) return null;
 
-  if (state.type === "confirm") {
-    return (
-      <ConfirmModal
-        isOpen={true}
-        onClose={onRequestClose}
-        {...state.props}
-      />
-    );
-  }
+  switch (state.type) {
+    case "confirm":
+      return (
+        <ConfirmModal
+          isOpen={true}
+          onClose={onRequestClose}
+          {...state.props}
+        />
+      );
 
-  if (state.type === "action") {
-    return (
-      <ActionModal
-        isOpen={true}
-        onClose={onRequestClose}
-        {...state.props}
-      />
-    );
-  }
+    case "action":
+      return (
+        <ActionModal
+          isOpen={true}
+          onClose={onRequestClose}
+          {...state.props}
+        />
+      );
 
-  if (state.type === "custom") {
-    return (
-      <ModalBase isOpen={true} onClose={onRequestClose}>
-        {state.props.render(onRequestClose)}
-      </ModalBase>
-    );
-  }
+    case "custom":
+      return (
+        <ModalBase isOpen={true} onClose={onRequestClose}>
+          {state.props.render(onRequestClose)}
+        </ModalBase>
+      );
 
-  return null;
+    case null:
+    default:
+
+      return null;
+  }
 }
 
 export function useModalContext() {
