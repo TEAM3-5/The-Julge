@@ -1,119 +1,214 @@
 'use client';
 
-import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 import { usePagination } from '@/hooks/usePagination';
-import { PaginationButton } from './PaginationButton';
-
-type PaginationMode = 'simple' | 'full';
-
-type PaginationProps = {
-  currentPage: number /** 현재 페이지 (1부터 시작) */;
-  totalPages: number /** 전체 페이지 수 */;
-  onPageChange?: (page: number) => void /** 페이지 변경 콜백 */;
-  hrefBuilder?: (page: number) => string /** 페이지별 링크 생성 */;
-  maxPageButtons?: number /** 가운데에 보여줄 최대 페이지 버튼 수 */;
-  mode?: PaginationMode;
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-};
-
-/** 여러 className 문자열을 합쳐주는 유틸 함수 */
-const cn = (...classes: Array<string | false | null | undefined>) =>
-  classes.filter(Boolean).join(' ');
 
 /**
- * 공용 Pagination 컴포넌트
- * - currentPage, totalPages만 넘겨주면 내부에서 페이지 버튼 계산
- * - hrefBuilder가 있으면 link로, 없으면 onPageChange 콜백으로 동작
+ * 숫자 버튼 컴포넌트
  */
-export const Pagination: React.FC<PaginationProps> = ({
+type NumberButtonProps = {
+  page: number;         // 버튼에 표시될 페이지 번호
+  isActive: boolean;    // 현재 페이지 활성화 여부(선택된 페이지인지)
+  href?: string;        // 제공되면 Link로 렌더링할 href
+  onClick?: () => void; // 버튼 클릭 시 호출될 콜백
+};
+
+function NumberButton({ page, isActive, href, onClick }: NumberButtonProps) {
+  // 활성/비활성 상태에 따른 색상 변경
+  const classes = `inline-flex items-center justify-center w-10 h-10 rounded-[4px] tj-body2 ${isActive 
+    ? 'bg-red-30 text-white' 
+    : 'text-gray-black hover:bg-gray-100'}`;
+
+  // href가 있으면 Link로 렌더링
+  if (href) {
+    return (
+      <Link
+        href={href}
+        scroll={false}
+        aria-current={isActive ? 'page' : undefined}
+        className={classes}
+        onClick={onClick}
+      >
+        <span>{page}</span>
+      </Link>
+    );
+  }
+
+  // href가 없으면 onPageChange로 상태만 변경하는 버튼
+  return (
+    <button
+      type="button"
+      aria-current={isActive ? 'page' : undefined}
+      className={classes}
+      onClick={onClick}
+    >
+      <span>{page}</span>
+    </button>
+  );
+}
+
+/**
+ * 화살표 버튼 컴포넌트
+ */
+type ArrowButtonProps = {
+  direction: 'prev' | 'next'; // 화살표 방향(이전 또는 다음)
+  disabled: boolean;          // 버튼 비활성화 여부
+  href?: string;              // 제공되면 Link로 렌더링할 href
+  onClick?: () => void;       // 버튼 클릭 시 호출될 콜백
+};
+
+function ArrowButton({ direction, disabled, href, onClick }: ArrowButtonProps) {
+  // 방향에 따라 왼쪽 또는 오른쪽 아이콘 선택
+  const icon =
+    direction === 'prev' ? (
+      <Image
+        src="/icons/icon-page-left.svg"
+        alt="이전 페이지"
+        width={16}
+        height={16}
+      />
+    ) : (
+      <Image
+        src="/icons/icon-page-right.svg"
+        alt="다음 페이지"
+        width={16}
+        height={16}
+      />
+    );
+
+  const ariaLabel = direction === 'prev' ? '이전 페이지' : '다음 페이지';
+
+  // 비활성 여부에 따라 스타일 분기
+  const classes = `flex items-center justify-center w-10 h-10 ${disabled 
+    ? 'opacity-40 cursor-not-allowed' 
+    : 'text-gray-black'}`;
+
+  const content = (
+    <span className="inline-flex items-center justify-center w-5 h-5">
+      {icon}
+    </span>
+  );
+
+  // Link 기반 이동
+  if (href && !disabled) {
+    return (
+      <Link
+        href={href}
+        scroll={false}
+        aria-label={ariaLabel}
+        className={classes}
+        onClick={onClick}
+      >
+        {content}
+      </Link>
+    );
+  }
+
+  // 버튼 기반 이동
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      aria-label={ariaLabel}
+      className={classes}
+      onClick={disabled ? undefined : onClick}
+    >
+      {content}
+    </button>
+  );
+}
+
+/**
+ * Pagination 메인 컴포넌트
+ */
+type PaginationProps = {
+  currentPage: number;                    // 현재 페이지 (1부터 시작)
+  totalPages: number;                     // 전체 페이지 수
+  onPageChange?: (page: number) => void;  // 페이지 변경 콜백 (href가 없을 때 사용)
+  hrefBuilder?: (page: number) => string; // 페이지별 링크 생성 함수 (존재하면 Link로 렌더링)
+  maxPageButtons?: number;                // 가운데에 표시될 최대 페이지 수
+  className?: string;                     // 추가로 적용시킬 Tailwind 클래스
+};
+
+export function Pagination({
   currentPage,
   totalPages,
   onPageChange,
   hrefBuilder,
   maxPageButtons = 7,
   className,
-}) => {
-  // 훅에 넣을 totalPages / currentPage 계산
+}: PaginationProps) {
+  // totalPage가 0, 음수 등 비정상적인 값이여도 안전하게 처리
   const safeTotalPages = Math.max(totalPages, 0);
-  // currentPage를 1~totalPages 범위로 보정
+
+  // currentPage를 1 ~ safeTotalPages 범위로 보정
   const safeCurrentPage =
     safeTotalPages > 0 ? Math.min(Math.max(currentPage, 1), safeTotalPages) : 1;
 
-  // 페이지 번호 배열 계산
-  const pageNumbers = usePagination({
+  // 화면에 보여줄 페이지 번호 배열 계산 (ex: [3,4,5,6,7])
+  const pages = usePagination({
     currentPage: safeCurrentPage,
     totalPages: safeTotalPages,
     maxPageButtons,
   });
 
-  // 페이지가 없으면 아무것도 렌더링하지 않음
-  if (safeTotalPages <= 0) return null;
+  // 1페이지 이하일 땐 렌더링하지 않음
+  if (safeTotalPages <= 1) return null;
 
-  /** 내부에서 사용하는 페이지 변경 핸들러 (범위 체크 포함)*/
-  const handleChange = (page: number) => {
-    if (!onPageChange) return;
-    if (page < 1 || page > safeTotalPages) return;
-    if (page === safeCurrentPage) return; // 동일 페이지 변경 방지
-    onPageChange(page);
-  };
+  // 이전/다음 페이지 번호 계산
+  const prevPage = safeCurrentPage - 1;
+  const nextPage = safeCurrentPage + 1;
 
   const isFirst = safeCurrentPage === 1;
   const isLast = safeCurrentPage === safeTotalPages;
 
-  // hrefbuilder가 있으면 링크 문자열 생성, 없으면 undefined 반환
-  const buildHref = (page: number) => (hrefBuilder ? hrefBuilder(page) : undefined);
+  // hrefBuilder가 있으면 page -> URL을 만들어 주는 헬퍼
+  const buildHref = (page: number) =>
+    hrefBuilder ? hrefBuilder(page) : undefined;
+
+  /**
+   * 페이지 변경 핸들러
+   * onPageChange가 없으면 아무 동작도 하지 않음
+   * page가 범위를 벗어나거나 같은 페이지로 이동하려고 하면 무시
+   */
+  const handleChange = (page: number) => {
+    if (!onPageChange) return;
+    if (page < 1 || page > safeTotalPages) return;
+    if (page === safeCurrentPage) return;
+    onPageChange(page);
+  };
 
   return (
-    <nav
-      aria-label="Pagination"
-      className={cn('flex items-center justify-center gap-0.5', className)}
+    <nav aria-label="Pagination"
+      className={`flex items-center justify-center gap-0.5${className ? ` ${className}` : ''}`}
     >
       {/* 이전 화살표 */}
-      <PaginationButton
-        variant="arrow"
+      <ArrowButton
         direction="prev"
         disabled={isFirst}
-        href={!isFirst && hrefBuilder ? buildHref(safeCurrentPage - 1) : undefined}
-        onClick={!hrefBuilder && !isFirst ? () => handleChange(safeCurrentPage - 1) : undefined}
+        href={!isFirst ? buildHref(prevPage) : undefined}
+        onClick={!hrefBuilder ? () => handleChange(prevPage) : undefined}
       />
 
       {/* 숫자 버튼 */}
-      {pageNumbers.map((page) => (
-        <PaginationButton
+      {pages.map((page) => (
+        <NumberButton
           key={page}
-          variant="number"
           page={page}
           isActive={page === safeCurrentPage}
-          href={hrefBuilder ? buildHref(page) : undefined}
+          href={buildHref(page)}
           onClick={!hrefBuilder ? () => handleChange(page) : undefined}
         />
       ))}
 
       {/* 다음 화살표 */}
-      <PaginationButton
-        variant="arrow"
+      <ArrowButton
         direction="next"
         disabled={isLast}
-        href={!isLast && hrefBuilder ? buildHref(safeCurrentPage + 1) : undefined}
-        onClick={!hrefBuilder && !isLast ? () => handleChange(safeCurrentPage + 1) : undefined}
+        href={!isLast ? buildHref(nextPage) : undefined}
+        onClick={!hrefBuilder ? () => handleChange(nextPage) : undefined}
       />
     </nav>
   );
-};
-
-// const searchParams = useSearchParams();
-// const pageParam = searchParams.get("page");
-// // 쿼리 없으면 1페이지
-// const rawPage = pageParam ? Number(pageParam) || 1 : 1;
-// // 나중에 실제 데이터 개수로 계산해서 채우면 됨
-// const totalPages = 21;
-// // 잘못된 값이 들어와도 안전하게 1~totalPages로 보정
-// const currentPage = Math.min(Math.max(rawPage, 1), totalPages);
-//   <Pagination
-//   currentPage={currentPage}
-//   totalPages={totalPages}
-//   hrefBuilder={(p) => `?page=${p}`}
-//   maxPageButtons={7}
-//   mode="full"
-// />
+}

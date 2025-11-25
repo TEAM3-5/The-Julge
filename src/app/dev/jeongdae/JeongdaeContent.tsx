@@ -1,6 +1,6 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import Table from '@/components/common/Table';
 import type { ShiftRow } from '@/features/shifts/model';
 import { Pagination } from '@/components/pagination/Pagination';
@@ -90,12 +90,12 @@ const MOCK_ROWS: ShiftRow[] = [
 const ROWS_PER_PAGE = 5;
 
 export default function JeongdaeContent() {
-  const searchParams = useSearchParams();
-  const pageParam = searchParams.get('page');
-  const rawPage = pageParam ? Number(pageParam) || 1 : 1;
-
+  const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.max(1, Math.ceil(MOCK_ROWS.length / ROWS_PER_PAGE));
-  const currentPage = Math.min(Math.max(rawPage, 1), totalPages);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // 페이지에 맞게 데이터를 다시 불러오거나 리스트 상태 업데이트 처리
+  }
 
   const pageRows = MOCK_ROWS.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE);
 
@@ -226,9 +226,8 @@ export default function JeongdaeContent() {
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
-                  hrefBuilder={(p) => `?page=${p}`}
+                  onPageChange={handlePageChange}
                   maxPageButtons={7}
-                  mode="full"
                 />
               </div>
             )}
