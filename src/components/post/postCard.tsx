@@ -65,10 +65,9 @@ export function PostCard({
 
         {/* 비활성(지난 공고) 오버레이 */}
         {isInactive && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70">
-            <span className="text-gray-30 tj-h3 md:tj-h1">
-              지난 공고
-            </span>
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-gray-30">
+            <span className="flex md:hidden tj-h3">지난 공고</span>
+            <span className="hidden md:flex tj-h1">지난 공고</span>
           </div>
         )}
       </div>
@@ -81,42 +80,42 @@ export function PostCard({
           <h3
             className={`
               ${isInactive ? "text-gray-30" : "text-gray-black"}
-              tj-body1-bold md:tj-h3
             `}
           >
-            {title}
+            <span className="flex md:hidden tj-body1-bold">{title}</span>
+            <span className="hidden md:flex tj-h3">{title}</span>
+
           </h3>
           <p
             className={`
               flex gap-1.5
               ${isInactive ? "text-gray-30" : "text-gray-50"}
-              tj-caption md:tj-body2
             `}
           >
             <PostClock
               className={`w-4 h-4 md:w-5 md:h-5 ${isInactive ? "text-gray-20" : "text-red-30"}`} />
 
             {/* 모바일 날짜/시간 두 줄로 표시 */}
-            <span className="flex flex-col md:hidden">
+            <span className="flex flex-col md:hidden tj-caption">
               <span>{datePart}</span>
               <span>{timePart}</span>
             </span>
 
             {/* md(태블릿) 이상 날짜/시간 한 줄로 표시 */}
-            <span className="hidden md:inline">{scheduleText}</span>
+            <span className="hidden md:inline tj-body2">{scheduleText}</span>
           </p>
 
           {/* 위치 줄 */}
           <p
             className={`
               flex gap-1.5
-              tj-caption md:tj-body2
               ${isInactive ? "text-gray-30" : "text-gray-50"}
             `}
           >
             <PostPath
               className={`w-4 h-4 md:w-5 md:h-5 ${isInactive ? "text-gray-20" : "text-red-30"}`} />
-            <span>{locationText}</span>
+            <span className="hidden md:flex tj-body2">{locationText}</span>
+            <span className="flex md:hidden tj-caption">{locationText}</span>
           </p>
         </div>
 
@@ -124,12 +123,12 @@ export function PostCard({
         <div className={`flex items-end flex-wrap md:justify-between`}>
           <p
             className={`
-              tj-h4 md:tj-h2
               w-full md:w-auto
               ${isInactive ? "text-gray-30" : "text-gray-black"}
             `}
           >
-            {wage.toLocaleString()}원
+            <span className="hidden md:flex tj-h2">{wage.toLocaleString()}원</span>
+            <span className="flex md:hidden tj-h4">{wage.toLocaleString()}원</span>
           </p>
 
           {wageBadgeText && (
@@ -139,25 +138,23 @@ export function PostCard({
                 className={`
                   hidden md:flex items-center justify-center rounded-[20px] h-9 p-3
                   ${isInactive ? "bg-gray-20 text-white" : "bg-red-40 text-white"}
-                  tj-caption md:tj-body2-bold
                 `}
               >
-                <span>{wageBadgeText}</span>
+                <span className="tj-body2-bold">{wageBadgeText}</span>
                 <PostArrow
                   className="w-5 h-5 text-white" />
               </div>
 
               {/* 모바일 가격 아래 문구 */}
               <div className="flex md:hidden">
-                <span className={`flex tj-caption text-center gap-0.5 ${isInactive ? "text-gray-20" : "text-red-40"}`}>
-                  {wageBadgeText}
+                <div className={`flex text-center gap-0.5 ${isInactive ? "text-gray-20" : "text-red-40"}`}>
+                  <span className="tj-caption">{wageBadgeText}</span>
                   <PostArrow
                     className={`w-4 h-4 ${isInactive ? "text-gray-20" : "text-red-40"}`} />
-                </span>
+                </div>
               </div>
             </>
-          )}
-          
+          )}    
         </div>
       </div>
     </article>
