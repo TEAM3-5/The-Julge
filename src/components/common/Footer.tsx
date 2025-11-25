@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 export default function Footer() {
   return (
-    <footer className="mt-auto flex justify-between w-full py-[37px] px-[238px] bg-gray-10 tj-body1-regular text-gray-50">
+    <footer className="flex justify-between w-full py-[37px] px-[238px] bg-gray-10 tj-body1-regular text-gray-50">
       <div className="select-none">codeit - 2025</div>
 
       <div className="flex gap-7.5">

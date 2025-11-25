@@ -95,7 +95,7 @@ export default function JeongdaeContent() {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     // 페이지에 맞게 데이터를 다시 불러오거나 리스트 상태 업데이트 처리
-  }
+  };
 
   const pageRows = MOCK_ROWS.slice((currentPage - 1) * ROWS_PER_PAGE, currentPage * ROWS_PER_PAGE);
 
@@ -106,7 +106,7 @@ export default function JeongdaeContent() {
     <>
       <section className="w-full">
         <h1 className="mb-4 text-xl font-semibold text-gray-black">컬러 팔레트</h1>
-        <div className="w-full rounded-lg bg-white shadow p-6 space-y-2">
+        <div className="w-full rounded-lg bg-gray-5 shadow p-6 space-y-2">
           <h3 className="text-xs font-medium text-gray-40 mb-6">
             배경색 ( bg- 로 시작 ) / 폰트색 ( font- 로 시작 )
           </h3>
@@ -168,7 +168,7 @@ export default function JeongdaeContent() {
       </section>
       <section className="w-full">
         <h1 className="mb-4 text-xl font-semibold text-gray-black">폰트 크기</h1>
-        <div className="w-full rounded-lg bg-white shadow p-6 space-y-6">
+        <div className="w-full rounded-lg bg-gray-5 shadow p-6 space-y-6">
           <h3 className="text-xs font-medium text-gray-40 mb-6">
             폰트 ( tj- 로 시작 ) - the julge 줄임
           </h3>
@@ -215,7 +215,7 @@ export default function JeongdaeContent() {
       </section>
       <section className="w-full">
         <h1 className="mb-4 text-xl font-semibold text-gray-black">컴포넌트</h1>
-        <div className="w-full rounded-lg bg-white shadow p-6 space-y-6">
+        <div className="w-full rounded-lg bg-gray-5 shadow p-6 space-y-6">
           <div>
             <h2 className="text-sm font-semibold text-gray-50">Table</h2>
 
