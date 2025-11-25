@@ -152,12 +152,10 @@ export function PostCard({
               </div>
 
               {/* 모바일 가격 아래 문구 */}
-              <div className="flex md:hidden">
-                <div className={`flex text-center gap-0.5 ${isInactive ? "text-gray-20" : "text-red-40"}`}>
-                  <span className="tj-caption">{wageBadgeText}</span>
-                  <PostArrow
-                    className={`w-4 h-4 ${isInactive ? "text-gray-20" : "text-red-40"}`} />
-                </div>
+              <div className={`flex md:hidden text-center gap-0.5 ${isInactive ? "text-gray-20" : "text-red-40"}`}>
+                <span className="tj-caption">{wageBadgeText}</span>
+                <PostArrow
+                  className={`w-4 h-4 ${isInactive ? "text-gray-20" : "text-red-40"}`} />
               </div>
             </>
           )}
