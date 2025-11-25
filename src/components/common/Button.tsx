@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ComponentPropsWithRef, forwardRef } from 'react';
 
 type NativeButtonProps = Omit<ComponentPropsWithRef<'button'>, 'className'>;
@@ -14,6 +15,9 @@ type CustomButtonProps = {
   fullWidth?: boolean;
   className?: string; // 추가로 스타일 더 줄 수 있게
   btnColor?: OutlineButtonColor;
+  href?: string;
+  target?: ComponentPropsWithRef<'a'>['target'];
+  rel?: ComponentPropsWithRef<'a'>['rel'];
 };
 
 const sizeStyles = {
@@ -36,10 +40,15 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       type = 'button',
       btnColor = 'primary',
       children,
+      href,
+      target,
+      rel,
       ...rest
     },
     ref,
   ) => {
+    const isDisabled = disabled || isLoading;
+
     // 공통 베이스 스타일
     const baseClass =
       'inline-flex items-center justify-center rounded-md disabled:cursor-not-allowed disabled:bg-gray-40 disabled:text-white disabled:border-gray-40';
@@ -59,14 +68,21 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       .filter(Boolean)
       .join(' ');
 
+    if (href) {
+      return (
+        <Link
+          href={href}
+          target={target}
+          rel={rel}
+          className={`${mergedClassName} ${isDisabled ? 'pointer-events-none opacity-50' : ''}`}
+        >
+          {isLoading ? '로딩 중...' : children}
+        </Link>
+      );
+    }
+
     return (
-      <button
-        ref={ref}
-        type={type}
-        disabled={disabled || isLoading}
-        className={mergedClassName}
-        {...rest}
-      >
+      <button ref={ref} type={type} disabled={isDisabled} className={mergedClassName} {...rest}>
         {isLoading ? '로딩 중...' : children}
       </button>
     );

@@ -13,7 +13,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
 
   return (
     <html lang="ko" className={spoqa.className}>
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col bg-white">
         <ToastProvider>
           <ModalProvider>
             <NavBar isLoggedIn={isLoggedIn} role={role} />
