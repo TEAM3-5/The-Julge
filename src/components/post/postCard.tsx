@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useMemo } from "react";
 import PostArrow from "./icon/PostArrow";
 import PostPath from "./icon/PostPath";
 import PostClock from "./icon/PostClock";
@@ -33,8 +34,10 @@ export function PostCard({
   const isInactive = status === "inactive";
 
   // 작은 카드(모바일에서 사용) 날짜/시간 분리
-  const [datePart, ...rest] = scheduleText.split(" ");
-  const timePart = rest.join(" ");
+  const [datePart, timePart] = useMemo(() => {
+    const [date, ...rest] = scheduleText.split(" ");
+    return [date, rest.join(" ")];
+  }, [scheduleText]);
 
   return (
     <article
@@ -154,7 +157,7 @@ export function PostCard({
                 </div>
               </div>
             </>
-          )}    
+          )}
         </div>
       </div>
     </article>
