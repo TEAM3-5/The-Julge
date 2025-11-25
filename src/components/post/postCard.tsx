@@ -18,6 +18,7 @@ export type PostCardProps = {
   thumbnailUrl: string;         // 상단 썸네일 이미지 URL
   onClick?: () => void;         // 카드 클릭 핸들러
   className?: string;           // 페이지에서 tailwind 속성 추가
+  thumbnailClassName?: string;
 };
 
 export function PostCard({
@@ -30,6 +31,7 @@ export function PostCard({
   thumbnailUrl,
   onClick,
   className,
+  thumbnailClassName,
 }: PostCardProps) {
   const isInactive = status === "inactive";
 
@@ -43,21 +45,22 @@ export function PostCard({
     <article
       onClick={onClick}
       className={`
-        relative flex flex-col rounded-xl
+        relative flex flex-col rounded-xl 
         border border-gray-20 bg-white
-        w-[171px] min-h-[260px] p-3 gap-3
-        md:w-[312px] md:h-[348px] md:p-4 md:gap-5
+        w-full p-3 gap-3
+        md:p-4 md:gap-5
         cursor-pointer
         ${className ?? ""}
       `}
     >
       {/* =================== 썸네일 영역 =================== */}
       <div
-        className="
+        className={`
           relative overflow-hidden rounded-xl
-          w-[147px] h-[84px]
+          w-full h-[84px]
           md:w-[280px] md:h-40
-          "
+          ${thumbnailClassName ?? ""}
+        `}
       >
         <Image
           src={thumbnailUrl}
