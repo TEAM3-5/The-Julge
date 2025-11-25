@@ -2,9 +2,7 @@
 
 import { useState } from "react";
 import { Pagination } from "@/components/pagination/Pagination";
-import { ConfirmModal } from "@/components/modal/ConfirmModal";
-import { ActionModal } from "@/components/modal/ActionModal";
-import { useModal } from "@/hooks/UseModal";
+import { useModal } from "@/hooks/useModal";
 import { PostCard } from "@/components/post/postCard";
 import Button from "@/components/common/Button";
 import { useToast } from "@/components/toast/toastProvider";
@@ -13,8 +11,8 @@ export default function JunyeolPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 21;
 
-  const confirmModal = useModal();
-  const actionModal = useModal();
+  const { openConfirm, openAction} = useModal();
+
   const { showToast } = useToast();
 
   const handlePageChange = (page: number) => {
@@ -28,6 +26,24 @@ export default function JunyeolPage() {
       {
         variant: "error",
       });
+  };
+
+  const handleOpenConfirmModal = () => {
+    openConfirm({
+      message: "가게 정보를 먼저 등록해 주세요.",
+      buttonText: "확인",
+      iconSrc: "/images/ModalConfirm.svg"
+    });
+  };
+
+  const handleOpenActionModal = () => {
+    openAction({
+      title: "신청을 거절하시겠어요?",
+      confirmText: "예",
+      cancelText: "아니오",
+      iconSrc: "/images/ModalAction.svg",
+      onConfirm: handleReject,
+    });
   };
 
   const MOCK_POST = {
@@ -51,14 +67,14 @@ export default function JunyeolPage() {
       <div className="flex flex-col items-center justify-center gap-4 p-8">
         <Button
           size="medium"
-          onClick={confirmModal.open}
+          onClick={handleOpenConfirmModal}
         >
           Confirm 모달
         </Button>
 
         <Button
           size="medium"
-          onClick={actionModal.open}
+          onClick={handleOpenActionModal}
         >
           Action 모달
         </Button>
@@ -70,17 +86,6 @@ export default function JunyeolPage() {
           Toast 메시지
         </Button>
       </div>
-
-      <ConfirmModal
-        isOpen={confirmModal.isOpen}
-        onClose={confirmModal.close}
-      />
-
-      <ActionModal
-        isOpen={actionModal.isOpen}
-        onClose={actionModal.close}
-        onConfirm={handleReject}
-      />
 
       <div className="py-10">
         <div className="mb-8 flex justify-center gap-6">
