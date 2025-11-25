@@ -6,6 +6,8 @@ import { ConfirmModal } from "@/components/modal/ConfirmModal";
 import { ActionModal } from "@/components/modal/ActionModal";
 import { useModal } from "@/hooks/UseModal";
 import { PostCard } from "@/components/post/postCard";
+import Button from "@/components/common/Button";
+import { useToast } from "@/components/toast/toastProvider";
 
 export default function JunyeolPage() {
   const searchParams = useSearchParams();
@@ -16,10 +18,14 @@ export default function JunyeolPage() {
 
   const confirmModal = useModal();
   const actionModal = useModal();
+  const { showToast } = useToast();
 
   const handleReject = () => {
     // 실제 거절 API 호출 등
-    console.log("거절 확정");
+    showToast("거절했어요.",
+      {
+        variant: "error",
+      });
   };
 
   const MOCK_POST = {
@@ -42,19 +48,26 @@ export default function JunyeolPage() {
       />
 
       <div className="flex flex-col items-center justify-center gap-4 p-8">
-        <button
-          className="w-80 border px-4 py-2"
+        <Button
+          size="medium"
           onClick={confirmModal.open}
         >
           Confirm 모달
-        </button>
+        </Button>
 
-        <button
-          className="w-80 border px-4 py-2"
+        <Button
+          size="medium"
           onClick={actionModal.open}
         >
           Action 모달
-        </button>
+        </Button>
+
+        <Button
+          size="medium"
+          onClick={handleReject}
+        >
+          Toast 메시지
+        </Button>
       </div>
 
       <ConfirmModal
