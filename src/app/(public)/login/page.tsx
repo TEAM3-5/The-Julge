@@ -28,14 +28,11 @@ export default function LoginPage() {
     },
   });
 
+  const getRedirectPath = (role: 'owner' | 'member') => (role === 'owner' ? '/owner' : '/member');
   useEffect(() => {
     if (!user) return;
 
-    if (user.role === 'owner') {
-      router.replace('/owner');
-    } else {
-      router.replace('/member');
-    }
+    router.replace(getRedirectPath(user.role));
   }, [user, router]);
 
   const onSubmit = async (data: LoginFormValues) => {
@@ -60,13 +57,8 @@ export default function LoginPage() {
 
       // zustand 전역 상태 + axios 헤더에 토큰 반영
       setAuth(parsed.user, parsed.token);
-
       // role에 따라 라우팅
-      if (parsed.user.role === 'owner') {
-        router.push('/owner');
-      } else {
-        router.push('/member');
-      }
+      router.push(getRedirectPath(parsed.user.role));
     } catch (error) {
       console.error(error);
       // 서버/네트워크 에러
