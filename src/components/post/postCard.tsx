@@ -19,6 +19,7 @@ export type PostCardProps = {
   onClick?: () => void;         // 카드 클릭 핸들러
   className?: string;           // 페이지에서 tailwind 속성 추가
   thumbnailClassName?: string;
+  inactiveLabelText?: string;   // 비활성화 썸네일 문구 (지난 공고/마감 완료)
 };
 
 export function PostCard({
@@ -32,6 +33,7 @@ export function PostCard({
   onClick,
   className,
   thumbnailClassName,
+  inactiveLabelText = "지난 공고",
 }: PostCardProps) {
   const isInactive = status === "inactive";
 
@@ -72,8 +74,8 @@ export function PostCard({
         {/* 비활성(지난 공고) 오버레이 */}
         {isInactive && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-gray-30">
-            <span className="block md:hidden tj-h3">지난 공고</span>
-            <span className="hidden md:block tj-h1">지난 공고</span>
+            <span className="block md:hidden tj-h3">{inactiveLabelText}</span>
+            <span className="hidden md:block tj-h1">{inactiveLabelText}</span>
           </div>
         )}
       </div>
