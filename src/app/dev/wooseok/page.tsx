@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Button from '@/components/common/Button';
 import FormInput from '@/components/common/FormInput'; // ✅ 새로 추가: 공통 FormInput 사용
 import { FormProvider, useForm } from 'react-hook-form'; // ✅ react-hook-form 훅 import
@@ -7,8 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'; // ✅ zodResolver import
 // import { loginSchema, type LoginFormValues } from '@/feature/auth/login/schema'; // ✅ 로그인 스키마 + 타입 import
 import { hourlyPaySchema, type HourlyPayFormValues } from '@/feature/shifts/hourlyPay/schema'; // ✅ 시급 스키마 + 타입 import
 import { z } from 'zod';
-import MemberTypeRadioBtn from '@/components/signup/MemberTypeRadioBtn';
-import SignupForm from '@/components/signup/SignupForm';
+import MemberTypeRadioBtn, { MemberTypeValue } from '@/components/signup/MemberTypeRadioBtn';
 
 export default function Home() {
   // ✅ 새로 추가: useForm으로 폼 세팅
@@ -25,6 +25,8 @@ export default function Home() {
   const onSubmit = (data: z.infer<typeof hourlyPaySchema>) => {
     console.log('시급 폼 데이터:', data);
   };
+
+  const [memberType, setMemberType] = useState<MemberTypeValue | null>(null);
 
   return (
     // ✅ 새로 추가: FormProvider로 감싸서 하위에서 useFormContext 쓸 수 있게 함
@@ -95,7 +97,23 @@ export default function Home() {
             </Button>
           </div>
         </section>
-       <MemberTypeRadioBtn />
+        {/* ✅ 회원 유형 라디오 버튼 사용 예시 */}
+        <section className="flex flex-col gap-4 w-[360px]">
+          <h2 className="text-md font-semibold">회원 유형 선택 테스트</h2>
+
+          <MemberTypeRadioBtn
+            selectedValue={memberType}
+            onChange={(value) => {
+              setMemberType(value);
+              console.log('선택된 회원 유형:', value);
+            }}
+          />
+
+          <p className="mt-2 text-sm text-gray-500">
+            현재 선택:{' '}
+            {memberType === 'MEMBER' ? '알바님' : memberType === 'OWNER' ? '사장님' : '없음'}
+          </p>
+        </section>
       </main>
     </FormProvider>
   );
