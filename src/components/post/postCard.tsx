@@ -72,8 +72,8 @@ export function PostCard({
         {/* 비활성(지난 공고) 오버레이 */}
         {isInactive && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-gray-30">
-            <span className="flex md:hidden tj-h3">지난 공고</span>
-            <span className="hidden md:flex tj-h1">지난 공고</span>
+            <span className="block md:hidden tj-h3">지난 공고</span>
+            <span className="hidden md:block tj-h1">지난 공고</span>
           </div>
         )}
       </div>
@@ -88,8 +88,8 @@ export function PostCard({
               ${isInactive ? "text-gray-30" : "text-gray-black"}
             `}
           >
-            <span className="flex md:hidden tj-body1-bold">{title}</span>
-            <span className="hidden md:flex tj-h3">{title}</span>
+            <span className="block md:hidden tj-body1-bold">{title}</span>
+            <span className="hidden md:block tj-h3">{title}</span>
 
           </h3>
           <p
@@ -120,8 +120,8 @@ export function PostCard({
           >
             <PostPath
               className={`w-4 h-4 md:w-5 md:h-5 ${isInactive ? "text-gray-20" : "text-red-30"}`} />
-            <span className="hidden md:flex tj-body2">{locationText}</span>
-            <span className="flex md:hidden tj-caption">{locationText}</span>
+            <span className="hidden md:inline tj-body2">{locationText}</span>
+            <span className="inline md:hidden tj-caption">{locationText}</span>
           </p>
         </div>
 
@@ -133,8 +133,8 @@ export function PostCard({
               ${isInactive ? "text-gray-30" : "text-gray-black"}
             `}
           >
-            <span className="hidden md:flex tj-h2">{wage.toLocaleString()}원</span>
-            <span className="flex md:hidden tj-h4">{wage.toLocaleString()}원</span>
+            <span className="hidden md:block tj-h2">{wage.toLocaleString()}원</span>
+            <span className="block md:hidden tj-h4">{wage.toLocaleString()}원</span>
           </p>
 
           {wageBadgeText && (
