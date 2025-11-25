@@ -8,8 +8,17 @@ import Link from 'next/link';
 import { FormProvider, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, type LoginFormValues } from '@/feature/auth/login/schema';
+import { login, parseLoginResponse } from '@/api/auth';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/stores/auth';
+import { useEffect } from 'react';
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { user, setAuth } = useAuthStore((state) => ({
+    user: state.user,
+    setAuth: state.setAuth,
+  }));
   const methods = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     mode: 'onBlur',
@@ -19,22 +28,72 @@ export default function LoginPage() {
     },
   });
 
-  const onSubmit = (data: LoginFormValues) => {
-    console.log('로그인 폼 제출 값:', data);
-    // TODO: 여기서 실제 로그인 API 호출하면 됨
+  useEffect(() => {
+    if (!user) return;
+
+    if (user.role === 'owner') {
+      router.replace('/owner');
+    } else {
+      router.replace('/member');
+    }
+  }, [user, router]);
+
+  const onSubmit = async (data: LoginFormValues) => {
+    try {
+      // 로그인 API 요청
+      const res = await login({
+        email: data.email,
+        password: data.password,
+      });
+
+      // 응답 파싱 (token + user)
+      const parsed = parseLoginResponse(res);
+
+      if (!parsed) {
+        // 토큰/유저가 안 온 경우
+        methods.setError('root', {
+          type: 'server',
+          message: '로그인에 실패했습니다. 잠시 후 다시 시도해주세요.',
+        });
+        return;
+      }
+
+      // zustand 전역 상태 + axios 헤더에 토큰 반영
+      setAuth(parsed.user, parsed.token);
+
+      // role에 따라 라우팅
+      if (parsed.user.role === 'owner') {
+        router.push('/owner');
+      } else {
+        router.push('/member');
+      }
+    } catch (error) {
+      console.error(error);
+      // 서버/네트워크 에러
+      methods.setError('root', {
+        type: 'server',
+        message: '이메일 또는 비밀번호를 다시 확인해주세요.',
+      });
+    }
   };
+
+  const {
+    formState: { errors, isSubmitting },
+  } = methods;
 
   return (
     <main className="flex min-h-screen items-center justify-center">
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col gap-5">
           <div>
+            {/* 로고 */}
             <div className="flex justify-center items-center mb-8">
               <Link href="/">
                 <Image src="/images/logo.svg" alt="로고" width={248} height={45} />
               </Link>
             </div>
 
+            {/* 입력 폼 */}
             <div className="flex flex-col gap-7">
               <FormInput<LoginFormValues>
                 name="email"
@@ -48,8 +107,14 @@ export default function LoginPage() {
                 placeholder="입력"
                 type="password"
               />
-              <Button type="submit">로그인 하기</Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? '로그인 중...' : '로그인 하기'}
+              </Button>
             </div>
+            {/* 서버에서 온 공통 에러 (이메일/비번 틀림 등) */}
+            {errors.root?.message && (
+              <p className="text-center mt-3 text-tj-caption text-red-40">{errors.root.message}</p>
+            )}
           </div>
 
           <p className="flex justify-center items-center">
