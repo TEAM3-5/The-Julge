@@ -17,9 +17,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <ToastProvider>
           <ModalProvider>
             <NavBar isLoggedIn={isLoggedIn} role={role} />
-            <main className="flex-1">
-              <div>{children}</div>
-            </main>
+            <main className="flex-1 flex mx-auto">{children}</main>
             <Footer />
           </ModalProvider>
         </ToastProvider>

@@ -132,7 +132,7 @@ export function ModalBase({ isOpen, onClose, children }: ModalBaseProps) {
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
-        className="rounded-xl bg-white p-6"
+        className="rounded-xl bg-white p-6 shadow-[0_12px_24px_rgba(0,0,0,0.12)]"
       >
         {children}
       </div>
