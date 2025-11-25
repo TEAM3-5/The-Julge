@@ -5,6 +5,8 @@ import Table from '@/components/common/Table';
 import type { ShiftRow } from '@/features/shifts/model';
 import { Pagination } from '@/components/pagination/Pagination';
 import Filter from '@/components/common/Filter';
+import Dropdown from '@/components/common/Dropdown';
+import { AREAS } from '@/constants/areas';
 
 // 임시 더미 데이터 (나중에 API 데이터로)
 const MOCK_ROWS: ShiftRow[] = [
@@ -91,6 +93,8 @@ const ROWS_PER_PAGE = 5;
 
 export default function JeongdaeContent() {
   const [currentPage, setCurrentPage] = useState(1);
+  const [selected, setSelected] = useState<string | undefined>(undefined);
+  const [sort, setSort] = useState<string>('deadline');
   const totalPages = Math.max(1, Math.ceil(MOCK_ROWS.length / ROWS_PER_PAGE));
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -236,6 +240,30 @@ export default function JeongdaeContent() {
           <div>
             <h2 className="text-sm font-semibold text-gray-50">Filter</h2>
             <Filter />
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-gray-50">드롭다운</h2>
+            <div className="flex flex-col gap-4 mb-12">
+              <Dropdown
+                size="large"
+                placeholder="선택"
+                options={AREAS}
+                value={selected}
+                onChange={setSelected}
+              />
+
+              <Dropdown
+                size="compact"
+                options={[
+                  { value: 'deadline', label: '마감임박순' },
+                  { value: 'wage', label: '시급많은순' },
+                  { value: 'time', label: '시간적은순' },
+                  { value: 'alpha', label: '가나다순' },
+                ]}
+                value={sort}
+                onChange={setSort}
+              />
+            </div>
           </div>
         </div>
       </section>

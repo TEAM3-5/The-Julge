@@ -19,6 +19,7 @@ export const ENDPOINTS = {
     detail: (shopId: string) => `/shops/${shopId}`,
   },
   notices: {
+    list: '/notices',
     listByShop: (shopId: string) => `/shops/${shopId}/notices`,
     detail: (shopId: string, noticeId: string) => `/shops/${shopId}/notices/${noticeId}`,
   },
