@@ -111,7 +111,7 @@ export default function LoginPage() {
 
           <p className="flex justify-center items-center">
             <span>회원이 아니신가요?&nbsp;</span>
-            <Link href="/signup" className="underline text-[#5534DA]">
+            <Link href="/signup" className="underline text-violet">
               회원가입하기
             </Link>
           </p>
