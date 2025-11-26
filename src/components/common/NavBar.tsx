@@ -96,7 +96,7 @@ export default function NavBar() {
         <button
           type="button"
           className="cursor-pointer select-none tj-body1-bold"
-          onClick={handleLogout}
+          onClick={isLoggedIn ? handleLogout : () => router.push('/signup')}
         >
           {secondLabel}
         </button>
