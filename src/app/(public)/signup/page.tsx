@@ -80,7 +80,7 @@ export default function SignupPage() {
           <div>
             {/* 로고 */}
             <div className="flex justify-center items-center mb-8">
-              <Link href="/">
+              <Link href="/posts">
                 <Image src="/images/logo.svg" alt="로고" width={248} height={45} />
               </Link>
             </div>
