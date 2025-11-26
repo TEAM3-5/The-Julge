@@ -70,6 +70,26 @@ export default function SignupPage() {
       </div>
     ));
   };
+  const showSignupErrorModal = (message: string) => {
+    openCustom((close) => (
+      <div className="flex w-[540px] flex-col justify-center items-center relative">
+        <div className="flex flex-col items-center gap-4 px-[60px] py-[48px]">
+          <p className="text-[18px] text-center text-gray-black">{message}</p>
+        </div>
+
+        <div className="flex w-full">
+          <Button
+            type="button"
+            size="medium"
+            onClick={close}
+            className="absolute right-3 bottom-3 px-[46px] py-[14px] rounded-[8px]"
+          >
+            확인
+          </Button>
+        </div>
+      </div>
+    ));
+  };
 
   const onSubmit = async (data: SignupFormValues) => {
     try {
@@ -86,22 +106,26 @@ export default function SignupPage() {
     } catch (error) {
       console.error(error);
 
-      // ✅ AxiosError 이면서 409(중복된 이메일)이면 모달로 안내
-      if (error instanceof AxiosError && error.response?.status === 409) {
-        showDuplicateEmailModal();
-        return;
-      }
+      if (error instanceof AxiosError) {
+        const status = error.response?.status;
 
-      // 서버/네트워크 에러
-      methods.setError('root', {
-        type: 'server',
-        message: '회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.',
-      });
+        switch (status) {
+          case 409:
+            showDuplicateEmailModal();
+            return;
+          case 400:
+            showSignupErrorModal('입력 정보를 다시 확인해 주세요.');
+            return;
+          default:
+            showSignupErrorModal('잠시 후 다시 시도해 주세요.');
+            return;
+        }
+      }
     }
   };
 
   const {
-    formState: { errors, isSubmitting, isValid }, // [수정] isValid 추가
+    formState: { isSubmitting, isValid },
   } = methods;
 
   return (
@@ -153,11 +177,6 @@ export default function SignupPage() {
                 {isSubmitting ? '처리 중...' : '가입하기'}
               </Button>
             </div>
-
-            {/* 서버에서 온 공통 에러 (이메일 중복, 서버 오류 등) */}
-            {errors.root?.message && (
-              <p className="text-center mt-3 text-tj-caption text-red-40">{errors.root.message}</p>
-            )}
           </div>
 
           <p className="flex justify-center items-center">
