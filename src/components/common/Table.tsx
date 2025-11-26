@@ -7,8 +7,9 @@ type TableRootProps = PropsWithChildren<{
 }>;
 
 function TableRoot({ children, className }: TableRootProps) {
+  const merged = ['rounded-xl border border-gray-20 bg-white', className].filter(Boolean).join(' ');
   return (
-    <section className={`rounded-xl border border-gray-20 bg-white ${className ?? ''}`}>
+    <section className={merged}>
       <div className="overflow-x-auto">
         <table className="min-w-full border-separate border-spacing-0">{children}</table>
       </div>
@@ -37,7 +38,8 @@ type TableRowProps = PropsWithChildren<{
 }>;
 
 function TableRow({ children, className }: TableRowProps) {
-  return <tr className={`border-b border-gray-10 last:border-b-0 ${className ?? ''}`}>{children}</tr>;
+  const merged = ['border-b border-gray-10 last:border-b-0', className].filter(Boolean).join(' ');
+  return <tr className={merged}>{children}</tr>;
 }
 
 type TableHeaderCellProps = PropsWithChildren<{
@@ -45,11 +47,10 @@ type TableHeaderCellProps = PropsWithChildren<{
 }>;
 
 function TableHeaderCell({ children, className }: TableHeaderCellProps) {
-  return (
-    <th className={`tj-body2 text-left py-3 px-6 text-gray-black bg-gray-10 ${className ?? ''}`}>
-      {children}
-    </th>
-  );
+  const merged = ['tj-body2 text-left py-3 px-6 text-gray-black bg-gray-10', className]
+    .filter(Boolean)
+    .join(' ');
+  return <th className={merged}>{children}</th>;
 }
 
 type TableCellProps = PropsWithChildren<{
@@ -57,11 +58,10 @@ type TableCellProps = PropsWithChildren<{
 }>;
 
 function TableCell({ children, className }: TableCellProps) {
-  return (
-    <td className={`h-[60px] tj-body1 px-6 text-gray-black align-middle ${className ?? ''}`}>
-      {children}
-    </td>
-  );
+  const merged = ['h-[60px] tj-body1 px-6 text-gray-black align-middle', className]
+    .filter(Boolean)
+    .join(' ');
+  return <td className={merged}>{children}</td>;
 }
 
 export const Table = Object.assign(TableRoot, {

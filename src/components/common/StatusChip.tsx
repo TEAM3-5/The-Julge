@@ -23,22 +23,22 @@ export function StatusChip({ status, onApprove, onReject }: StatusChipProps) {
     );
   }
 
-  const labelMap: Record<StatusChipProps['status'], ReactNode> = {
+  const labelMap: Record<Exclude<StatusChipProps['status'], 'PENDING'>, ReactNode> = {
     APPROVED: '승인 완료',
     REJECTED: '거절',
     WAITING: '대기중',
-    PENDING: '대기중',
   };
 
-  const colorMap: Record<StatusChipProps['status'], string> = {
+  const colorMap: Record<Exclude<StatusChipProps['status'], 'PENDING'>, string> = {
     APPROVED: 'bg-blue-10 text-blue-20',
     REJECTED: 'bg-red-10 text-red-40',
     WAITING: 'bg-green-10 text-green-20',
-    PENDING: 'bg-green-10 text-green-20',
   };
 
   return (
-    <span className={`tj-body2-bold inline-flex rounded-full px-[10px] py-[6px] ${colorMap[status]}`}>
+    <span
+      className={`tj-body2-bold inline-flex rounded-full px-[10px] py-[6px] ${colorMap[status]}`}
+    >
       {labelMap[status]}
     </span>
   );
