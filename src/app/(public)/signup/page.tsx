@@ -16,6 +16,10 @@ import { useEffect } from 'react';
 import MemberTypeRadioBtn from '@/components/signup/MemberTypeRadioBtn';
 import { getRedirectPathByRole } from '@/utils/auth';
 
+const mapMemberTypeToApiType = (memberType: 'MEMBER' | 'OWNER'): 'employee' | 'employer' => {
+  return memberType === 'MEMBER' ? 'employee' : 'employer';
+};
+
 export default function SignupPage() {
   const router = useRouter();
 
@@ -40,10 +44,6 @@ export default function SignupPage() {
 
     router.replace(getRedirectPathByRole(user.role));
   }, [user, router]);
-
-  const mapMemberTypeToApiType = (memberType: 'MEMBER' | 'OWNER'): 'employee' | 'employer' => {
-    return memberType === 'MEMBER' ? 'employee' : 'employer';
-  };
 
   // [수정] 회원가입 로직: login 대신 createUser 사용, 성공 시 로그인 페이지로 이동
   const onSubmit = async (data: SignupFormValues) => {
