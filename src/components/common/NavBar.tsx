@@ -12,8 +12,7 @@ export default function NavBar() {
   const [keyword, setKeyword] = useState('');
   const { isLoggedIn, role: authRole, clearAuth } = useAuth();
 
-  const role: UserRole =
-    authRole === 'owner' ? 'OWNER' : authRole === 'member' ? 'MEMBER' : 'GUEST';
+  const role: UserRole = authRole.toUpperCase() as UserRole;
   // const [alertCount, setAlertCount] = useState(0);
 
   const handleMainPage = () => {
