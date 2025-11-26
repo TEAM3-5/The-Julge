@@ -3,17 +3,17 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, type KeyboardEvent, type ChangeEvent } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type UserRole = 'OWNER' | 'MEMBER' | 'GUEST';
 
-interface NavBarProps {
-  isLoggedIn: boolean;
-  role: UserRole;
-}
-
-export default function NavBar({ isLoggedIn, role }: NavBarProps) {
+export default function NavBar() {
   const router = useRouter();
   const [keyword, setKeyword] = useState('');
+  const { isLoggedIn, role: authRole, clearAuth } = useAuth();
+
+  const role: UserRole =
+    authRole === 'owner' ? 'OWNER' : authRole === 'member' ? 'MEMBER' : 'GUEST';
   // const [alertCount, setAlertCount] = useState(0);
 
   const handleMainPage = () => {
@@ -27,7 +27,10 @@ export default function NavBar({ isLoggedIn, role }: NavBarProps) {
   };
 
   const handleLogout = () => {
-    // TODO: 로그아웃 로직 + 공고 리스트 페이지 이동
+    // ✅ 변경: Zustand/Context 기반 로그아웃 처리 + 공고 리스트 페이지 이동
+    if (isLoggedIn) {
+      clearAuth();
+    }
     router.push('/posts');
   };
 
@@ -51,16 +54,6 @@ export default function NavBar({ isLoggedIn, role }: NavBarProps) {
     setKeyword(e.target.value);
   };
 
-  switch (role) {
-    case 'OWNER':
-      break;
-    case 'MEMBER':
-      break;
-    case 'GUEST':
-      break;
-    default:
-      throw new Error('Invalid user role');
-  }
   const firstLabel = !isLoggedIn ? '로그인' : role === 'OWNER' ? '내 가게' : '내 프로필';
   const secondLabel = isLoggedIn ? '로그아웃' : '회원가입';
 
