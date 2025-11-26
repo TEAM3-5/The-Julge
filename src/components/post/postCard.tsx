@@ -1,16 +1,15 @@
 "use client";
 
 import Image from "next/image";
+import { useMemo } from "react";
 import PostArrow from "./icon/PostArrow";
 import PostPath from "./icon/PostPath";
 import PostClock from "./icon/PostClock";
 
 type PostStatus = "active" | "inactive";
-type PostSize = "large" | "small";
 
 export type PostCardProps = {
   status?: PostStatus;          // 공고 상태 (기본값: active)
-  size?: PostSize;              // 카드 크기 (기본값: large)
   title: string;                // 공고 제목
   scheduleText: string;         // 날짜/시간 텍스트
   locationText: string;         // 위치 텍스트
@@ -18,37 +17,13 @@ export type PostCardProps = {
   wageBadgeText?: string;       // 뱃지 텍스트 (예: "기존 시급보다 100%")
   thumbnailUrl: string;         // 상단 썸네일 이미지 URL
   onClick?: () => void;         // 카드 클릭 핸들러
+  className?: string;           // 페이지에서 tailwind 속성 추가
+  thumbnailClassName?: string;
+  inactiveLabelText?: string;   // 비활성화 썸네일 문구 (지난 공고/마감 완료)
 };
-
-/**
- * 큰 카드/작은 카드 스타일
- */
-const SIZE_STYLE = {
-  large: {
-    card: "w-[312px] h-[348px] p-4 gap-5",
-    imageWrapper: "w-[280px] h-[160px]",
-    title: "tj-h3",
-    meta: "tj-body2",
-    wage: "tj-h2",
-    wageIncrease: "tj-body2-bold",
-    iconSize: 20,
-    inactiveLabel: "tj-h1",
-  },
-  small: {
-    card: "w-[171px] min-h-[260px] p-3 gap-3",
-    imageWrapper: "w-[147px] h-[84px]",
-    title: "tj-body1-bold",
-    meta: "tj-caption",
-    wage: "tj-h4",
-    wageIncrease: "tj-caption",
-    iconSize: 16,
-    inactiveLabel: "tj-h3",
-  },
-} as const;
 
 export function PostCard({
   status = "active",
-  size = "large",
   title,
   scheduleText,
   locationText,
@@ -56,131 +31,32 @@ export function PostCard({
   wageBadgeText,
   thumbnailUrl,
   onClick,
+  className,
+  thumbnailClassName,
+  inactiveLabelText = "지난 공고",
 }: PostCardProps) {
   const isInactive = status === "inactive";
-  const styles = SIZE_STYLE[size];
 
-  // 작은 카드 날짜/시간 분리
-  const renderScheduleText = () => {
-    if (size === "small") {
-      const [datePart, ...rest] = scheduleText.split(" ");
-      const timePart = rest.join(" ");
-      return (
-        <span className="flex flex-col">
-          <span>{datePart}</span>
-          <span>{timePart}</span>
-        </span>
-      );
-    }
-  }
-  /** 날짜/위치 렌더링 */
-  const renderMeta = () => (
-    <>
-      {/* 날짜/시간 줄 */}
-      <p
-        className={[
-          "flex gap-1.5",
-          styles.meta,
-          isInactive ? "text-gray-30" : "text-gray-50",
-        ].join(" ")}
-      >
-        <PostClock
-          width={styles.iconSize}
-          height={styles.iconSize}
-          className={isInactive ? "text-gray-20" : "text-red-30"} />
-        {size === "small" ? renderScheduleText() : scheduleText}
-      </p>
-
-      {/* 위치 줄 */}
-      <p
-        className={[
-          "flex gap-1.5",
-          styles.meta,
-          isInactive ? "text-gray-30" : "text-gray-50",
-        ].join(" ")}
-      >
-        <PostPath
-          width={styles.iconSize}
-          height={styles.iconSize}
-          className={isInactive ? "text-gray-20" : "text-red-30"} />
-        <span>{locationText}</span>
-      </p>
-    </>
-  );
-
-  /** 큰 카드 전용 문구 뱃지*/
-  const renderLargeBadge = () => {
-    if (!wageBadgeText) return null;
-
-    const baseColor = isInactive ? "bg-gray-20 text-white" : "bg-red-40 text-white";
-
-    return (
-      <div
-        className={[
-          "flex items-center justify-center rounded-[20px] h-9 p-3",
-          baseColor,
-          styles.wageIncrease,
-        ].join(" ")}
-      >
-        <span>{wageBadgeText}</span>
-        <PostArrow
-          width={styles.iconSize}
-          height={styles.iconSize}
-          className="text-white" />
-      </div>
-    );
-  };
-
-  /** 작은 카드 전용 가격 아래 문구 */
-  const renderSmallBadge = () => {
-    if (!wageBadgeText) return null;
-
-    const baseColor = isInactive ? "text-gray-20" : "text-red-40";
-
-    return (
-      <div>
-        <div
-          className={[
-            baseColor,
-          ].join(" ")}
-        >
-          <span className="flex tj-caption text-center gap-0.5">
-            {wageBadgeText}
-            <PostArrow
-              width={styles.iconSize}
-              height={styles.iconSize}
-              className={isInactive ? "text-gray-20" : "text-red-40"} />
-          </span>
-        </div>
-      </div>
-    );
-  };
-
-  /** 사이즈별로 다른 뱃지 렌더링 */
-  const renderBadge = () => {
-    if (!wageBadgeText) return null;
-    if (size === "large") return renderLargeBadge();
-    return renderSmallBadge();
-  };
+  // 작은 카드(모바일에서 사용) 날짜/시간 분리
+  const [datePart, timePart] = useMemo(() => {
+    const [date, ...rest] = scheduleText.split(" ");
+    return [date, rest.join(" ")];
+  }, [scheduleText]);
 
   return (
     <article
       onClick={onClick}
-      className={[
-        "relative flex flex-col rounded-xl",
-        "border border-gray-20 bg-white",
-        styles.card,
-        "cursor-pointer",
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className={`relative flex flex-col rounded-xl border border-gray-20 bg-white cursor-pointer
+        w-full p-3 gap-3 md:p-4 md:gap-5
+        ${className ?? ""}
+      `}
     >
       {/* =================== 썸네일 영역 =================== */}
       <div
-        className={[
-          "relative w-full overflow-hidden rounded-xl",
-          styles.imageWrapper,
-        ].join(" ")}
+        className={`relative overflow-hidden rounded-xl
+          w-full h-[84px] md:w-[280px] md:h-40
+          ${thumbnailClassName ?? ""}
+        `}
       >
         <Image
           src={thumbnailUrl}
@@ -191,13 +67,9 @@ export function PostCard({
 
         {/* 비활성(지난 공고) 오버레이 */}
         {isInactive && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/70">
-            <span className={[
-              styles.inactiveLabel,
-              "text-gray-30",
-              ].join(" ")}>
-              지난 공고
-            </span>
+          <div className="absolute inset-0 flex items-center justify-center bg-black/70 text-gray-30">
+            <span className="block md:hidden tj-h3">{inactiveLabelText}</span>
+            <span className="hidden md:block tj-h1">{inactiveLabelText}</span>
           </div>
         )}
       </div>
@@ -208,33 +80,82 @@ export function PostCard({
         <div className="flex flex-col gap-2">
           {/* 제목 */}
           <h3
-            className={[
-              styles.title,
-              isInactive ? "text-gray-30" : "text-gray-black",
-            ].join(" ")}
+            className={`
+              ${isInactive ? "text-gray-30" : "text-gray-black"}
+            `}
           >
-            {title}
+            <span className="block md:hidden tj-body1-bold">{title}</span>
+            <span className="hidden md:block tj-h3">{title}</span>
+
           </h3>
-          {renderMeta()}
+          <p
+            className={`
+              flex gap-1.5
+              ${isInactive ? "text-gray-30" : "text-gray-50"}
+            `}
+          >
+            <PostClock
+              className={`w-4 h-4 md:w-5 md:h-5 ${isInactive ? "text-gray-20" : "text-red-30"}`} />
+
+            {/* 모바일 날짜/시간 두 줄로 표시 */}
+            <span className="flex flex-col md:hidden tj-caption">
+              <span>{datePart}</span>
+              <span>{timePart}</span>
+            </span>
+
+            {/* md(태블릿) 이상 날짜/시간 한 줄로 표시 */}
+            <span className="hidden md:inline tj-body2">{scheduleText}</span>
+          </p>
+
+          {/* 위치 줄 */}
+          <p
+            className={`
+              flex gap-1.5
+              ${isInactive ? "text-gray-30" : "text-gray-50"}
+            `}
+          >
+            <PostPath
+              className={`w-4 h-4 md:w-5 md:h-5 ${isInactive ? "text-gray-20" : "text-red-30"}`} />
+            <span className="hidden md:inline tj-body2">{locationText}</span>
+            <span className="inline md:hidden tj-caption">{locationText}</span>
+          </p>
         </div>
 
         {/* =================== 시급 텍스트 =================== */}
-        <div className={["flex items-end", size === "large" ? "justify-between" : "flex-wrap"].join(" ")}>
+        <div className={`flex items-end flex-wrap md:justify-between`}>
           <p
-            className={[
-              styles.wage,
-              isInactive ? "text-gray-30" : "text-gray-black",
-            ].join(" ")}
+            className={`
+              w-full md:w-auto
+              ${isInactive ? "text-gray-30" : "text-gray-black"}
+            `}
           >
-            {wage.toLocaleString()}원
+            <span className="hidden md:block tj-h2">{wage.toLocaleString()}원</span>
+            <span className="block md:hidden tj-h4">{wage.toLocaleString()}원</span>
           </p>
-          {/* large 에서는 같은 줄에 렌더링, small 에서는 아래에 렌더링 */}
-          {renderBadge()}
+
+          {wageBadgeText && (
+            <>
+              {/* md(태블릿 이상) 뱃지 */}
+              <div
+                className={`hidden md:flex items-center justify-center rounded-[20px] h-9 p-3
+                  ${isInactive ? "bg-gray-20 text-white" : "bg-red-40 text-white"}
+                `}
+              >
+                <span className="tj-body2-bold">{wageBadgeText}</span>
+                <PostArrow
+                  className="w-5 h-5 text-white" />
+              </div>
+
+              {/* 모바일 가격 아래 문구 */}
+              <div className={`flex md:hidden text-center gap-0.5 ${isInactive ? "text-gray-20" : "text-red-40"}`}>
+                <span className="tj-caption">{wageBadgeText}</span>
+                <PostArrow
+                  className={`w-4 h-4 ${isInactive ? "text-gray-20" : "text-red-40"}`} />
+              </div>
+            </>
+          )}
         </div>
-            
       </div>
-
-
     </article>
   );
 }

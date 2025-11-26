@@ -91,27 +91,12 @@ export default function JunyeolPage() {
         <div className="mb-8 flex justify-center gap-6">
           <PostCard
             status="active"
-            size="large"
             {...MOCK_POST}
           />
           <PostCard
             status="inactive"
-            size="large"
             {...MOCK_POST}
             wageBadgeText="50%"
-          />
-        </div>
-
-        <div className="flex justify-center gap-6">
-          <PostCard
-            status="active"
-            size="small"
-            {...MOCK_POST}
-          />
-          <PostCard
-            status="inactive"
-            size="small"
-            {...MOCK_POST}
           />
         </div>
       </div>
