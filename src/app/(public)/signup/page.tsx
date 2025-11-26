@@ -45,7 +45,7 @@ export default function SignupPage() {
     router.replace(getRedirectPathByRole(user.role));
   }, [user, router]);
 
-  // [수정] 회원가입 로직: login 대신 createUser 사용, 성공 시 로그인 페이지로 이동
+  // [수정] 회원가입 로직: login 대신 createUser 사용, 성공 시 alert 후, 로그인 페이지로 이동
   const onSubmit = async (data: SignupFormValues) => {
     try {
       // 회원가입 API 요청
@@ -55,14 +55,14 @@ export default function SignupPage() {
         type: mapMemberTypeToApiType(data.memberType),
       });
 
-      // 회원가입 성공 시 로그인 페이지로 이동
+      // 회원가입 성공 시 alert 후, 로그인 페이지로 이동
+      alert('가입이 완료되었습니다.');
       router.push('/login');
     } catch (error) {
       console.error(error);
       // 서버/네트워크 에러
       methods.setError('root', {
         type: 'server',
-        // [수정] 문구를 "회원가입" 기준으로 변경
         message: '회원가입에 실패했습니다. 잠시 후 다시 시도해주세요.',
       });
     }
