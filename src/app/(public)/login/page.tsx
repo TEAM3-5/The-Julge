@@ -19,7 +19,7 @@ import { useModalContext } from '@/components/modal/ModalProvider';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { openConfirm } = useModalContext(); // ✅ 로그인 실패 시 모달 열기용
+  const { openConfirm, openCustom } = useModalContext(); // ✅ 로그인 실패 시 모달 열기용
 
   const { user, setAuth } = useAuthStore((state) => ({
     user: state.user,
@@ -42,6 +42,29 @@ export default function LoginPage() {
   }, [user, router]);
 
   const onSubmit = async (data: LoginFormValues) => {
+    const showLoginErrorModal = () => {
+      openCustom((close) => (
+        <div className="flex w-full flex-col justify-center items-center relative">
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-[18px] text-center text-gray-black px-[162px] py-[108px]">
+              비밀번호가 일치하지 않습니다.
+            </p>
+          </div>
+
+          <div className="flex justify-end w-full">
+            <Button
+              type="button"
+              size="medium"
+              onClick={close}
+              className="absolute right-3 bottom-3 px-[46px] py-[14px] rounded-[8px]"
+            >
+              확인
+            </Button>
+          </div>
+        </div>
+      ));
+    };
+
     try {
       const res = await login({
         email: data.email,
@@ -52,9 +75,7 @@ export default function LoginPage() {
 
       if (!parsed) {
         // ✅ 토큰/유저 정보가 안 오면 (대부분 이메일/비밀번호 불일치)
-        openConfirm({
-          message: '이메일 또는 비밀번호가 일치하지 않습니다. 다시 확인해 주세요.',
-        });
+        showLoginErrorModal();
         return;
       }
 
@@ -64,9 +85,7 @@ export default function LoginPage() {
     } catch (error) {
       console.error(error);
       // ✅ 네트워크/서버 에러 등 모든 예외 상황에서 공통 모달
-      openConfirm({
-        message: '비밀번호가 일치하지 않습니다.',
-      });
+      showLoginErrorModal();
     }
   };
 
