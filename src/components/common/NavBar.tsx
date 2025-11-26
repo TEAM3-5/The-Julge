@@ -36,8 +36,6 @@ export default function NavBar() {
     } else if (role === USER_ROLE.OWNER) {
       // 사장님: 내 가게 페이지
       router.push('/owner');
-    } else {
-      router.push('/posts');
     }
   };
   // ✅ 로그아웃: clearAuth() 후 /posts 로 이동
