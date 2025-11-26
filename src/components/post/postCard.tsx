@@ -46,21 +46,15 @@ export function PostCard({
   return (
     <article
       onClick={onClick}
-      className={`
-        relative flex flex-col rounded-xl 
-        border border-gray-20 bg-white
-        w-full p-3 gap-3
-        md:p-4 md:gap-5
-        cursor-pointer
+      className={`relative flex flex-col rounded-xl border border-gray-20 bg-white cursor-pointer
+        w-full p-3 gap-3 md:p-4 md:gap-5
         ${className ?? ""}
       `}
     >
       {/* =================== 썸네일 영역 =================== */}
       <div
-        className={`
-          relative overflow-hidden rounded-xl
-          w-full h-[84px]
-          md:w-[280px] md:h-40
+        className={`relative overflow-hidden rounded-xl
+          w-full h-[84px] md:w-[280px] md:h-40
           ${thumbnailClassName ?? ""}
         `}
       >
@@ -143,8 +137,7 @@ export function PostCard({
             <>
               {/* md(태블릿 이상) 뱃지 */}
               <div
-                className={`
-                  hidden md:flex items-center justify-center rounded-[20px] h-9 p-3
+                className={`hidden md:flex items-center justify-center rounded-[20px] h-9 p-3
                   ${isInactive ? "bg-gray-20 text-white" : "bg-red-40 text-white"}
                 `}
               >
