@@ -1,4 +1,4 @@
-import type { UserRole } from '@/constants/auth';
+import { USER_ROLE, type UserRole } from '@/constants/auth';
 
 export const getRedirectPathByRole = (role: UserRole): string => {
   switch (role) {

@@ -1,4 +1,4 @@
-export type MemberTypeValue = 'MEMBER' | 'OWNER';
+export type MemberTypeValue = 'member' | 'owner';
 
 type MemberTypeOption = {
   id: string;
@@ -7,8 +7,8 @@ type MemberTypeOption = {
 };
 
 const MEMBER_TYPE_OPTIONS: MemberTypeOption[] = [
-  { id: 'member', value: 'MEMBER', label: '알바님' },
-  { id: 'owner', value: 'OWNER', label: '사장님' },
+  { id: 'member', value: 'member', label: '알바님' },
+  { id: 'owner', value: 'owner', label: '사장님' },
 ] as const;
 
 interface MemberTypeRadioBtnProps {

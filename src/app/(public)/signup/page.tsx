@@ -16,8 +16,8 @@ import { useEffect } from 'react';
 import MemberTypeRadioBtn from '@/components/signup/MemberTypeRadioBtn';
 import { getRedirectPathByRole } from '@/utils/auth';
 
-const mapMemberTypeToApiType = (memberType: 'MEMBER' | 'OWNER'): 'employee' | 'employer' => {
-  return memberType === 'MEMBER' ? 'employee' : 'employer';
+const mapMemberTypeToApiType = (memberType: 'member' | 'owner'): 'employee' | 'employer' => {
+  return memberType === 'member' ? 'employee' : 'employer';
 };
 
 export default function SignupPage() {
@@ -34,7 +34,7 @@ export default function SignupPage() {
       email: '',
       password: '',
       passwordConfirm: '',
-      memberType: 'MEMBER',
+      memberType: 'member',
     },
   });
 

@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState, type KeyboardEvent, type ChangeEvent } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { USER_ROLE } from '@/constants/auth';
 
 export default function NavBar() {
   const router = useRouter();
@@ -11,7 +12,6 @@ export default function NavBar() {
 
   const { isLoggedIn, role: authRole, clearAuth } = useAuth();
 
-  // ✅ AuthContext에서 내려온 role을 그대로 사용 (소문자: 'owner' | 'member' | 'guest')
   const role = authRole;
 
   // 알림 개수 (나중에 API 붙일 예정)
@@ -30,14 +30,13 @@ export default function NavBar() {
       return;
     }
 
-    if (role === 'member') {
+    if (role === USER_ROLE.MEMBER) {
       // 알바님: 내 프로필 페이지
       router.push('/member');
-    } else if (role === 'owner') {
+    } else if (role === USER_ROLE.OWNER) {
       // 사장님: 내 가게 페이지
       router.push('/owner');
     } else {
-      // guest 등 예외 상황 방어용 기본값
       router.push('/posts');
     }
   };
