@@ -1,39 +1,51 @@
 "use client";
 
 import Image from "next/image";
+import { ReactNode } from "react";
 import { ModalBase } from "./ModalBase";
 import Button from "@/components/common/Button";
 
-type ActionModalProps = {
+export type ActionModalProps = {
   isOpen: boolean;
   onClose: () => void;
+
   onConfirm: () => void; // "예" 눌렀을 때 실행할 콜백
+  
+  title?: ReactNode;
+  confirmText?: string;
+  cancelText?: string;
+
+  iconSrc?: string;
+  iconAlt?: string;
 };
 
 /**
  * ActionModal
  */
-export function ActionModal({ isOpen, onClose, onConfirm }: ActionModalProps) {
+export function ActionModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title = "신청을 거절하시겠어요?",
+  confirmText = "예",
+  cancelText = "아니오",
+  iconSrc = "/images/ModalAction.svg",
+  iconAlt = "확인 아이콘",
+}: ActionModalProps) {
   if (!isOpen) return null;
 
   const handleConfirmClick = () => {
-    // "예" 버튼 클릭 시 콜백 실행 후 모달 닫기
     onConfirm();
     onClose();
   };
 
   return (
-    <ModalBase onClose={onClose}>
+    <ModalBase isOpen={isOpen} onClose={onClose}>
       <div className="flex w-[250px] flex-col items-center gap-8">
         <div className="flex flex-col items-center gap-4">
-          <Image
-            src="/images/ModalAction.svg"
-            alt="확인 아이콘"
-            width={24}
-            height={24}
-          />
+          <Image src={iconSrc} alt={iconAlt ?? ""} width={24} height={24} />
           <p className="tj-body1 text-center text-gray-black">
-            신청을 거절하시겠어요?
+            {title}
           </p>
         </div>
 
@@ -45,7 +57,7 @@ export function ActionModal({ isOpen, onClose, onConfirm }: ActionModalProps) {
             onClick={onClose}
           >
             <span className="w-10.5 flex items-center justify-center h-full">
-              아니오
+              {cancelText}
             </span>
           </Button>
           <Button
@@ -54,7 +66,7 @@ export function ActionModal({ isOpen, onClose, onConfirm }: ActionModalProps) {
             onClick={handleConfirmClick}
           >
             <span className="w-10.5 flex items-center justify-center h-full">
-              예 
+              {confirmText}
             </span>
             
           </Button>

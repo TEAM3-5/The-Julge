@@ -1,32 +1,42 @@
 "use client";
 
 import Image from "next/image";
+import { ReactNode } from "react";
 import { ModalBase } from "./ModalBase";
 import Button from "@/components/common/Button";
 
-type ConfirmModalProps = {
+export type ConfirmModalProps = {
   isOpen: boolean;
   onClose: () => void;
+
+  message?: ReactNode;
+  buttonText?: string;
+  iconSrc?: string | null;
+  iconAlt?: string;
 };
 
 /**
  * ConfirmModal
  */
-export function ConfirmModal({ isOpen, onClose }: ConfirmModalProps) {
+export function ConfirmModal({  
+  isOpen,
+  onClose,
+  message = "가게 정보를 먼저 등록해 주세요.",
+  buttonText = "확인",
+  iconSrc = "/images/ModalConfirm.svg",
+  iconAlt = "알림 아이콘",
+}: ConfirmModalProps) {
   if (!isOpen) return null;
 
   return (
-    <ModalBase onClose={onClose}>
+    <ModalBase isOpen={isOpen} onClose={onClose}>
       <div className="flex w-[250px] flex-col items-center gap-8">
         <div className="flex flex-col items-center gap-4">
-          <Image
-            src="/images/ModalConfirm.svg"
-            alt="알림 아이콘"
-            width={24}
-            height={24}
-          />
+          {iconSrc && (
+            <Image src={iconSrc} alt={iconAlt ?? ""} width={24} height={24} />
+          )}
           <p className="tj-body1 text-center text-gray-black">
-            가게 정보를 먼저 등록해 주세요.
+            {message}
           </p>
         </div>
 
@@ -38,7 +48,7 @@ export function ConfirmModal({ isOpen, onClose }: ConfirmModalProps) {
             onClick={onClose}
           >
             <span className="w-10.5 flex items-center justify-center h-full">
-              확인
+              {buttonText}
             </span>
           </Button>
         </div>
