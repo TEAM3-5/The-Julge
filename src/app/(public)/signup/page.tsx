@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth';
 import { useEffect } from 'react';
 import MemberTypeRadioBtn from '@/components/signup/MemberTypeRadioBtn';
+import { getRedirectPathByRole } from '@/utils/auth';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -33,13 +34,11 @@ export default function SignupPage() {
     },
   });
 
-  const getRedirectPath = (role: 'owner' | 'member') => (role === 'owner' ? '/owner' : '/member');
-
   // [수정] 로그인 상태라면 회원가입 페이지 접근 시 리다이렉트 (기존 로직 유지하되 user만 사용)
   useEffect(() => {
     if (!user) return;
 
-    router.replace(getRedirectPath(user.role));
+    router.replace(getRedirectPathByRole(user.role));
   }, [user, router]);
 
   const mapMemberTypeToApiType = (memberType: 'MEMBER' | 'OWNER'): 'employee' | 'employer' => {

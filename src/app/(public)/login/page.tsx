@@ -12,6 +12,7 @@ import { login, parseLoginResponse } from '@/api/auth';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth';
 import { useEffect } from 'react';
+import { getRedirectPathByRole } from '@/utils/auth';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -29,12 +30,10 @@ export default function LoginPage() {
     },
   });
 
-  const getRedirectPath = (role: 'owner' | 'member') => (role === 'owner' ? '/owner' : '/member');
-
   useEffect(() => {
     if (!user) return;
 
-    router.replace(getRedirectPath(user.role));
+    router.replace(getRedirectPathByRole(user.role));
   }, [user, router]);
 
   const onSubmit = async (data: LoginFormValues) => {
@@ -60,7 +59,7 @@ export default function LoginPage() {
       // zustand 전역 상태 + axios 헤더에 토큰 반영
       setAuth(parsed.user, parsed.token);
       // role에 따라 라우팅
-      router.push(getRedirectPath(parsed.user.role));
+      router.push(getRedirectPathByRole(parsed.user.role));
     } catch (error) {
       console.error(error);
       // 서버/네트워크 에러 or 401 등
