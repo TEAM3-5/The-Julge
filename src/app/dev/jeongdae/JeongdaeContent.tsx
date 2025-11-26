@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Table from '@/components/common/Table';
+import { Table } from '@/components/common/Table';
+import { StatusChip } from '@/components/common/StatusChip';
 import type { ShiftRow } from '@/features/shifts/model';
 import { Pagination } from '@/components/pagination/Pagination';
 import Filter from '@/components/common/Filter';
@@ -223,7 +224,32 @@ export default function JeongdaeContent() {
           <div>
             <h2 className="text-sm font-semibold text-gray-50">Table</h2>
 
-            <Table rows={pageRows} onApprove={handleApprove} onReject={handleReject} />
+            <Table>
+              <Table.Head>
+                <Table.Row>
+                  <Table.HeaderCell>가게</Table.HeaderCell>
+                  <Table.HeaderCell>일자</Table.HeaderCell>
+                  <Table.HeaderCell>시급</Table.HeaderCell>
+                  <Table.HeaderCell className="text-left pr-6">상태</Table.HeaderCell>
+                </Table.Row>
+              </Table.Head>
+              <Table.Body>
+                {pageRows.map((row) => (
+                  <Table.Row key={row.id}>
+                    <Table.Cell>{row.storeName}</Table.Cell>
+                    <Table.Cell>{row.dateText}</Table.Cell>
+                    <Table.Cell>{row.wageText}</Table.Cell>
+                    <Table.Cell className="text-left pr-6">
+                      <StatusChip
+                        status={row.status}
+                        onApprove={() => handleApprove(row.id)}
+                        onReject={() => handleReject(row.id)}
+                      />
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table>
 
             {totalPages > 1 && (
               <div className="mt-4 flex justify-center">
