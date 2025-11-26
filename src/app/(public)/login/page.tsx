@@ -19,9 +19,10 @@ export default function LoginPage() {
     user: state.user,
     setAuth: state.setAuth,
   }));
+
   const methods = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    mode: 'onBlur',
+    mode: 'onChange', // ✅ 입력이 바뀔 때마다 유효성 검사
     defaultValues: {
       email: '',
       password: '',
@@ -29,6 +30,7 @@ export default function LoginPage() {
   });
 
   const getRedirectPath = (role: 'owner' | 'member') => (role === 'owner' ? '/owner' : '/member');
+
   useEffect(() => {
     if (!user) return;
 
@@ -61,7 +63,7 @@ export default function LoginPage() {
       router.push(getRedirectPath(parsed.user.role));
     } catch (error) {
       console.error(error);
-      // 서버/네트워크 에러
+      // 서버/네트워크 에러 or 401 등
       methods.setError('root', {
         type: 'server',
         message: '이메일 또는 비밀번호를 다시 확인해주세요.',
@@ -70,7 +72,7 @@ export default function LoginPage() {
   };
 
   const {
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isValid }, // ✅ isValid 추가
   } = methods;
 
   return (
@@ -99,10 +101,11 @@ export default function LoginPage() {
                 placeholder="입력"
                 type="password"
               />
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={!isValid || isSubmitting}>
                 {isSubmitting ? '로그인 중...' : '로그인 하기'}
               </Button>
             </div>
+
             {/* 서버에서 온 공통 에러 (이메일/비번 틀림 등) */}
             {errors.root?.message && (
               <p className="text-center mt-3 text-tj-caption text-red-40">{errors.root.message}</p>

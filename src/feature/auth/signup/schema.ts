@@ -7,6 +7,7 @@ export const signupSchema = z
     password: z.string().nonempty('비밀번호를 입력해주세요.').min(8, '8자 이상 입력해주세요.'),
 
     passwordConfirm: z.string().nonempty('비밀번호를 한 번 더 입력해주세요.'),
+    memberType: z.enum(['MEMBER', 'OWNER']),
   })
   .refine((data) => data.password === data.passwordConfirm, {
     path: ['passwordConfirm'], // 이 필드에 에러를 달아줌
