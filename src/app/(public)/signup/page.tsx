@@ -111,10 +111,7 @@ export default function SignupPage() {
                 name="memberType"
                 control={methods.control}
                 render={({ field }) => (
-                  <MemberTypeRadioBtn
-                    selectedValue={field.value ?? null}
-                    onChange={field.onChange}
-                  />
+                  <MemberTypeRadioBtn selectedValue={field.value} onChange={field.onChange} />
                 )}
               />
 
