@@ -7,7 +7,6 @@ import { AREAS } from '@/constants/areas';
 // import DateInput from '@/components/date/DateInput';
 export default function Filter() {
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
-  const [_amount, _setAmount] = useState('');
 
   const handleSelectArea = (area: string) => {
     setSelectedAreas((prev) =>

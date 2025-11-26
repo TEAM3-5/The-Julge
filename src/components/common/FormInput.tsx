@@ -26,7 +26,7 @@ export default function FormInput<T extends FieldValues>({
 
   // register 기반으로 RHF와 연결 (언컨트롤드 input)
   const registerResult = register(name, {
-    onChange: (_event) => {
+    onChange: () => {
       // 이 필드에 에러가 있는 상태에서 타이핑을 시작하면 에러 제거
       if (fieldError) {
         clearErrors(name);
