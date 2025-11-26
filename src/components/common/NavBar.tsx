@@ -5,17 +5,14 @@ import { useRouter } from 'next/navigation';
 import { useState, type KeyboardEvent, type ChangeEvent } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 
-export type UserRole = 'OWNER' | 'MEMBER' | 'GUEST';
-
 export default function NavBar() {
   const router = useRouter();
   const [keyword, setKeyword] = useState('');
 
   const { isLoggedIn, role: authRole, clearAuth } = useAuth();
 
-  // AuthContext의 role은 'owner' | 'member' | 'guest'
-  // NavBar에서는 대문자 버전으로 사용
-  const role: UserRole = authRole.toUpperCase() as UserRole;
+  // ✅ AuthContext에서 내려온 role을 그대로 사용 (소문자: 'owner' | 'member' | 'guest')
+  const role = authRole;
 
   // 알림 개수 (나중에 API 붙일 예정)
   const [alertCount] = useState(0);
@@ -28,17 +25,22 @@ export default function NavBar() {
 
   // ✅ 왼쪽 메뉴 버튼: 로그인 X → /login, 로그인 O → 내 프로필/내 가게
   const handleMyPage = () => {
-    if (!isLoggedIn) return router.push('/login');
+    if (!isLoggedIn) {
+      router.push('/login');
+      return;
+    }
 
-    if (role === 'MEMBER') {
+    if (role === 'member') {
       // 알바님: 내 프로필 페이지
       router.push('/member');
-    } else {
+    } else if (role === 'owner') {
       // 사장님: 내 가게 페이지
       router.push('/owner');
+    } else {
+      // guest 등 예외 상황 방어용 기본값
+      router.push('/posts');
     }
   };
-
   // ✅ 로그아웃: clearAuth() 후 /posts 로 이동
   const handleLogout = () => {
     if (isLoggedIn) {
@@ -50,8 +52,7 @@ export default function NavBar() {
   // (추후 구현용) 알림 아이콘 클릭
   const handleAlarm = () => {
     // TODO: 알림 모달 / 드롭다운 열기
-    // 일단은 콘솔만 찍어둠
-    // eslint-disable-next-line no-console
+    // 일단은 콘솔 출력으로만
     console.log('알림 아이콘 클릭');
   };
 
@@ -72,9 +73,8 @@ export default function NavBar() {
   };
 
   // 버튼 라벨
-  const firstLabel = !isLoggedIn ? '로그인' : role === 'OWNER' ? '내 가게' : '내 프로필';
+  const firstLabel = !isLoggedIn ? '로그인' : role === 'owner' ? '내 가게' : '내 프로필';
   const secondLabel = isLoggedIn ? '로그아웃' : '회원가입';
-
   return (
     <div className="flex justify-between items-center w-full pl-52 pr-52">
       <div className="flex items-center gap-10">
