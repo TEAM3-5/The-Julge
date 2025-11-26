@@ -15,6 +15,8 @@ import { useAuthStore } from '@/stores/auth';
 import { useEffect } from 'react';
 import MemberTypeRadioBtn from '@/components/signup/MemberTypeRadioBtn';
 import { getRedirectPathByRole } from '@/utils/auth';
+import { useModalContext } from '@/components/modal/ModalProvider';
+import { AxiosError } from 'axios';
 
 const mapMemberTypeToApiType = (memberType: 'member' | 'owner'): 'employee' | 'employer' => {
   return memberType === 'member' ? 'employee' : 'employer';
@@ -22,6 +24,7 @@ const mapMemberTypeToApiType = (memberType: 'member' | 'owner'): 'employee' | 'e
 
 export default function SignupPage() {
   const router = useRouter();
+  const { openCustom } = useModalContext();
 
   // [수정] setAuth는 이 페이지에서 사용하지 않으므로 제거
   const user = useAuthStore((state) => state.user);
@@ -45,7 +48,29 @@ export default function SignupPage() {
     router.replace(getRedirectPathByRole(user.role));
   }, [user, router]);
 
-  // [수정] 회원가입 로직: login 대신 createUser 사용, 성공 시 alert 후, 로그인 페이지로 이동
+  const showDuplicateEmailModal = () => {
+    openCustom((close) => (
+      <div className="flex w-full flex-col justify-center items-center relative">
+        <div className="flex flex-col items-center gap-4 ">
+          <p className="text-[18px] text-center text-gray-black px-[162px] py-[108px]">
+            이미 사용중인 이메일입니다.
+          </p>
+        </div>
+
+        <div className="flex w-full">
+          <Button
+            type="button"
+            size="medium"
+            onClick={close}
+            className="absolute right-3 bottom-3 px-[46px] py-[14px] rounded-[8px]"
+          >
+            확인
+          </Button>
+        </div>
+      </div>
+    ));
+  };
+
   const onSubmit = async (data: SignupFormValues) => {
     try {
       // 회원가입 API 요청
@@ -60,6 +85,13 @@ export default function SignupPage() {
       router.push('/login');
     } catch (error) {
       console.error(error);
+
+      // ✅ AxiosError 이면서 409(중복된 이메일)이면 모달로 안내
+      if (error instanceof AxiosError && error.response?.status === 409) {
+        showDuplicateEmailModal();
+        return;
+      }
+
       // 서버/네트워크 에러
       methods.setError('root', {
         type: 'server',
