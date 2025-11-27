@@ -26,8 +26,8 @@ export default function NewPostingPage() {
     mode: 'onChange',
     defaultValues: {
       hourlyPay: '',
-      startAt: '',
-      workHour: '',
+      startsAt: '',
+      workhour: '',
       description: '',
     },
   });
@@ -77,8 +77,8 @@ export default function NewPostingPage() {
 
     const payload: CreateNoticePayload = {
       hourlyPay: Number(data.hourlyPay),
-      startsAt: data.startAt,
-      workhour: Number(data.workHour),
+      startsAt: data.startsAt,
+      workhour: Number(data.workhour),
       description: data.description,
     };
 
@@ -126,12 +126,12 @@ export default function NewPostingPage() {
             </div>
 
             <div className="flex-1">
-              <FormInput<PostingFormValues> name="startAt" label="시작 일시*" type="date" />
+              <FormInput<PostingFormValues> name="startsAt" label="시작 일시*" type="date" />
             </div>
 
             <div className="flex-1">
               <FormInput<PostingFormValues>
-                name="workHour"
+                name="workhour"
                 label="업무 시간*"
                 type="number"
                 inputMode="numeric"

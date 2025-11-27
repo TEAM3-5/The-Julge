@@ -11,12 +11,12 @@ export const postingSchema = z.object({
       message: `현재 최저시급은 ${MIN_HOURLY_PAY}원입니다`,
     }),
 
-  startAt: z
+  startsAt: z
     .string()
     .nonempty('시작 일시를 선택해주세요.')
     .refine((val) => !isNaN(Date.parse(val)), { message: '유효한 날짜를 선택해주세요.' }),
 
-  workHour: z
+  workhour: z
     .string()
     .nonempty('업무 시간을 입력해주세요.')
     .regex(/^\d+$/, '업무 시간은 숫자만 입력해주세요.')
