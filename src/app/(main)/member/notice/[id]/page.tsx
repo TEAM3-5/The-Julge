@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Button from '@/components/common/Button';
 import { PostCard } from '@/components/post/postCard';
+import { PostCardProps } from '@/components/post/postCard';
 
 type NoticeDetail = {
   id: string;
@@ -30,7 +31,7 @@ const MOCK_NOTICE: NoticeDetail = {
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQcRJOrTwdt2QZc7F4VKcaG4pB0QOuSiawmJA&s',
 };
 
-const RECENT_POSTS = [
+const RECENT_POSTS: (PostCardProps & { id: string })[] = [
   {
     id: 'r1',
     title: '마감 완료',
