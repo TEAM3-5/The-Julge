@@ -17,7 +17,7 @@ export const postingSchema = z.object({
     .string()
     .nonempty('업무 시간을 입력해주세요.')
     .regex(/^\d+$/, '업무 시간은 숫자만 입력해주세요.')
-    .refine((value) => Number(value) <= 24, {
+    .refine((value) => Number(value) > 0 && Number(value) <= 24, {
       message: '올바른 업무 시간을 입력해주세요.',
     }),
 
