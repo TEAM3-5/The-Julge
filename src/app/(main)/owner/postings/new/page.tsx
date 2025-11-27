@@ -1,4 +1,3 @@
-// src/app/(main)/owner/postings/new/page.tsx
 'use client';
 
 import Button from '@/components/common/Button';
@@ -9,7 +8,7 @@ import { createNotice } from '@/api/notices';
 import { useModalContext } from '@/components/modal/ModalProvider';
 import { useRouter } from 'next/navigation';
 
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { postingSchema, type PostingFormValues } from '@/feature/postings/newPosting/schema';
 
@@ -22,12 +21,10 @@ type CreateNoticePayload = {
 
 export default function NewPostingPage() {
   const methods = useForm<PostingFormValues>({
-    resolver: zodResolver(postingSchema),
+    resolver: zodResolver(postingSchema) as Resolver<PostingFormValues>,
     mode: 'onChange',
     defaultValues: {
-      hourlyPay: '',
       startsAt: '',
-      workhour: '',
       description: '',
     },
   });
@@ -76,9 +73,9 @@ export default function NewPostingPage() {
     }
 
     const payload: CreateNoticePayload = {
-      hourlyPay: Number(data.hourlyPay),
+      hourlyPay: data.hourlyPay,
       startsAt: data.startsAt,
-      workhour: Number(data.workhour),
+      workhour: data.workhour,
       description: data.description,
     };
 
