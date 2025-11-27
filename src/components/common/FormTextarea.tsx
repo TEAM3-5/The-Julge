@@ -24,7 +24,9 @@ export default function FormTextarea<T extends FieldValues>({
 
   const registerResult = register(name, {
     onChange: () => {
-      clearErrors(name);
+      if (fieldError) {
+        clearErrors(name);
+      }
     },
   });
 
