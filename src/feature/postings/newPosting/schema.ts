@@ -11,7 +11,7 @@ export const postingSchema = z.object({
       message: `현재 최저시급은 ${MIN_HOURLY_PAY}원입니다`,
     }),
 
-  startAt: z.string().nonempty('시작 일시를 선택해주세요.'),
+  startAt: z.string().nonempty('시작 일시를 선택해주세요.').refine((val) => !isNaN(Date.parse(val)), { message: '유효한 날짜를 선택해주세요.' }),
 
   workHour: z
     .string()
