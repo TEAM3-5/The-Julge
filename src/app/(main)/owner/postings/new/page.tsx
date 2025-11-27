@@ -85,13 +85,10 @@ export default function NewPostingPage() {
     };
 
     try {
-      console.log('📤 createNotice 요청 payload:', payload);
       await createNotice(shopId, payload);
-      console.log('✅ createNotice 성공, 모달 띄우기 직전');
       showPostingSuccessModal();
     } catch (error) {
       console.error('공고 등록 실패:', error);
-      // TODO: 실패 모달/토스트 연결
     }
   };
 
