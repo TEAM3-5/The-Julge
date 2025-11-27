@@ -111,7 +111,7 @@ export default function Home() {
 
           <p className="mt-2 text-sm text-gray-500">
             현재 선택:{' '}
-            {memberType === 'MEMBER' ? '알바님' : memberType === 'OWNER' ? '사장님' : '없음'}
+            {memberType === 'member' ? '알바님' : memberType === 'owner' ? '사장님' : '없음'}
           </p>
         </section>
       </main>
