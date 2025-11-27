@@ -44,8 +44,6 @@ export default function NewPostingPage() {
   const shopId = 'SHOP_ID_PLACEHOLDER';
 
   const showPostingSuccessModal = () => {
-    console.log('✅ showPostingSuccessModal 호출됨');
-
     openCustom((close) => (
       <div className="flex w-full flex-col justify-center items-center relative">
         <div className="flex flex-col items-center gap-4">
