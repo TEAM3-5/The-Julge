@@ -102,7 +102,14 @@ export default function NewPostingPage() {
         {/* 상단 타이틀 + 닫기 아이콘 */}
         <div className="flex justify-between">
           <span className="tj-h1">공고 등록</span>
-          <Image src="/icons/icon-close-filter.svg" alt="닫기 아이콘" width={32} height={32} />
+          <Image
+            src="/icons/icon-close-filter.svg"
+            alt="닫기 아이콘"
+            width={32}
+            height={32}
+            onClick={() => router.back()}
+            className="cursor-pointer"
+          />
         </div>
 
         {/* 폼 영역 */}
