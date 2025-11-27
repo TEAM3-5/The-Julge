@@ -7,7 +7,7 @@ export default function MainLayout({ children }: Readonly<{ children: ReactNode 
   return (
     <div className="h-screen flex flex-col">
       <NavBar />
-      <main className="flex flex-1">{children}</main>
+      <main className="flex-1">{children}</main>
       <Footer />
     </div>
   );
