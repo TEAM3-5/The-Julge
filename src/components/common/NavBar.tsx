@@ -84,9 +84,7 @@ export default function NavBar() {
           className="cursor-pointer"
           onClick={handleMainPage}
         />
-
-        {/* 검색 영역 */}
-        <div className="flex gap-2.5 bg-gray-10 rounded-[10px] mt-[15px] mb-[15px] p-2.5 w-[450px]">
+        <div className="flex gap-2.5 bg-gray-10 rounded-[10px] mt-[15px] mb-[15px] p-2.5 min-w-[450px]">
           <Image
             src="/images/search.svg"
             alt="검색 돋보기"

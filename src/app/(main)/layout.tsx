@@ -5,9 +5,9 @@ import Footer from '@/components/common/Footer';
 
 export default function MainLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="h-screen flex flex-col">
       <NavBar />
-      <main className="flex-1">{children}</main>
+      <main className="flex flex-1">{children}</main>
       <Footer />
     </div>
   );
