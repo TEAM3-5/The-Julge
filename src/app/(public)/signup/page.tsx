@@ -1,7 +1,7 @@
 'use client';
 
-import Button from '@/components/common/Button';
-import FormInput from '@/components/common/FormInput';
+import Button from '@/components/e/Button';
+import FormInput from '@/components/e/FormInput';
 import Image from 'next/image';
 import Link from 'next/link';
 

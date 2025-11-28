@@ -4,14 +4,16 @@ import { useState } from "react";
 import { Pagination } from "@/components/pagination/Pagination";
 import { useModal } from "@/hooks/useModal";
 import { PostCard } from "@/components/post/postCard";
-import Button from "@/components/common/Button";
+import Button from "@/components/e/Button";
 import { useToast } from "@/components/toast/toastProvider";
+import { EmptySection } from "@/components/e/EmptySection";
+import { StoreCard } from "@/components/owner/StoreCard";
 
 export default function JunyeolPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = 21;
 
-  const { openConfirm, openAction} = useModal();
+  const { openConfirm, openAction } = useModal();
 
   const { showToast } = useToast();
 
@@ -87,8 +89,8 @@ export default function JunyeolPage() {
         </Button>
       </div>
 
-      <div className="py-10">
-        <div className="mb-8 flex justify-center gap-6">
+      <div className="py-10 flex justify-center">
+        <div className="w-164 mb-8 flex justify-center gap-6">
           <PostCard
             status="active"
             {...MOCK_POST}
@@ -101,7 +103,46 @@ export default function JunyeolPage() {
         </div>
       </div>
 
-    </div>
+      <div className="py-10">
+        <EmptySection
+          title="내 가게"
+          description="내 가게를 소개하고 공고도 등록해 보세요."
+          buttonLabel="가게 등록하기"
+          href="/owner/postings/new"
+        />
+      </div>
 
+      <div className="py-10">
+        <EmptySection
+          title="내 프로필"
+          description="내 프로필을 등록하고 원하는 가게에 지원해 보세요."
+          buttonLabel="내 프로필 등록하기"
+          href="/member/profile/new"
+        />
+      </div>
+
+      <div className="py-10">
+        <StoreCard
+          heading="내 가게"
+          thumbnailUrl="/images/dotori.svg"
+          storeLabel="식당"
+          name="도토리 식당"
+          locationText="서울시 송파구"
+          description="알바하기 편한 너구리네 라면집! 라면 올려두고 끓이기만 하면 되어서 쉬운 편에 속하는 가게입니다."
+          editHref="/owner/store/edit"
+          createPostingHref="/owner/new"
+        />
+      </div>
+
+      <div className="bg-gray-5">
+        <EmptySection
+          title="등록한 공고"
+          description="공고를 등록해 보세요."
+          buttonLabel="공고 등록하기"
+          href="/owner/postings/new"
+        />
+      </div>
+
+    </div>
   );
 }

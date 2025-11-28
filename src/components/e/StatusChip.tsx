@@ -1,6 +1,6 @@
 'use client';
 
-import Button from '@/components/common/Button';
+import Button from '@/components/e/Button';
 import type { ReactNode } from 'react';
 
 export type StatusChipProps = {

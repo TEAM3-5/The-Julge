@@ -54,7 +54,7 @@ export function PostCard({
       {/* =================== 썸네일 영역 =================== */}
       <div
         className={`relative overflow-hidden rounded-xl
-          w-full h-[84px] md:w-[280px] md:h-40
+          w-full h-[84px] md:h-40
           ${thumbnailClassName ?? ""}
         `}
       >

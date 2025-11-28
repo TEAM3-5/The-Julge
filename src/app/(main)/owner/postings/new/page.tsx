@@ -1,6 +1,6 @@
-import Button from '@/components/common/Button';
-import Input from '@/components/common/Input';
-import Textarea from '@/components/common/Textarea';
+import Button from '@/components/e/Button';
+import Input from '@/components/e/Input';
+import Textarea from '@/components/e/Textarea';
 import Image from 'next/image';
 
 export default function NewPosting() {

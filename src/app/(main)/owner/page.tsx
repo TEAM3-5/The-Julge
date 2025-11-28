@@ -1,4 +1,4 @@
-import Button from '@/components/common/Button';
+import Button from '@/components/e/Button';
 import Link from 'next/link';
 
 export default function OwnerDashboardPage() {

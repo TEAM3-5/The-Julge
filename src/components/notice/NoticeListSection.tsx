@@ -6,8 +6,8 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import type { SwiperOptions } from 'swiper/types';
 import { PostCard } from '@/components/post/postCard';
-import Dropdown from '@/components/common/Dropdown';
-import Button from '@/components/common/Button';
+import Dropdown from '@/components/e/Dropdown';
+import Button from '@/components/e/Button';
 import { Pagination } from '@/components/pagination/Pagination';
 
 export type NoticeCard = {
