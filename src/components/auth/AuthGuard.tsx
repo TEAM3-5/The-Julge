@@ -20,20 +20,19 @@ export default function AuthGuard({
   const { isLoggedIn, role } = useAuth();
 
   const isAllowedRole = role !== 'guest' && allowedRoles.includes(role);
+  const fallbackPath = role === 'owner' ? '/owner' : '/member';
 
   useEffect(() => {
-    // 로그인 안 된 상태 → 로그인 페이지로
     if (!isLoggedIn) {
       router.replace(redirectTo);
       return;
     }
 
-    // role 불일치 → 접근 불가 (원하는 경로로 보내기)
     if (!isAllowedRole) {
-      router.replace('/posts');
+      router.replace(fallbackPath);
       return;
     }
-  }, [isLoggedIn, isAllowedRole, redirectTo, router]);
+  }, [isLoggedIn, isAllowedRole, redirectTo, fallbackPath, router]);
 
   if (!isLoggedIn || !isAllowedRole) {
     return null;
