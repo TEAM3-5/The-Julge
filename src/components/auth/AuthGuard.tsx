@@ -19,7 +19,7 @@ export default function AuthGuard({
   const router = useRouter();
   const { isLoggedIn, role } = useAuth();
 
-  const isAllowedRole = role !== 'guest' && allowedRoles.includes(role as UserRole);
+  const isAllowedRole = role !== 'guest' && allowedRoles.includes(role);
 
   useEffect(() => {
     // 로그인 안 된 상태 → 로그인 페이지로
