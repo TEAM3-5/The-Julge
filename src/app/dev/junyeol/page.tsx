@@ -8,6 +8,7 @@ import Button from "@/components/common/Button";
 import { useToast } from "@/components/toast/toastProvider";
 import { EmptySection } from "@/components/common/EmptySection";
 import { ShopCard } from "@/components/owner/ShopCard";
+import { PostingList, type PostingItem, } from "@/components/owner/PostingList"
 
 export default function JunyeolPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -56,6 +57,129 @@ export default function JunyeolPage() {
     wageBadgeText: "기존 시급보다 100%",
     thumbnailUrl: "/images/dotori.svg",
   };
+
+  const MOCK_POSTS: PostingItem[] = [
+    {
+      id: 1,
+      status: "active",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 100%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 2,
+      status: "inactive",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 60%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 3,
+      status: "inactive",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 100%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 4,
+      status: "inactive",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "40%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 5,
+      status: "active",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 70%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 6,
+      status: "active",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 10%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 7,
+      status: "active",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "150%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 8,
+      status: "active",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 50%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 9,
+      status: "inactive",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 80%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 10,
+      status: "inactive",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "50%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 11,
+      status: "active",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 100%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+    {
+      id: 12,
+      status: "active",
+      title: "도토리식당",
+      scheduleText: "2023-01-02 15:00-18:00 (3시간)",
+      locationText: "서울시 송파구",
+      wage: 15000,
+      wageBadgeText: "기존 시급보다 100%",
+      thumbnailUrl: "/images/dotori.svg",
+    },
+  ];
 
   return (
     <div>
@@ -134,13 +258,17 @@ export default function JunyeolPage() {
         />
       </div>
 
-      <div className="bg-gray-5">
+      <div className="py-10 bg-gray-5">
         <EmptySection
           title="등록한 공고"
           description="공고를 등록해 보세요."
           buttonLabel="공고 등록하기"
           href="/owner/postings/new"
         />
+      </div>
+
+      <div className="py-10">
+        <PostingList posts={MOCK_POSTS} />
       </div>
 
     </div>

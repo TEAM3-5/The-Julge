@@ -9,6 +9,7 @@ import PostClock from "./icon/PostClock";
 type PostStatus = "active" | "inactive";
 
 export type PostCardProps = {
+  id?: string | number;         // 카드 id
   status?: PostStatus;          // 공고 상태 (기본값: active)
   title: string;                // 공고 제목
   scheduleText: string;         // 날짜/시간 텍스트
@@ -23,6 +24,7 @@ export type PostCardProps = {
 };
 
 export function PostCard({
+  id,
   status = "active",
   title,
   scheduleText,
@@ -45,6 +47,7 @@ export function PostCard({
 
   return (
     <article
+      id={id ? `post-card-${id}` : undefined}
       onClick={onClick}
       className={`relative flex flex-col rounded-xl border border-gray-20 bg-white cursor-pointer
         w-full p-3 gap-3 md:p-4 md:gap-5

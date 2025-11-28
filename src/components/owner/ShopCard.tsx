@@ -7,7 +7,7 @@ import PostPath from "@/components/post/icon/PostPath";
 export type ShopCardProps = {
     heading: string;            // 섹션 제목
     thumbnailUrl: string;       // 좌측 썸네일 이미지 URL
-    shopLabel?: string;        // 가게 이름 위에 붙는 라벨
+    shopLabel?: string;         // 가게 이름 위에 붙는 라벨
     name: string;               // 가게 이름
     locationText: string;       // 가게 위치
     description: string;        // 가게 소개 문구

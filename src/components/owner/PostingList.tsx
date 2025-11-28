@@ -1,33 +1,53 @@
-export function PostingList() {
+"use client";
+
+import { PostCard, type PostCardProps } from "@/components/post/postCard";
+
+/**
+ * PostingList가 받는 개별 공고 데이터 타입
+ * PostingList가 필요한 정보만 받아옴
+ */
+export type PostingItem = Omit<
+  PostCardProps,
+  "className" | "thumbnailClassName" | "onClick"
+> & {
+  id: string | number;
+};
+
+export type PostingListProps = {
+  heading?: string;
+  posts: PostingItem[]; // 렌더링할 공고 카드 데이터 배열
+  className?: string;
+  // 카드를 클릭했을 때 공고 데이터를 넘겨주는 핸들러
+  onCardClick?: (post: PostingItem) => void;
+};
+
+export function PostingList({
+  heading = "내가 등록한 공고",
+  posts,
+  className,
+  onCardClick,
+}: PostingListProps) {
+  const hasPosts = posts.length > 0;
+
   return (
-    <section className="flex flex-col gap-6">
-      <h2 className="tj-h1 text-gray-black">등록한 공고</h2>
+    <section className={`flex flex-col gap-6 ${className ?? ""}`}>
+      <h2 className="tj-h1 text-gray-black">{heading}</h2>
 
-      <div className="grid grid-cols-3 gap-4">
-        <div className="flex flex-col gap-2 rounded-3 border border-gray-20 bg-white px-4 py-4">
-          <p className="tj-body2 text-primary">도토리식당</p>
-          <p className="tj-body1-bold text-gray-black">주말 주방 보조 알바</p>
-          <p className="tj-caption text-gray-60">2023.01.02 15:00–18:00 (3시간)</p>
-          <p className="tj-caption text-gray-60">서울시 송파구</p>
-          <p className="tj-body2-bold text-primary mt-1">시급 15,000원</p>
+      {hasPosts ? (
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <PostCard
+              key={post.id}             // React key
+              {...post}                 // id 포함 나머지 props
+              className="h-full"
+              thumbnailClassName="md:h-40"
+              onClick={() => onCardClick?.(post)}
+            />
+          ))}
         </div>
-
-        <div className="flex flex-col gap-2 rounded-3 border border-gray-20 bg-white px-4 py-4">
-          <p className="tj-body2 text-primary">도토리식당</p>
-          <p className="tj-body1-bold text-gray-black">평일 오후 서빙 알바</p>
-          <p className="tj-caption text-gray-60">2023.01.05 17:00–21:00 (4시간)</p>
-          <p className="tj-caption text-gray-60">서울시 송파구</p>
-          <p className="tj-body2-bold text-primary mt-1">시급 14,000원</p>
-        </div>
-
-        <div className="flex flex-col gap-2 rounded-3 border border-gray-20 bg-white px-4 py-4">
-          <p className="tj-body2 text-primary">도토리식당</p>
-          <p className="tj-body1-bold text-gray-black">설거지 및 마감 알바</p>
-          <p className="tj-caption text-gray-60">2023.01.07 19:00–23:00 (4시간)</p>
-          <p className="tj-caption text-gray-60">서울시 송파구</p>
-          <p className="tj-body2-bold text-primary mt-1">시급 15,000원</p>
-        </div>
-      </div>
+      ) : (
+        <p className="tj-body1 text-gray-60">등록된 공고가 없습니다.</p>
+      )}
     </section>
   );
 }
