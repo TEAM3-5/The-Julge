@@ -1,12 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Table } from '@/components/e/Table';
-import { StatusChip } from '@/components/e/StatusChip';
+import { Table } from '@/components/common/Table';
+import { StatusChip } from '@/components/common/StatusChip';
 import type { ShiftRow } from '@/features/shifts/model';
 import { Pagination } from '@/components/pagination/Pagination';
-import Filter from '@/components/e/Filter';
-import Dropdown from '@/components/e/Dropdown';
+import Filter from '@/components/common/Filter';
+import Dropdown from '@/components/common/Dropdown';
 import { AREAS } from '@/constants/areas';
 
 // 임시 더미 데이터 (나중에 API 데이터로)

@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "@/components/e/Button"
+import Button from "@/components/common/Button"
 
 type EmptySectionProps = {
     title: string;          // 섹션 제목

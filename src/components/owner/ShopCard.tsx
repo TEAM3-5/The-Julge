@@ -1,13 +1,13 @@
 "use client"
 
-import Button from "@/components/e/Button";
+import Button from "@/components/common/Button";
 import Image from "next/image";
 import PostPath from "@/components/post/icon/PostPath";
 
-export type StoreCardProps = {
+export type ShopCardProps = {
     heading: string;            // 섹션 제목
     thumbnailUrl: string;       // 좌측 썸네일 이미지 URL
-    storeLabel?: string;        // 가게 이름 위에 붙는 라벨
+    shopLabel?: string;        // 가게 이름 위에 붙는 라벨
     name: string;               // 가게 이름
     locationText: string;       // 가게 위치
     description: string;        // 가게 소개 문구
@@ -15,16 +15,16 @@ export type StoreCardProps = {
     createPostingHref: string;  // 공고 등록하기 버튼 클릭시 이동할 경로
 };
 
-export function StoreCard({
+export function ShopCard({
     heading,
     thumbnailUrl,
-    storeLabel = "식당",
+    shopLabel = "식당",
     name,
     locationText,
     description,
     editHref,
     createPostingHref,
-}: StoreCardProps) {
+}: ShopCardProps) {
     return (
         <section className="flex flex-col gap-6">
             <span className="tj-h1 text-black">{heading}</span>
@@ -42,7 +42,7 @@ export function StoreCard({
                 <div className="flex flex-col justify-between pt-4 w-[346px]">
                     <div className="flex flex-col gap-3">
                         <div className="flex flex-col gap-2">
-                            <span className="tj-body1-bold text-primary">{storeLabel}</span>
+                            <span className="tj-body1-bold text-primary">{shopLabel}</span>
                             <span className="tj-h1 text-gray-black">{name}</span>
                         </div>
 

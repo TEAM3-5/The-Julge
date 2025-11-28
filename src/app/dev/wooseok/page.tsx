@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import Button from '@/components/e/Button';
-import FormInput from '@/components/e/FormInput'; // ✅ 새로 추가: 공통 FormInput 사용
+import Button from '@/components/common/Button';
+import FormInput from '@/components/common/FormInput'; // ✅ 새로 추가: 공통 FormInput 사용
 import { FormProvider, useForm } from 'react-hook-form'; // ✅ react-hook-form 훅 import
 import { zodResolver } from '@hookform/resolvers/zod'; // ✅ zodResolver import
 // import { loginSchema, type LoginFormValues } from '@/feature/auth/login/schema'; // ✅ 로그인 스키마 + 타입 import

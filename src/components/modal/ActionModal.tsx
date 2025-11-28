@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { ReactNode } from "react";
 import { ModalBase } from "./ModalBase";
-import Button from "@/components/e/Button";
+import Button from "@/components/common/Button";
 
 export type ActionModalProps = {
   isOpen: boolean;

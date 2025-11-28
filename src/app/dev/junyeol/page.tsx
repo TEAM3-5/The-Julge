@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Pagination } from "@/components/pagination/Pagination";
 import { useModal } from "@/hooks/useModal";
 import { PostCard } from "@/components/post/postCard";
-import Button from "@/components/e/Button";
+import Button from "@/components/common/Button";
 import { useToast } from "@/components/toast/toastProvider";
-import { EmptySection } from "@/components/e/EmptySection";
-import { StoreCard } from "@/components/owner/StoreCard";
+import { EmptySection } from "@/components/common/EmptySection";
+import { ShopCard } from "@/components/owner/ShopCard";
 
 export default function JunyeolPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -122,14 +122,14 @@ export default function JunyeolPage() {
       </div>
 
       <div className="py-10">
-        <StoreCard
+        <ShopCard
           heading="내 가게"
           thumbnailUrl="/images/dotori.svg"
-          storeLabel="식당"
+          shopLabel="식당"
           name="도토리 식당"
           locationText="서울시 송파구"
           description="알바하기 편한 너구리네 라면집! 라면 올려두고 끓이기만 하면 되어서 쉬운 편에 속하는 가게입니다."
-          editHref="/owner/store/edit"
+          editHref="/owner/shop/edit"
           createPostingHref="/owner/new"
         />
       </div>

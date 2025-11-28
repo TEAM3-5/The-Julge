@@ -1,30 +1,30 @@
 "use client";
 
-import { EmptySection } from "@/components/e/EmptySection";
+import { EmptySection } from "@/components/common/EmptySection";
 import { PostingList } from "@/components/owner/PostingList";
-import { StoreCard } from "@/components/owner/StoreCard";
+import { ShopCard } from "@/components/owner/ShopCard";
 
 // 가게/공고 등록 전/후 분기
-// noStore: 가게 등록 전
-// storeNoPosting: 가게 등록 후/공고 등록 전 
+// noShop: 가게 등록 전
+// ShopNoPosting: 가게 등록 후/공고 등록 전 
 // full: 가게 등록 후/공고 등록 후
-const VIEW_MODE: "noStore" | "storeNoPosting" | "full" = "full";
+const VIEW_MODE: "noShop" | "shopNoPosting" | "full" = "full";
 
-export default function StoreDetailPage() {
+export default function ShopDetailPage() {
     // 가게 등록 전
-    if (VIEW_MODE === "noStore") {
+    if (VIEW_MODE === "noShop") {
         return (
             <EmptySection
                 title="내 가게"
                 description="내 가게를 소개하고 공고도 등록해 보세요."
                 buttonLabel="가게 등록하기"
-                href="/owner/store/new"
+                href="/owner/shop/new"
             />
         );
     }
 
     // 가게 등록 후/공고 등록 전
-    if (VIEW_MODE === "storeNoPosting") {
+    if (VIEW_MODE === "shopNoPosting") {
         return (
             <div>
                 <EmptySection
