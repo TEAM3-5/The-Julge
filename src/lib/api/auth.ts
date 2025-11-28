@@ -13,7 +13,7 @@ export async function loginApi({ email, password }: LoginParams): Promise<LoginR
   });
 
   if (!res.ok) {
-    throw new Error('로그인 실패');
+    throw new Error(`로그인에 실패했습니다. (상태: ${res.status})`);
   }
 
   const data = await res.json();
