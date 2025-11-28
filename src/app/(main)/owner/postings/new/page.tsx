@@ -16,7 +16,7 @@ type CreateNoticePayload = {
   hourlyPay: number;
   startsAt: string;
   workhour: number;
-  description: string;
+  description?: string;
 };
 
 export default function NewPostingPage() {
