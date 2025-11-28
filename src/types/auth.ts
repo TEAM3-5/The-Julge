@@ -1,4 +1,7 @@
+import type { UserRole } from '@/constants/auth';
+
 export type MemberType = 'employee' | 'employer';
+export type Role = UserRole;
 
 export interface SignupUser {
   id: string;
@@ -11,6 +14,6 @@ export interface LoginResponse {
   user: {
     id: string;
     email: string;
-    type: MemberType;
+    role: Role;
   };
 }
