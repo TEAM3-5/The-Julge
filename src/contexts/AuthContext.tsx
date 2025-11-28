@@ -1,7 +1,8 @@
 'use client';
 
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, type ReactNode, useEffect } from 'react'; // ✅ useEffect 추가
 import { useAuthStore, type AuthState } from '@/stores/auth';
+import { setAuthToken } from '@/lib/api'; // ✅ 추가
 
 type AuthContextValue = {
   user: AuthState['user'];
@@ -12,7 +13,6 @@ type AuthContextValue = {
   clearAuth: AuthState['clearAuth'];
 };
 
-// Context 기본값은 실제로는 사용하지 않고, 훅에서 체크
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -25,6 +25,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isLoggedIn = !!user;
   const role: AuthContextValue['role'] = user?.role ?? 'guest';
+
+  useEffect(() => {
+    setAuthToken(token ?? null);
+  }, [token]);
 
   const value: AuthContextValue = {
     user,
