@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { setAuthToken } from '@/lib/api';
 
 type Role = 'owner' | 'member';
@@ -19,21 +20,26 @@ export type AuthState = {
 };
 
 // Zustand 스토어
-export const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  token: null,
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      token: null,
 
-  // 로그인 성공시
-  setAuth: (user, token) => {
-    // Zustand 상태 업데이트
-    set({ user, token });
-    // axios 인스턴스 header 토큰 설정
-    setAuthToken(token);
-  },
+      // 로그인 성공시
+      setAuth: (user, token) => {
+        set({ user, token });
+        setAuthToken(token); // 로그인 직후 axios 헤더 설정
+      },
 
-  // 로그아웃시
-  clearAuth: () => {
-    set({ user: null, token: null });
-    setAuthToken(null);
-  },
-}));
+      // 로그아웃시
+      clearAuth: () => {
+        set({ user: null, token: null });
+        setAuthToken(null); // 헤더 제거
+      },
+    }),
+    {
+      name: 'the-julge-auth', // localStorage key 이름 (원하는 이름으로)
+    },
+  ),
+);
