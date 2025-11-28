@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import type { UserRole } from '@/constants/auth';
+import { useAuthStore } from '@/stores/auth';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -18,11 +19,24 @@ export default function AuthGuard({
 }: AuthGuardProps) {
   const router = useRouter();
   const { isLoggedIn, role } = useAuth();
+  const [isHydrated, setIsHydrated] = useState(() => useAuthStore.persist.hasHydrated());
+
+  useEffect(() => {
+    const unsub = useAuthStore.persist.onFinishHydration(() => {
+      setIsHydrated(true);
+    });
+
+    return () => {
+      unsub();
+    };
+  }, []);
 
   const isAllowedRole = role !== 'guest' && allowedRoles.includes(role);
   const fallbackPath = role === 'owner' ? '/owner' : '/member';
 
   useEffect(() => {
+    if (!isHydrated) return;
+
     if (!isLoggedIn) {
       router.replace(redirectTo);
       return;
@@ -32,9 +46,9 @@ export default function AuthGuard({
       router.replace(fallbackPath);
       return;
     }
-  }, [isLoggedIn, isAllowedRole, redirectTo, fallbackPath, router]);
+  }, [isHydrated, isLoggedIn, isAllowedRole, redirectTo, fallbackPath, router]);
 
-  if (!isLoggedIn || !isAllowedRole) {
+  if (!isHydrated || !isLoggedIn || !isAllowedRole) {
     return null;
   }
 
