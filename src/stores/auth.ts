@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { setAuthToken } from '@/lib/api';
 
 type Role = 'owner' | 'member';
 
@@ -29,13 +28,11 @@ export const useAuthStore = create<AuthState>()(
       // 로그인 성공시
       setAuth: (user, token) => {
         set({ user, token });
-        setAuthToken(token); // 로그인 직후 axios 헤더 설정
       },
 
       // 로그아웃시
       clearAuth: () => {
         set({ user: null, token: null });
-        setAuthToken(null); // 헤더 제거
       },
     }),
     {
