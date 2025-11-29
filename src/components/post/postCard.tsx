@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import PostArrow from "./icon/PostArrow";
 import PostPath from "./icon/PostPath";
 import PostClock from "./icon/PostClock";
@@ -23,7 +23,7 @@ export type PostCardProps = {
   inactiveLabelText?: string;   // 비활성화 썸네일 문구 (지난 공고/마감 완료)
 };
 
-export function PostCard({
+export const PostCard = memo(function PostCard({
   id,
   status = "active",
   title,
@@ -65,7 +65,7 @@ export function PostCard({
           src={thumbnailUrl}
           alt={title}
           fill
-          className="object-cover"
+          className="obj  ect-cover"
         />
 
         {/* 비활성(지난 공고) 오버레이 */}
@@ -161,4 +161,4 @@ export function PostCard({
       </div>
     </article>
   );
-}
+});

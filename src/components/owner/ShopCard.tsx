@@ -7,26 +7,28 @@ import PostPath from "@/components/post/icon/PostPath";
 export type ShopCardProps = {
     heading: string;            // 섹션 제목
     thumbnailUrl: string;       // 좌측 썸네일 이미지 URL
-    shopLabel?: string;         // 가게 이름 위에 붙는 라벨
+    category?: string;         // 가게 이름 위에 붙는 라벨
     name: string;               // 가게 이름
     locationText: string;       // 가게 위치
     description: string;        // 가게 소개 문구
     editHref: string;           // 편집하기 버튼 클릭시 이동할 경로
     createPostingHref: string;  // 공고 등록하기 버튼 클릭시 이동할 경로
+    className?: string;
 };
 
 export function ShopCard({
     heading,
     thumbnailUrl,
-    shopLabel = "식당",
+    category = "식당",
     name,
     locationText,
     description,
     editHref,
     createPostingHref,
+    className,
 }: ShopCardProps) {
     return (
-        <section className="flex flex-col gap-6">
+        <section className={`flex flex-col gap-6 ${className ?? ""}`}>
             <span className="tj-h1 text-black">{heading}</span>
 
             <div className="flex flex-row justify-between bg-red-10 rounded-[12px] p-6">
@@ -42,7 +44,7 @@ export function ShopCard({
                 <div className="flex flex-col justify-between pt-4 w-[346px]">
                     <div className="flex flex-col gap-3">
                         <div className="flex flex-col gap-2">
-                            <span className="tj-body1-bold text-primary">{shopLabel}</span>
+                            <span className="tj-body1-bold text-primary">{category}</span>
                             <span className="tj-h1 text-gray-black">{name}</span>
                         </div>
 

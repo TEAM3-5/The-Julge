@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Pagination } from "@/components/pagination/Pagination";
 import { useModal } from "@/hooks/useModal";
 import { PostCard } from "@/components/post/postCard";
@@ -181,6 +181,12 @@ export default function JunyeolPage() {
     },
   ];
 
+  const sortedPosts = useMemo(() => {
+    return MOCK_POSTS.slice().sort((a, b) => {
+      return (b.id as number) - (a.id as number);
+    });
+  }, [MOCK_POSTS]);
+
   return (
     <div>
       <Pagination
@@ -249,7 +255,7 @@ export default function JunyeolPage() {
         <ShopCard
           heading="내 가게"
           thumbnailUrl="/images/dotori.svg"
-          shopLabel="식당"
+          category="식당"
           name="도토리 식당"
           locationText="서울시 송파구"
           description="알바하기 편한 너구리네 라면집! 라면 올려두고 끓이기만 하면 되어서 쉬운 편에 속하는 가게입니다."
@@ -258,7 +264,7 @@ export default function JunyeolPage() {
         />
       </div>
 
-      <div className="py-10 bg-gray-5">
+      <div className="p-30 bg-gray-5">
         <EmptySection
           title="등록한 공고"
           description="공고를 등록해 보세요."
@@ -267,8 +273,13 @@ export default function JunyeolPage() {
         />
       </div>
 
-      <div className="py-10">
-        <PostingList posts={MOCK_POSTS} />
+      <div className="py-10 mx-auto max-w-[964px]">
+        <PostingList
+          posts={sortedPosts}
+          onCardClick={(post) => {
+            console.log(`식당: ${post.id}번 ${post.title}`);
+          }}
+        />
       </div>
 
     </div>
