@@ -73,7 +73,7 @@ export default function NewProfilePage() {
         name: data.name,
         phone: data.phone, // zod transform으로 하이픈 제거된 숫자 문자열이라고 가정
         address: data.region,
-        bio: data.description?.trim() ? data.description : undefined,
+        bio: data.description,
       };
 
       await updateUser(String(user.id), payload);
