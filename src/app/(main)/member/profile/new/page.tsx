@@ -72,7 +72,7 @@ export default function NewProfilePage() {
       const payload = {
         name: data.name,
         phone: data.phone, // zod transform으로 하이픈 제거된 숫자 문자열이라고 가정
-        address: data.region,
+        address: AREAS.find((a) => a.value === data.region)?.label,
         bio: data.description,
       };
 
