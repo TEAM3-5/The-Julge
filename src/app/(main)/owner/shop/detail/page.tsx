@@ -186,14 +186,17 @@ export default function ShopDetailPage() {
 
                 setPosts(mappedPosts);
                 setViewMode("full");
-            } 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            catch (error: any) {
+            }
+            catch (error: unknown) {
                 console.error(error);
-                const msg =
-                    error?.response?.data?.message ??
-                    error?.message ??
-                    "가게 정보를 불러오는 중 오류가 발생했습니다.";
+
+                let msg = "가게 정보를 불러오는 중 오류가 발생했습니다.";
+
+                if (error && typeof error === "object" && "response" in error) {
+                    const e = error as { response?: { data?: { message?: string } } };
+                    msg = e.response?.data?.message ?? msg;
+                }
+
                 SetErrorMessage(msg);
                 setViewMode("error");
             }
