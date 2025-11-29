@@ -118,7 +118,7 @@ export default function NewProfilePage() {
 
             <div className="flex-1">
               <div className="flex flex-col gap-2">
-                <span>선호 지역*</span>
+                <label>선호 지역*</label>
                 <Controller
                   name="region"
                   control={methods.control}
