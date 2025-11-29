@@ -19,7 +19,7 @@ import { useModalContext } from '@/components/modal/ModalProvider';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { openConfirm, openCustom } = useModalContext(); // ✅ 로그인 실패 시 모달 열기용
+  const { openCustom } = useModalContext(); // ✅ 로그인 실패 시 모달 열기용
 
   const { user, setAuth } = useAuthStore((state) => ({
     user: state.user,
