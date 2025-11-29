@@ -12,7 +12,7 @@ export const profileSchema = z.object({
     }),
 
   region: z.string().min(1, '선호 지역을 선택해주세요.'),
-  description: z.string().optional(),
+  description: z.string().min(1, '소개를 입력해주세요.'),
 });
 
 export type ProfileFormValues = z.infer<typeof profileSchema>;

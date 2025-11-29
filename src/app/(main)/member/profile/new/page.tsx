@@ -12,6 +12,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { profileSchema, type ProfileFormValues } from '@/feature/profile/newProfile/schema';
 import Dropdown from '@/components/common/Dropdown';
 import { AREAS } from '@/constants/areas';
+import { useAuth } from '@/contexts/AuthContext';
+import { updateUser } from '@/api/users';
 
 export default function NewProfilePage() {
   const methods = useForm<ProfileFormValues>({
@@ -29,6 +31,8 @@ export default function NewProfilePage() {
     handleSubmit,
     formState: { isSubmitting, isValid },
   } = methods;
+
+  const { user } = useAuth();
 
   const router = useRouter();
   const { openCustom } = useModalContext();
@@ -61,8 +65,18 @@ export default function NewProfilePage() {
 
   const onSubmit = async (data: ProfileFormValues) => {
     try {
-      // TODO: 여기서 실제 프로필 생성/수정 API 연결
-      console.log('profile form submitted: ', data);
+      if (!user) {
+        console.error('로그인 정보가 없습니다. 내 프로필 등록은 로그인 후 이용 가능합니다.');
+        return;
+      }
+      const payload = {
+        name: data.name,
+        phone: data.phone, // zod transform으로 하이픈 제거된 숫자 문자열이라고 가정
+        address: data.region,
+        bio: data.description?.trim() ? data.description : undefined,
+      };
+
+      await updateUser(String(user.id), payload);
       showProfileSuccessModal();
     } catch (error) {
       console.error('프로필 등록 실패:', error);
