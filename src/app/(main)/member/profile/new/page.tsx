@@ -123,7 +123,7 @@ export default function NewProfilePage() {
 
             <div className="flex-1">
               <div className="flex flex-col gap-2">
-                <span className="tj-body1-bold">선호 지역</span>
+                <span>선호 지역*</span>
                 <Controller
                   name="region"
                   control={methods.control}
@@ -142,7 +142,7 @@ export default function NewProfilePage() {
           </div>
 
           {/* 소개 */}
-          <FormTextarea<ProfileFormValues> name="description" label="소개" placeholder="입력" />
+          <FormTextarea<ProfileFormValues> name="description" label="소개*" placeholder="입력" />
         </div>
 
         {/* 버튼 영역 */}
