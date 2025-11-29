@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
 import { isAxiosError } from 'axios';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm, useWatch, type Resolver } from 'react-hook-form';
 import Button from '@/components/common/Button';
@@ -13,8 +14,6 @@ import { AREAS } from '@/constants/areas';
 import type { ShopCreatePayload } from '@/types/shop';
 import { shopRegisterSchema, type ShopFormValues } from '@/feature/shops/schema';
 import { useToast } from '@/components/toast/toastProvider';
-import { useAuthStore } from '@/stores/auth';
-import { setAuthToken } from '@/lib/api';
 
 const CATEGORIES = [
   { value: '한식', label: '한식' },
@@ -25,11 +24,7 @@ const CATEGORIES = [
 ];
 
 export default function ShopRegisterPage() {
-  const token = useAuthStore((s) => s.token);
-
-  useEffect(() => {
-    if (token) setAuthToken(token);
-  }, [token]);
+  const router = useRouter();
 
   const {
     register,
@@ -52,8 +47,7 @@ export default function ShopRegisterPage() {
     mode: 'onChange',
   });
 
-  const [submittingError, setSubmittingError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
+  const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { showToast } = useToast();
 
@@ -63,11 +57,13 @@ export default function ShopRegisterPage() {
     [],
   );
   const imageUrl = useWatch({ control, name: 'imageUrl' });
+  useEffect(() => {
+    return () => {
+      if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
+    };
+  }, [imageObjectUrl]);
 
   const onSubmit = async (data: ShopFormValues) => {
-    setSubmittingError(null);
-    setSuccess(null);
-
     const imageUrl = data.imageUrl?.trim();
 
     const payload: ShopCreatePayload = {
@@ -82,20 +78,16 @@ export default function ShopRegisterPage() {
 
     try {
       await createShop(payload);
-      setSuccess('가게가 등록되었습니다.');
       showToast('가게가 등록되었습니다.', { variant: 'success' });
     } catch (err: unknown) {
       const status = isAxiosError(err) ? err.response?.status : undefined;
       const respData = isAxiosError(err) ? err.response?.data : undefined;
       console.error('가게 등록 실패', status, respData);
       if (status === 409) {
-        setSubmittingError('이미 등록한 가게가 있습니다.');
         showToast('이미 등록한 가게가 있습니다.', { variant: 'error' });
       } else if (status === 401) {
-        setSubmittingError('로그인이 필요합니다. 다시 로그인해주세요.');
         showToast('로그인이 필요합니다. 다시 로그인해주세요.', { variant: 'error' });
       } else {
-        setSubmittingError('가게 등록에 실패했습니다.');
         showToast('가게 등록에 실패했습니다.', { variant: 'error' });
       }
     }
@@ -105,9 +97,11 @@ export default function ShopRegisterPage() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
     const objectUrl = URL.createObjectURL(file);
     setValue('imageFile', file);
     setValue('imageUrl', objectUrl);
+    setImageObjectUrl(objectUrl);
   };
 
   return (
@@ -125,7 +119,7 @@ export default function ShopRegisterPage() {
             width={32}
             height={32}
             className="cursor-pointer"
-            onClick={() => history.back()}
+            onClick={() => router.back()}
           />
         </div>
 
@@ -238,9 +232,6 @@ export default function ShopRegisterPage() {
           )}
         </div>
 
-        {submittingError && <p className="text-sm text-red-40">{submittingError}</p>}
-        {success && <p className="text-sm text-green-20">{success}</p>}
-
         <div className="flex justify-center">
           <Button type="submit" disabled={isSubmitting} className="px-16">
             {isSubmitting ? '등록 중...' : '등록하기'}
@@ -253,19 +244,17 @@ export default function ShopRegisterPage() {
 
 type LabeledInputProps = {
   label: string;
-  placeholder?: string;
   children: React.ReactNode;
   suffix?: string;
   error?: string;
 };
 
-function LabeledInput({ label, placeholder, children, suffix, error }: LabeledInputProps) {
+function LabeledInput({ label, children, suffix, error }: LabeledInputProps) {
   return (
     <div className="flex flex-col gap-2">
       <span className="tj-body2 text-gray-black">{label}</span>
       <div className="relative">
         {children}
-        {placeholder}
         {suffix && (
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-50">
             {suffix}
