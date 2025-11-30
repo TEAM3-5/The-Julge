@@ -1,19 +1,22 @@
 'use client';
 
+import { extractDigits, formatPhoneNumber } from '@/utils/phone';
+import { ChangeEvent, ComponentPropsWithoutRef } from 'react';
 import { useFormContext, FieldError, Path, FieldValues } from 'react-hook-form';
 import Input from './Input';
-import { ComponentPropsWithoutRef } from 'react';
 
 type FormInputProps<T extends FieldValues> = {
   name: Path<T>; // RHF에서 필드 이름 (ex: "email", "password")
   label?: string;
   unit?: string;
+  numericOnly?: boolean;
 } & Omit<ComponentPropsWithoutRef<'input'>, 'name' | 'id'>;
 
 export default function FormInput<T extends FieldValues>({
   name,
   label,
   unit,
+  numericOnly,
   ...restInputProps
 }: FormInputProps<T>) {
   const {
@@ -26,12 +29,18 @@ export default function FormInput<T extends FieldValues>({
 
   // register 기반으로 RHF와 연결 (언컨트롤드 input)
   const registerResult = register(name, {
-    onChange: () => {
-      // 이 필드에 에러가 있는 상태에서 타이핑을 시작하면 에러 제거
-      if (fieldError) {
-        clearErrors(name);
+    onChange: (e) => {
+      const inputEvent = e as ChangeEvent<HTMLInputElement>;
+
+      if (numericOnly) {
+        // 숫자만 남기기 + 길이 제한
+        const digits = extractDigits(inputEvent.target.value);
+
+        // 하이픈 포맷 적용
+        inputEvent.target.value = formatPhoneNumber(digits);
       }
-      // RHF의 onChange는 register 내부에서 이미 처리됨
+
+      if (fieldError) clearErrors(name);
     },
   });
 

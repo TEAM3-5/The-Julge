@@ -6,6 +6,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { UserRole } from '@/constants/auth';
 import { useAuthStore } from '@/stores/auth';
 
+type PersistStore = {
+  hasHydrated?: () => boolean;
+  onFinishHydration?: (cb: () => void) => (() => void) | void;
+};
+
 interface AuthGuardProps {
   children: React.ReactNode;
   allowedRoles: UserRole[];
@@ -19,17 +24,17 @@ export default function AuthGuard({
 }: AuthGuardProps) {
   const router = useRouter();
   const { isLoggedIn, role } = useAuth();
-  const [isHydrated, setIsHydrated] = useState(() => useAuthStore.persist.hasHydrated());
+
+  const persist = (useAuthStore as typeof useAuthStore & { persist?: PersistStore }).persist;
+  const [isHydrated, setIsHydrated] = useState<boolean>(() => persist?.hasHydrated?.() ?? false);
 
   useEffect(() => {
-    const unsub = useAuthStore.persist.onFinishHydration(() => {
-      setIsHydrated(true);
-    });
+    const unsub = persist?.onFinishHydration?.(() => setIsHydrated(true));
 
     return () => {
-      unsub();
+      unsub?.();
     };
-  }, []);
+  }, [persist]);
 
   const isAllowedRole = role !== 'guest' && allowedRoles.includes(role);
   const fallbackPath = role === 'owner' ? '/owner' : '/member';
