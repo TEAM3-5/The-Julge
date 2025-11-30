@@ -50,7 +50,7 @@ export default function Dropdown({
 
   const baseButton =
     size === 'large'
-      ? 'h-14 w-full rounded-xl border border-gray-30 bg-white px-4 text-left text-gray-40 text-base'
+      ? 'h-14 w-full rounded-md border border-gray-30 bg-white px-4 text-left text-gray-40 text-base'
       : 'inline-flex items-center w-[120px] gap-2 rounded-md border border-gray-20 bg-gray-10 px-3 py-2 tj-body2-bold';
 
   const menuWidth = size === 'large' ? 'w-full min-w-[240px]' : 'w-[120px]';
