@@ -230,16 +230,14 @@ export default function ShopDetailPage({
                 }
 
                 // 4) 공고를 PostingItem 배열로 매핑 + 최신순 정렬
-                const mappedPosts: PostingItem[] = notices.map((notice) =>
-                    mapNoticeToPostingItem(notice, shopData),
+                const sortedNotices = [...notices].sort(
+                    (a, b) =>
+                        new Date(b.startsAt).getTime() - new Date(a.startsAt).getTime(),
                 );
 
-                const allNumericId = mappedPosts.every(
-                    (p) => !Number.isNaN(Number(p.id)),
+                const mappedPosts: PostingItem[] = sortedNotices.map((notice) =>
+                    mapNoticeToPostingItem(notice, shopData),
                 );
-                if (allNumericId) {
-                    mappedPosts.sort((a, b) => Number(b.id) - Number(a.id));
-                }
 
                 setPosts(mappedPosts);
                 setViewMode("full");
@@ -376,7 +374,6 @@ export default function ShopDetailPage({
                         onCardClick={(post) => {
                             // 공고 카드 클릭시 공고 상세 페이지로 이동
                             // API: GET /shops/{shop_id}/notices/{notice_id} 폴더 구조 수정 필요
-                            // router.push(`/owner/postings/${post.id}`)
                             router.push(`/owner/shops/${shop.id}/notices/${post.id}`)
                         }}
                     />

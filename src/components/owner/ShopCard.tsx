@@ -29,7 +29,7 @@ export function ShopCard({
 }: ShopCardProps) {
     return (
         <section className={`flex flex-col gap-6 ${className ?? ""}`}>
-            <span className="tj-h1 text-black">{heading}</span>
+            <span className="tj-h1 text-gray-black">{heading}</span>
 
             <div className="flex flex-row justify-between bg-red-10 rounded-3 p-6">
                 <div className="relative overflow-hidden rounded-xl w-[539px] h-[308px]">

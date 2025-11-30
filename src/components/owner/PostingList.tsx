@@ -112,7 +112,7 @@ export function PostingList({
             <span className="tj-h1 text-gray-black">{heading}</span>
 
             <div ref={scrollContainerRef}
-                className={`overflow-scroll max-h-[730px] overflow-y-auto [&::-webkit-scrollbar]:hidden`}
+                className={`max-h-[730px] overflow-y-auto [&::-webkit-scrollbar]:hidden`}
                 style={{
                     scrollbarWidth: 'none',
                     msOverflowStyle: 'none',
