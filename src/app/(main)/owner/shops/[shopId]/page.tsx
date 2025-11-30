@@ -126,7 +126,7 @@ export default function ShopDetailPage() {
     const [posts, setPosts] = useState<PostingItem[]>([]);
 
     // 에러 메시지
-    const [errorMessage, SetErrorMessage] = useState<string | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     /**
      * 마운트 시 / userId 변경 시
@@ -137,7 +137,7 @@ export default function ShopDetailPage() {
      */
     useEffect(() => {
         if (!userId) {
-            SetErrorMessage("로그인 정보가 없습니다.");
+            setErrorMessage("로그인 정보가 없습니다.");
             setViewMode("error");
             return;
         }
@@ -145,7 +145,7 @@ export default function ShopDetailPage() {
         async function fetchShopAndNotices() {
             try {
                 setViewMode("loading");
-                SetErrorMessage(null);
+                setErrorMessage(null);
 
                 // 1) 내 정보 조회
                 const userRes = await getUser(userId);
@@ -197,7 +197,7 @@ export default function ShopDetailPage() {
                     msg = e.response?.data?.message ?? msg;
                 }
 
-                SetErrorMessage(msg);
+                setErrorMessage(msg);
                 setViewMode("error");
             }
         }
@@ -301,8 +301,9 @@ export default function ShopDetailPage() {
                         posts={posts}
                         onCardClick={(post) => {
                             // 공고 카드 클릭시 공고 상세 페이지로 이동
-                            // API: GET /shops/{shop_id}/notices/{notice_id}
-                            // router.push(`/owner/shop/${shop.id}/notices/${post.id}`)
+                            // API: GET /shops/{shop_id}/notices/{notice_id} 폴더 구조 수정 필요
+                            // router.push(`/owner/postings/${post.id}`)
+                            router.push(`/owner/shops/${shop.id}/notices/${post.id}`)
                         }}
                     />
                 </section>
