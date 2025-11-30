@@ -7,7 +7,7 @@ import PostPath from "@/components/post/icon/PostPath";
 export type ShopCardProps = {
     heading: string;            // 섹션 제목
     thumbnailUrl: string;       // 좌측 썸네일 이미지 URL
-    category?: string;         // 가게 이름 위에 붙는 라벨
+    category?: string;          // 가게 이름 위에 붙는 라벨
     name: string;               // 가게 이름
     locationText: string;       // 가게 위치
     description: string;        // 가게 소개 문구
@@ -31,7 +31,7 @@ export function ShopCard({
         <section className={`flex flex-col gap-6 ${className ?? ""}`}>
             <span className="tj-h1 text-black">{heading}</span>
 
-            <div className="flex flex-row justify-between bg-red-10 rounded-[12px] p-6">
+            <div className="flex flex-row justify-between bg-red-10 rounded-3 p-6">
                 <div className="relative overflow-hidden rounded-xl w-[539px] h-[308px]">
                     <Image
                         src={thumbnailUrl}

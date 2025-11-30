@@ -35,7 +35,7 @@ export function PostingList({
     /**
      * 무한 스크롤에서 현재 화면에 몇 개까지 보여줄지 관리하는 상태
      * 초기값: initialCount
-     * IntersectionObsever에 의해 pageSize만큼씩 증가
+     * IntersectionObserver에 의해 pageSize만큼씩 증가
      */
     const [visibleCount, setVisibleCount] = useState(initialCount);
 
@@ -47,7 +47,7 @@ export function PostingList({
     const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
     /**
-     * 공고 카드를 더 불러올 때 트리거하는 spentiel 요소 ref
+     * 공고 카드를 더 불러올 때 트리거하는 sentinel 요소 ref
      * 이 div가 스크롤 영역의 viewport에 들어오면 다음 페이지 데이터를 로드
      */
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -64,15 +64,7 @@ export function PostingList({
     const hasMore = visibleCount < posts.length;
 
     /**
-     * post나 initialCount가 바뀔 때마다 visibleCount를 초기화
-     * 필터/정렬이 바뀌었을 때, 스크롤 상태를 리셋해주는 역할
-     */
-    // useEffect(() => {
-    //     setVisibleCount(initialCount);
-    // }, [posts, initialCount]);
-
-    /**
-     * IntersectionObsever를 이용한 무한 스크롤 핵심 로직
+     * IntersectionObserver를 이용한 무한 스크롤 핵심 로직
      * 1. root: scrollContainerRef (실제 스크롤이 발생하는 영역)
      * 2. target: loadMoreRef (리스트 제일 아래에 있는 sentinel div)
      * 3. target이 root의 viewport에 일정 비율(threshold) 이상 들어오면
@@ -111,7 +103,7 @@ export function PostingList({
 
         // 컴포넌트 unmount 시 / deps 변경 시 obsever 해제
         return () => observer.disconnect();
-    }, [hasMore, pageSize, posts.length, visibleCount]);
+    }, [hasMore, pageSize, posts.length]);
 
     if (!hasPosts) return null;
 

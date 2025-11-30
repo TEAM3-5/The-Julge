@@ -66,7 +66,7 @@ export const PostCard = memo(function PostCard({
           src={thumbnailUrl}
           alt={title}
           fill
-          className="obj  ect-cover"
+          className="object-cover"
         />
 
         {/* 비활성(지난 공고) 오버레이 */}

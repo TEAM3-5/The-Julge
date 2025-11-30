@@ -10,45 +10,6 @@ import { EmptySection } from "@/components/common/EmptySection";
 import { ShopCard } from "@/components/owner/ShopCard";
 import { PostingList, type PostingItem, } from "@/components/owner/PostingList"
 
-export default function JunyeolPage() {
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 21;
-
-  const { openConfirm, openAction } = useModal();
-
-  const { showToast } = useToast();
-
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
-    // 페이지에 맞게 데이터를 다시 불러오거나 리스트 상태 업데이트 처리
-  }
-
-  const handleReject = () => {
-    // 실제 거절 API 호출 등
-    showToast("거절했어요.",
-      {
-        variant: "error",
-      });
-  };
-
-  const handleOpenConfirmModal = () => {
-    openConfirm({
-      message: "가게 정보를 먼저 등록해 주세요.",
-      buttonText: "확인",
-      iconSrc: "/images/ModalConfirm.svg"
-    });
-  };
-
-  const handleOpenActionModal = () => {
-    openAction({
-      title: "신청을 거절하시겠어요?",
-      confirmText: "예",
-      cancelText: "아니오",
-      iconSrc: "/images/ModalAction.svg",
-      onConfirm: handleReject,
-    });
-  };
-
   const MOCK_POST = {
     title: "도토리식당",
     scheduleText: "2023-01-02 15:00-18:00 (3시간)",
@@ -180,6 +141,45 @@ export default function JunyeolPage() {
       thumbnailUrl: "/images/dotori.svg",
     },
   ];
+  
+export default function JunyeolPage() {
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 21;
+
+  const { openConfirm, openAction } = useModal();
+
+  const { showToast } = useToast();
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    // 페이지에 맞게 데이터를 다시 불러오거나 리스트 상태 업데이트 처리
+  }
+
+  const handleReject = () => {
+    // 실제 거절 API 호출 등
+    showToast("거절했어요.",
+      {
+        variant: "error",
+      });
+  };
+
+  const handleOpenConfirmModal = () => {
+    openConfirm({
+      message: "가게 정보를 먼저 등록해 주세요.",
+      buttonText: "확인",
+      iconSrc: "/images/ModalConfirm.svg"
+    });
+  };
+
+  const handleOpenActionModal = () => {
+    openAction({
+      title: "신청을 거절하시겠어요?",
+      confirmText: "예",
+      cancelText: "아니오",
+      iconSrc: "/images/ModalAction.svg",
+      onConfirm: handleReject,
+    });
+  };
 
   const sortedPosts = useMemo(() => {
     return MOCK_POSTS.slice().sort((a, b) => {

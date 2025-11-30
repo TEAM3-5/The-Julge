@@ -9,6 +9,7 @@ import { PostingList, type PostingItem, } from "@/components/owner/PostingList"
 
 import { getUser } from "@/api/users";
 import { listNoticesByShop } from "@/api/notices";
+import { useAuthStore } from "@/stores/auth";
 
 /**
  * 화면에서 사용할 뷰 상태
@@ -70,6 +71,31 @@ type ShopNoticesResponse = {
     }[];
 };
 
+// API 응답 타입을 안전하게 확인하기 위한 타입 가드
+function isUserDetailResponse(data: unknown): data is UserDetailResponse {
+    if (!data || typeof data !== "object") return false;
+
+    const obj = data as { item?: unknown };
+    if (!obj.item || typeof obj.item !== "object") return false;
+
+    const item = obj.item as { id?: unknown; email?: unknown };
+    return typeof item.id === "string" && typeof item.email === "string";
+}
+
+// 공고 목록 응답 타입 가드
+function isShopNoticesResponse(data: unknown): data is ShopNoticesResponse {
+    if (!data || typeof data !== "object") return false;
+
+    const obj = data as { items?: unknown };
+    if (!Array.isArray(obj.items)) return false;
+
+    return obj.items.every((entry) => {
+        if (!entry || typeof entry !== "object") return false;
+        const e = entry as { item?: unknown };
+        return !!e.item;
+    });
+}
+
 // 날짜 문구 변환
 function formatDateTimeShort(iso: string) {
     return iso.replace("T", " ").replace(/:\d{2}Z$/, "");
@@ -105,16 +131,16 @@ function mapNoticeToPostingItem(notice: Notice, shop: Shop): PostingItem {
         locationText: shop.address1,
         wage: notice.hourlyPay,
         wageBadgeText,
-        thumbnailUrl: shop.imageUrl,
+        thumbnailUrl: shop.imageUrl || "/images/dotori.svg",
     };
 }
 
 export default function ShopDetailPage() {
     const router = useRouter();
 
-    // auth store/contex에서 로그인 유저 id 가져오기
-    // const userId = useAuthStore((state) => state.user?.id);
-    const userId = "로그인 한 유저 Id";
+    // 로그인 유저 id 가져오기
+    const user = useAuthStore((state) => state.user);
+    const userId = user?.id ?? "";
 
     // 현재 뷰 상태(로딩 / 에러 / 가게 없음 / 가게만 있음 / 가게+공고 있음 )
     const [viewMode, setViewMode] = useState<ViewMode>("loading");
@@ -136,11 +162,7 @@ export default function ShopDetailPage() {
      * 4) 공고 개수에 따라 shopNoPosting / full 분기
      */
     useEffect(() => {
-        if (!userId) {
-            setErrorMessage("로그인 정보가 없습니다.");
-            setViewMode("error");
-            return;
-        }
+        if (!userId) return;
 
         async function fetchShopAndNotices() {
             try {
@@ -149,7 +171,10 @@ export default function ShopDetailPage() {
 
                 // 1) 내 정보 조회
                 const userRes = await getUser(userId);
-                const userData = userRes.data as UserDetailResponse;
+                const userData = userRes.data;
+                if (!isUserDetailResponse(userData)) {
+                    throw new Error("예상치 못한 사용자 응답 형식입니다.");
+                }
                 const me = userData.item;
 
                 // 2) 내 가게 정보 추출
@@ -167,8 +192,12 @@ export default function ShopDetailPage() {
 
                 // 3) 가게 공고 목록 조회
                 const noticeRes = await listNoticesByShop(shopData.id);
-                const noticesData = noticeRes.data as ShopNoticesResponse;
+                const noticesData = noticeRes.data;
+                if (!isShopNoticesResponse(noticesData)) {
+                    throw new Error("예상치 못한 공고 목록 응답 형식입니다.");
+                }
                 const notices = noticesData.items.map(({ item }) => item);
+
 
                 // 공고가 없으면 "shopNoPosting"
                 if (notices.length === 0) {
@@ -182,7 +211,12 @@ export default function ShopDetailPage() {
                     mapNoticeToPostingItem(notice, shopData),
                 );
 
-                mappedPosts.sort((a, b) => Number(b.id) - Number(a.id));
+                const allNumericId = mappedPosts.every(
+                    (p) => !Number.isNaN(Number(p.id)),
+                );
+                if (allNumericId) {
+                    mappedPosts.sort((a, b) => Number(b.id) - Number(a.id));
+                }
 
                 setPosts(mappedPosts);
                 setViewMode("full");
@@ -195,6 +229,8 @@ export default function ShopDetailPage() {
                 if (error && typeof error === "object" && "response" in error) {
                     const e = error as { response?: { data?: { message?: string } } };
                     msg = e.response?.data?.message ?? msg;
+                } else if (error instanceof Error && error.message) {
+                    msg = error.message;
                 }
 
                 setErrorMessage(msg);
@@ -206,6 +242,20 @@ export default function ShopDetailPage() {
     }, [userId]);
 
     // --------------- 뷰 렌더링 분기 --------------- //
+
+    // 로그인 안 된 경우 (userId 없음)
+    if (!userId) {
+        return (
+            <main className="w-full max-w-[964px] flex flex-col items-start">
+                <section className="py-15">
+                    <span className="tj-h1 text-gray-black">내 가게</span>
+                    <p className="mt-4 tj-body1 text-red-500">
+                        로그인 정보가 없습니다. 먼저 로그인해 주세요.
+                    </p>
+                </section>
+            </main>
+        );
+    }
 
     // 1) 로딩 상태
     if (viewMode === "loading") {
@@ -259,12 +309,12 @@ export default function ShopDetailPage() {
                 <section className="py-15">
                     <ShopCard
                         heading="내 가게"
-                        thumbnailUrl={shop.imageUrl}
+                        thumbnailUrl={shop.imageUrl || "/images/dotori.svg"}
                         category={shop.category}
                         name={shop.name}
                         locationText={shop.address1}
                         description={shop.description}
-                        editHref="/owner/shop/edit"
+                        editHref={`/owner/shops/${shop.id}/edit`}
                         createPostingHref="/owner/postings/new"
                     />
                 </section>
@@ -287,17 +337,18 @@ export default function ShopDetailPage() {
                 <section className="py-15">
                     <ShopCard
                         heading="내 가게"
-                        thumbnailUrl={shop.imageUrl}
+                        thumbnailUrl={shop.imageUrl || "/images/dotori.svg"}
                         category={shop.category}
                         name={shop.name}
                         locationText={shop.address1}
                         description={shop.description}
-                        editHref="/owner/shop/edit"
+                        editHref={`/owner/shops/${shop.id}/edit`}
                         createPostingHref="/owner/postings/new"
                     />
                 </section>
                 <section className="py-15">
                     <PostingList
+                        key={posts.length}
                         posts={posts}
                         onCardClick={(post) => {
                             // 공고 카드 클릭시 공고 상세 페이지로 이동
@@ -310,4 +361,6 @@ export default function ShopDetailPage() {
             </main>
         );
     }
+
+    return null;
 }
