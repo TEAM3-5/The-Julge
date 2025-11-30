@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'bootcamp-project-api.s3.ap-northeast-2.amazonaws.com',
+        hostname: process.env.NEXT_PUBLIC_S3_HOSTNAME!,
       },
     ],
   },
