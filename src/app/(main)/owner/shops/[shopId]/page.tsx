@@ -98,9 +98,12 @@ function isShopNoticesResponse(data: unknown): data is ShopNoticesResponse {
 
 // 날짜 문구 변환
 function formatDateTimeShort(iso: string) {
-    return iso.replace("T", " ").replace(/:\d{2}Z$/, "");
+    try {
+        return new Date(iso).toISOString().slice(0, 16).replace('T', ' ');
+    } catch {
+        return iso; // 파싱 실패 시 원본 문자열 반환
+    }
 }
-
 // Notice + Shop 데이터를 PostingList가 사용하는 PostingItem 형태로 변환
 function mapNoticeToPostingItem(notice: Notice, shop: Shop): PostingItem {
     // closed 여부에 따라 카드 status 설정
@@ -135,8 +138,13 @@ function mapNoticeToPostingItem(notice: Notice, shop: Shop): PostingItem {
     };
 }
 
-export default function ShopDetailPage() {
+export default function ShopDetailPage({
+    params,
+}: {
+    params: { shopId: string };
+}) {
     const router = useRouter();
+    const { shopId } = params;
 
     // 로그인 유저 id 가져오기
     const user = useAuthStore((state) => state.user);
@@ -163,6 +171,12 @@ export default function ShopDetailPage() {
      */
     useEffect(() => {
         if (!userId) return;
+        if (!shopId) {
+            // shopId가 없는 URL이면 바로 에러 처리
+            setErrorMessage("가게 정보가 올바르지 않습니다.");
+            setViewMode("error");
+            return;
+        }
 
         async function fetchShopAndNotices() {
             try {
@@ -188,10 +202,19 @@ export default function ShopDetailPage() {
                     return;
                 }
 
+                // URK의 shopId와 실제 내 가게 id가 다르면 에러 처리
+                if (shopData.id !== shopId) {
+                    setShop(null);
+                    setPosts([]);
+                    setErrorMessage("URL의 가게 정보와 내 가게 정보가 일치하지 않습니다.");
+                    setViewMode("error");
+                    return;
+                }
+
                 setShop(shopData);
 
                 // 3) 가게 공고 목록 조회
-                const noticeRes = await listNoticesByShop(shopData.id);
+                const noticeRes = await listNoticesByShop(shopId);
                 const noticesData = noticeRes.data;
                 if (!isShopNoticesResponse(noticesData)) {
                     throw new Error("예상치 못한 공고 목록 응답 형식입니다.");
@@ -239,7 +262,7 @@ export default function ShopDetailPage() {
         }
 
         fetchShopAndNotices();
-    }, [userId]);
+    }, [userId, shopId]);
 
     // --------------- 뷰 렌더링 분기 --------------- //
 
