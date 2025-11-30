@@ -11,6 +11,10 @@ import { getUser } from "@/api/users";
 import { listNoticesByShop } from "@/api/notices";
 import { useAuthStore } from "@/stores/auth";
 
+import type { Shop } from "@/types/shop";
+import type { Notice, NoticeListResponse } from "@/types/notice";
+import type { UserDetailResponse } from "@/types/user";
+
 /**
  * 화면에서 사용할 뷰 상태
  * loading          : API 호출 중
@@ -20,56 +24,6 @@ import { useAuthStore } from "@/stores/auth";
  * error            : API 에러 발생
  */
 type ViewMode = "loading" | "noShop" | "shopNoPosting" | "full" | "error";
-
-// /users/{user_id} 응답에서 필요한 부분 정의
-type UserDetailResponse = {
-    item: {
-        id: string;
-        email: string;
-        type: "employer" | "employee";
-        name?: string;
-        phone?: string;
-        address?: string;
-        bio?: string;
-        shop?: {
-            item: Shop;
-        } | null;
-    };
-};
-
-// shops 관련 Shop 타입
-type Shop = {
-    id: string;
-    name: string;
-    category: string;
-    address1: string;
-    address2: string;
-    description: string;
-    imageUrl: string;
-    originalHourlyPay: number;
-};
-
-// /shops/{shop_id}/notices 공고 단일 item 타입
-type Notice = {
-    id: string;
-    hourlyPay: number;
-    startsAt: string;
-    workhour: number;
-    description: string;
-    closed: boolean;
-};
-
-// /shops/{shop_id}/notices 응답 타입
-type ShopNoticesResponse = {
-    offset: number;
-    limit: number;
-    count: number;
-    hasNext: boolean;
-    items: {
-        item: Notice;
-        links: unknown[];
-    }[];
-};
 
 // API 응답 타입을 안전하게 확인하기 위한 타입 가드
 function isUserDetailResponse(data: unknown): data is UserDetailResponse {
@@ -83,7 +37,7 @@ function isUserDetailResponse(data: unknown): data is UserDetailResponse {
 }
 
 // 공고 목록 응답 타입 가드
-function isShopNoticesResponse(data: unknown): data is ShopNoticesResponse {
+function isNoticeListResponse(data: unknown): data is NoticeListResponse {
     if (!data || typeof data !== "object") return false;
 
     const obj = data as { items?: unknown };
@@ -117,11 +71,8 @@ function mapNoticeToPostingItem(notice: Notice, shop: Shop): PostingItem {
 
         if (rounded > 0) {
             wageBadgeText = `기존 시급보다 ${rounded}%`;
-        } else if (rounded === 0) {
-            wageBadgeText = "기존 시급과 동일";
-        } else {
-            wageBadgeText = `기존 시급보다 ${Math.abs(rounded)}% 낮음`;
         }
+        // 0 이하일 때는 undefined
     }
 
     const scheduleText = `${formatDateTimeShort(notice.startsAt)} (${notice.workhour}시간)`;
@@ -216,7 +167,7 @@ export default function ShopDetailPage({
                 // 3) 가게 공고 목록 조회
                 const noticeRes = await listNoticesByShop(shopId);
                 const noticesData = noticeRes.data;
-                if (!isShopNoticesResponse(noticesData)) {
+                if (!isNoticeListResponse(noticesData)) {
                     throw new Error("예상치 못한 공고 목록 응답 형식입니다.");
                 }
                 const notices = noticesData.items.map(({ item }) => item);
@@ -369,7 +320,6 @@ export default function ShopDetailPage({
                 </section>
                 <section className="py-15">
                     <PostingList
-                        key={posts.length}
                         posts={posts}
                         onCardClick={(post) => {
                             // 공고 카드 클릭시 공고 상세 페이지로 이동
