@@ -32,7 +32,7 @@ export const postingSchema = z.object({
       message: '업무 시간은 24시간을 초과할 수 없습니다.',
     }),
 
-  description: z.string().min(10, '공고 설명을 10자 이상 입력해주세요.'),
+  description: z.string().min(1, '설명을 입력해주세요.'),
 });
 
 export type PostingFormValues = z.infer<typeof postingSchema>;
