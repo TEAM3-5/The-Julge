@@ -1,29 +1,32 @@
 'use client';
 
-import Image from 'next/image';
-import { useMemo } from 'react';
-import PostArrow from './icon/PostArrow';
-import PostPath from './icon/PostPath';
-import PostClock from './icon/PostClock';
+import Image from "next/image";
+import React, { memo, useMemo } from "react";
+import PostArrow from "./icon/PostArrow";
+import PostPath from "./icon/PostPath";
+import PostClock from "./icon/PostClock";
+
 
 type PostStatus = 'active' | 'inactive';
 
 export type PostCardProps = {
-  status?: PostStatus; // 공고 상태 (기본값: active)
-  title: string; // 공고 제목
-  scheduleText: string; // 날짜/시간 텍스트
-  locationText: string; // 위치 텍스트
-  wage: number; // 시급
-  wageBadgeText?: string; // 뱃지 텍스트 (예: "기존 시급보다 100%")
-  thumbnailUrl: string; // 상단 썸네일 이미지 URL
-  onClick?: () => void; // 카드 클릭 핸들러
-  className?: string; // 페이지에서 tailwind 속성 추가
+  id?: string | number;         // 카드 id
+  status?: PostStatus;          // 공고 상태 (기본값: active)
+  title: string;                // 공고 제목
+  scheduleText: string;         // 날짜/시간 텍스트
+  locationText: string;         // 위치 텍스트
+  wage: number;                 // 시급
+  wageBadgeText?: string;       // 뱃지 텍스트 (예: "기존 시급보다 100%")
+  thumbnailUrl: string;         // 상단 썸네일 이미지 URL
+  onClick?: () => void;         // 카드 클릭 핸들러
+  className?: string;           // 페이지에서 tailwind 속성 추가
   thumbnailClassName?: string;
   inactiveLabelText?: string; // 비활성화 썸네일 문구 (지난 공고/마감 완료)
 };
 
-export function PostCard({
-  status = 'active',
+export const PostCard = memo(function PostCard({
+  id,
+  status = "active",
   title,
   scheduleText,
   locationText,
@@ -45,6 +48,7 @@ export function PostCard({
 
   return (
     <article
+      id={id ? `post-card-${id}` : undefined}
       onClick={onClick}
       className={`relative flex flex-col rounded-xl border border-gray-20 bg-white cursor-pointer
         w-full p-3 gap-3 md:p-4 md:gap-5
@@ -55,10 +59,15 @@ export function PostCard({
       <div
         className={`relative overflow-hidden rounded-xl
           w-full h-[84px] md:h-40
-          ${thumbnailClassName ?? ''}
+          ${thumbnailClassName ?? ""}
         `}
       >
-        <Image src={thumbnailUrl} alt={title} fill className="object-cover" />
+        <Image
+          src={thumbnailUrl}
+          alt={title}
+          fill
+          className="obj  ect-cover"
+        />
 
         {/* 비활성(지난 공고) 오버레이 */}
         {isInactive && (
@@ -154,4 +163,4 @@ export function PostCard({
       </div>
     </article>
   );
-}
+});
