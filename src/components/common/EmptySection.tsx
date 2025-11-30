@@ -30,7 +30,7 @@ export function EmptySection({
                 <div
                     className="
                         w-full max-w-[965px]
-                        rounded-3 border border-gray-20
+                        rounded-[12px] border border-gray-20
                         px-6 py-15
                         flex flex-col items-center justify-center gap-6
                     "
