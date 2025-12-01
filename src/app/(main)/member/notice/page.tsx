@@ -4,14 +4,27 @@ import { useEffect, useState } from 'react';
 import { listNoticesAll, type NoticesQuery } from '@/api/notices';
 import type { NoticeListResponse, NoticeListItem } from '@/types/notice';
 import { NoticeListSection, type NoticeCard } from '@/components/notice/NoticeListSection';
+import { AREAS } from '@/constants/areas';
+
+const formatStartsAt = (startsAt?: string, workhour?: number) => {
+  if (!startsAt) return '날짜/시간 정보 없음';
+  const date = new Date(startsAt);
+  if (Number.isNaN(date.getTime())) return '날짜/시간 정보 없음';
+  const dateText = date.toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+  return workhour ? `${dateText} (${workhour}시간)` : dateText;
+};
 
 const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   const notice = item.item;
   const shop = notice.shop?.item;
   const title = notice.description || shop?.name || '공고';
-  const scheduleText = notice.startsAt
-    ? `${notice.startsAt}${notice.workhour ? ` (${notice.workhour}시간)` : ''}`
-    : '날짜/시간 정보 없음';
+  const shopName = shop?.name;
+  const shopAddress = shop?.address1;
+  const scheduleText = formatStartsAt(notice.startsAt, notice.workhour);
   const locationText =
     shop?.address1 || shop?.address2 || shop?.address || notice.description || '위치 정보 없음';
   const hourlyPay = Number(notice.hourlyPay) || 0;
@@ -24,6 +37,9 @@ const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   return {
     id: notice.id,
     title,
+    shopName,
+    shopAddress,
+    startsAt: notice.startsAt,
     scheduleText,
     locationText,
     wage: hourlyPay,
@@ -38,6 +54,12 @@ export default function Notice() {
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [notices, setNotices] = useState<NoticeCard[]>([]);
+  const [featuredNotices, setFeaturedNotices] = useState<NoticeCard[]>([]);
+  const [filters, setFilters] = useState({
+    addresses: [] as string[],
+    startsAt: '',
+    hourlyPayGte: '',
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +69,24 @@ export default function Notice() {
       const res = await listNoticesAll(params);
       const data = res.data as NoticeListResponse;
       const items = Array.isArray(data.items) ? data.items : [];
-      setNotices(items.map(normalizeNotice));
+      const cards = items.map(normalizeNotice);
+
+      // 맞춤 공고: 서울시 중구 + 시작일시 오름차순, 최대 3개
+      const featured = cards
+        .filter((c) => c.shopAddress?.includes('서울시 중구'))
+        .sort((a, b) => {
+          const aDate = a.startsAt ? new Date(a.startsAt).getTime() : Infinity;
+          const bDate = b.startsAt ? new Date(b.startsAt).getTime() : Infinity;
+          return aDate - bDate;
+        })
+        .slice(0, 3);
+
+      if (sort === 'shop') {
+        cards.sort((a, b) => a.title.localeCompare(b.title, 'ko', { sensitivity: 'base' }));
+      }
+
+      setNotices(cards);
+      setFeaturedNotices(featured);
       const count = typeof data.count === 'number' ? data.count : items.length;
       const pageSize = params?.limit ?? 12;
       setTotalPages(Math.max(1, Math.ceil(count / pageSize)));
@@ -60,12 +99,34 @@ export default function Notice() {
   };
 
   useEffect(() => {
-    fetchNotices({
+    const params: NoticesQuery = {
       limit: 12,
       offset: (page - 1) * 12,
       sort: sort as NoticesQuery['sort'],
+    };
+
+    if (filters.addresses.length > 0) {
+      const first = filters.addresses[0];
+      const areaLabel = AREAS.find((a) => a.value === first)?.label;
+      if (areaLabel) params.address = areaLabel;
+    }
+    if (filters.startsAt) {
+      const dt = new Date(filters.startsAt);
+      if (!Number.isNaN(dt.getTime())) {
+        params.startsAtGte = dt.toISOString();
+      }
+    }
+    if (filters.hourlyPayGte) {
+      const pay = Number(filters.hourlyPayGte);
+      if (!Number.isNaN(pay)) {
+        params.hourlyPayGte = pay;
+      }
+    }
+
+    fetchNotices({
+      ...params,
     });
-  }, [sort, page]);
+  }, [sort, page, filters]);
 
   const handleSortChange = (value: string) => {
     setSort(value);
@@ -75,10 +136,16 @@ export default function Notice() {
   return (
     <NoticeListSection
       notices={notices}
+      featuredNotices={featuredNotices}
       loading={loading}
       error={error}
       sort={sort}
       onSortChange={handleSortChange}
+      filterValues={filters}
+      onFilterApply={(values) => {
+        setFilters(values);
+        setPage(1);
+      }}
       showFeatured
       showFilterButton
       pagination={{ currentPage: page, totalPages, onPageChange: setPage }}

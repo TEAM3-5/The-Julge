@@ -1,32 +1,31 @@
 'use client';
 
-import Image from "next/image";
-import React, { memo, useMemo } from "react";
-import PostArrow from "./icon/PostArrow";
-import PostPath from "./icon/PostPath";
-import PostClock from "./icon/PostClock";
-
+import Image from 'next/image';
+import React, { memo, useMemo, useState } from 'react';
+import PostArrow from './icon/PostArrow';
+import PostPath from './icon/PostPath';
+import PostClock from './icon/PostClock';
 
 type PostStatus = 'active' | 'inactive';
 
 export type PostCardProps = {
-  id?: string | number;         // 카드 id
-  status?: PostStatus;          // 공고 상태 (기본값: active)
-  title: string;                // 공고 제목
-  scheduleText: string;         // 날짜/시간 텍스트
-  locationText: string;         // 위치 텍스트
-  wage: number;                 // 시급
-  wageBadgeText?: string;       // 뱃지 텍스트 (예: "기존 시급보다 100%")
-  thumbnailUrl: string;         // 상단 썸네일 이미지 URL
-  onClick?: () => void;         // 카드 클릭 핸들러
-  className?: string;           // 페이지에서 tailwind 속성 추가
+  id?: string | number; // 카드 id
+  status?: PostStatus; // 공고 상태 (기본값: active)
+  title: string; // 공고 제목
+  scheduleText: string; // 날짜/시간 텍스트
+  locationText: string; // 위치 텍스트
+  wage: number; // 시급
+  wageBadgeText?: string; // 뱃지 텍스트 (예: "기존 시급보다 100%")
+  thumbnailUrl?: string; // 상단 썸네일 이미지 URL (없으면 플레이스홀더)
+  onClick?: () => void; // 카드 클릭 핸들러
+  className?: string; // 페이지에서 tailwind 속성 추가
   thumbnailClassName?: string;
   inactiveLabelText?: string; // 비활성화 썸네일 문구 (지난 공고/마감 완료)
 };
 
 export const PostCard = memo(function PostCard({
   id,
-  status = "active",
+  status = 'active',
   title,
   scheduleText,
   locationText,
@@ -39,6 +38,12 @@ export const PostCard = memo(function PostCard({
   inactiveLabelText = '지난 공고',
 }: PostCardProps) {
   const isInactive = status === 'inactive';
+  const resolvedThumbnail =
+    !thumbnailUrl || thumbnailUrl.includes('via.placeholder.com')
+      ? '/images/no-image.png'
+      : thumbnailUrl;
+
+  const [hasImageError, setHasImageError] = useState<boolean>(() => !resolvedThumbnail);
 
   // 작은 카드(모바일에서 사용) 날짜/시간 분리
   const [datePart, timePart] = useMemo(() => {
@@ -59,15 +64,22 @@ export const PostCard = memo(function PostCard({
       <div
         className={`relative overflow-hidden rounded-xl
           w-full h-[84px] md:h-40
-          ${thumbnailClassName ?? ""}
+          ${thumbnailClassName ?? ''}
         `}
       >
-        <Image
-          src={thumbnailUrl}
-          alt={title}
-          fill
-          className="object-cover"
-        />
+        {hasImageError ? (
+          <div className="flex h-full w-full items-center justify-center bg-gray-10 text-gray-40">
+            <span className="tj-body2">이미지 없음</span>
+          </div>
+        ) : (
+          <Image
+            src={resolvedThumbnail}
+            alt={title}
+            fill
+            className="object-cover"
+            onError={() => setHasImageError(true)}
+          />
+        )}
 
         {/* 비활성(지난 공고) 오버레이 */}
         {isInactive && (

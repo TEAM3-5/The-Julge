@@ -9,10 +9,15 @@ import { PostCard } from '@/components/post/postCard';
 import Dropdown from '@/components/common/Dropdown';
 import Button from '@/components/common/Button';
 import { Pagination } from '@/components/pagination/Pagination';
+import { useState } from 'react';
+import Filter from '@/components/common/Filter';
 
 export type NoticeCard = {
   id: string | number;
   title: string;
+  shopName?: string;
+  shopAddress?: string;
+  startsAt?: string;
   scheduleText: string;
   locationText: string;
   wage: number;
@@ -29,10 +34,21 @@ type PaginationProps = {
 
 type NoticeListSectionProps = {
   notices: NoticeCard[];
+  featuredNotices?: NoticeCard[];
   loading?: boolean;
   error?: string | null;
   sort?: string;
   onSortChange?: (value: string) => void;
+  filterValues?: {
+    addresses: string[];
+    startsAt: string;
+    hourlyPayGte: string;
+  };
+  onFilterApply?: (values: {
+    addresses: string[];
+    startsAt: string;
+    hourlyPayGte: string;
+  }) => void;
   showFeatured?: boolean;
   showFilterButton?: boolean;
   pagination?: PaginationProps;
@@ -42,14 +58,31 @@ const swiperConfig: SwiperOptions = {
   spaceBetween: 14,
   slidesPerView: 1.2,
   loop: true,
-  pagination: {
-    clickable: true,
-  },
+  slidesOffsetBefore: 24,
+  slidesOffsetAfter: 24,
+  pagination: false,
   modules: [SwiperPagination],
   breakpoints: {
-    640: { slidesPerView: 2, spaceBetween: 16 },
-    900: { slidesPerView: 3, spaceBetween: 20 },
-    1200: { slidesPerView: 3, spaceBetween: 24 },
+    500: {
+      slidesPerView: 2.2,
+      spaceBetween: 8,
+      slidesOffsetBefore: 24,
+      slidesOffsetAfter: 24,
+    },
+    768: {
+      slidesPerView: 2.4,
+      spaceBetween: 14,
+      slidesOffsetBefore: 24,
+      slidesOffsetAfter: 24,
+    },
+    960: {
+      slidesPerView: 3,
+      spaceBetween: 14,
+      allowTouchMove: false,
+      loop: false,
+      slidesOffsetBefore: 0,
+      slidesOffsetAfter: 0,
+    },
   },
 };
 
@@ -62,34 +95,34 @@ const SORT_OPTIONS = [
 
 export function NoticeListSection({
   notices,
+  featuredNotices,
   loading,
   error,
   sort,
   onSortChange,
+  filterValues,
+  onFilterApply,
   showFeatured = false,
   showFilterButton = false,
   pagination,
 }: NoticeListSectionProps) {
-  const featured = showFeatured ? notices.slice(0, 4) : [];
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const featured = showFeatured
+    ? featuredNotices && featuredNotices.length > 0
+      ? featuredNotices
+      : notices.slice(0, 4)
+    : [];
   const list = notices;
 
   return (
     <div className="w-full">
-      {/* 맞춤 공고 로그인 돼어(/member 경로) 있거나, 맞춤 공고가 1개 이상일 때 보이게 */}
+      {/* 맞춤 공고 로그인 되어(/member 경로) 있거나, 맞춤 공고가 1개 이상일 때 보이게 */}
       {showFeatured && featured.length > 0 && (
         <section className="bg-red-10 py-10 w-full">
-          <div className="mx-auto flex max-w-[964px] flex-col gap-6 px-6">
-            <h2 className="tj-h2 text-gray-black">맞춤 공고</h2>
-            <Swiper
-              {...swiperConfig}
-              className="w-full custom-swiper"
-              style={{
-                ['--swiper-theme-color' as string]: '#ff8d72',
-                ['--swiper-pagination-color' as string]: '#ff8d72',
-                ['--swiper-pagination-bullet-inactive-color' as string]: '#cbc9cf',
-                ['--swiper-pagination-bullet-inactive-opacity' as string]: '1',
-              }}
-            >
+          <div className="mx-auto flex max-w-[964px] flex-col gap-6">
+            <h2 className="tj-h2 text-gray-black px-6">맞춤 공고</h2>
+            <Swiper {...swiperConfig} className="w-full max-w-[920px] custom-swiper px-6">
               {featured.map((post) => (
                 <SwiperSlide key={post.id} className="pb-4">
                   <PostCard status={post.status ?? 'active'} {...post} />
@@ -104,7 +137,7 @@ export function NoticeListSection({
         <div className="mx-auto flex max-w-[964px] flex-col gap-6 px-6">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
             <h2 className="tj-h2 text-gray-black">전체 공고</h2>
-            <div className="flex items-center gap-2">
+            <div className="relative flex items-center gap-2">
               {onSortChange && (
                 <Dropdown
                   size="compact"
@@ -114,14 +147,42 @@ export function NoticeListSection({
                 />
               )}
               {showFilterButton && (
-                <Button size="medium" type="button" className="bg-red-30">
+                <Button
+                  size="medium"
+                  type="button"
+                  className="bg-red-30"
+                  onClick={() => setIsFilterOpen(true)}
+                >
                   상세 필터
                 </Button>
+              )}
+
+              {isFilterOpen && (
+                <>
+                  {/* 간단한 외부 클릭 닫기용 오버레이 */}
+                  <div
+                    className="fixed inset-0 z-20"
+                    onClick={() => setIsFilterOpen(false)}
+                    aria-hidden
+                  />
+                  <div className="absolute right-0 top-full z-30 mt-2 w-[420px] max-w-[90vw]">
+                    <Filter
+                      onClose={() => setIsFilterOpen(false)}
+                      initialAddresses={filterValues?.addresses}
+                      initialStartsAt={filterValues?.startsAt}
+                      initialHourlyPayGte={filterValues?.hourlyPayGte}
+                      onApply={(values) => {
+                        onFilterApply?.(values);
+                        setIsFilterOpen(false);
+                      }}
+                    />
+                  </div>
+                </>
               )}
             </div>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-[8px] md:gap-[14px] sm:grid-cols-2 lg:grid-cols-3">
             {list.map((post) => (
               <PostCard key={post.id} status={post.status ?? 'active'} {...post} />
             ))}
@@ -144,6 +205,7 @@ export function NoticeListSection({
           )}
         </div>
       </section>
+
     </div>
   );
 }

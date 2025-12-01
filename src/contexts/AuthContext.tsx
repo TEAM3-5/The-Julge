@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, type ReactNode, useEffect } from 'react'; // ✅ useEffect 추가
+import { createContext, useContext, type ReactNode, useEffect } from 'react';
 import { useAuthStore, type AuthState } from '@/stores/auth';
 import { setAuthToken } from '@/lib/api'; // ✅ 추가
 
