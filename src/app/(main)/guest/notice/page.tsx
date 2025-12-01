@@ -6,8 +6,6 @@ import type { NoticeListResponse, NoticeListItem } from '@/types/notice';
 import { NoticeListSection, type NoticeCard } from '@/components/notice/NoticeListSection';
 import { AREAS } from '@/constants/areas';
 
-const PAGE_SIZE = 12;
-
 const formatStartsAt = (startsAt?: string, workhour?: number) => {
   if (!startsAt) return '날짜/시간 정보 없음';
   const date = new Date(startsAt);
@@ -25,6 +23,7 @@ const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   const shop = notice.shop?.item;
   const title = notice.description || shop?.name || '공고';
   const shopAddress = shop?.address1;
+  const shopId = shop?.id ? String(shop.id) : undefined;
   const scheduleText = formatStartsAt(notice.startsAt, notice.workhour);
   const locationText =
     shop?.address1 || shop?.address2 || shop?.address || notice.description || '위치 정보 없음';
@@ -39,6 +38,7 @@ const normalizeNotice = (item: NoticeListItem): NoticeCard => {
     id: notice.id,
     title,
     shopAddress,
+    shopId,
     startsAt: notice.startsAt,
     scheduleText,
     locationText,
@@ -53,6 +53,7 @@ export default function Notice() {
   const [sort, setSort] = useState<string>('time');
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(6);
   const [notices, setNotices] = useState<NoticeCard[]>([]);
   const [featuredNotices, setFeaturedNotices] = useState<NoticeCard[]>([]);
   const [filters, setFilters] = useState({
@@ -70,23 +71,15 @@ export default function Notice() {
       const data = res.data as NoticeListResponse;
       const items = Array.isArray(data.items) ? data.items : [];
       const cards = items.map(normalizeNotice);
-      const featured = cards
-        .filter((c) => c.shopAddress?.includes('서울시 중구'))
-        .sort((a, b) => {
-          const aDate = a.startsAt ? new Date(a.startsAt).getTime() : Infinity;
-          const bDate = b.startsAt ? new Date(b.startsAt).getTime() : Infinity;
-          return aDate - bDate;
-        })
-        .slice(0, 3);
 
       if (sort === 'shop') {
         cards.sort((a, b) => a.title.localeCompare(b.title, 'ko', { sensitivity: 'base' }));
       }
 
       setNotices(cards);
-      setFeaturedNotices(featured);
       const count = typeof data.count === 'number' ? data.count : items.length;
-      setTotalPages(Math.max(1, Math.ceil(count / PAGE_SIZE)));
+      const size = params?.limit ?? pageSize;
+      setTotalPages(Math.max(1, Math.ceil(count / size)));
     } catch (err) {
       setError('공고를 불러오지 못했습니다.');
       console.error(err);
@@ -95,10 +88,28 @@ export default function Notice() {
     }
   };
 
+  // 화면 크기에 따라 페이지당 개수 설정 (모바일 6개, PC 9개)
+  useEffect(() => {
+    const updatePageSize = () => {
+      const mobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
+      const nextSize = mobile ? 6 : 9;
+      setPageSize((prev) => {
+        if (prev !== nextSize) {
+          setPage(1);
+        }
+        return nextSize;
+      });
+    };
+
+    updatePageSize();
+    window.addEventListener('resize', updatePageSize);
+    return () => window.removeEventListener('resize', updatePageSize);
+  }, []);
+
   useEffect(() => {
     const params: NoticesQuery = {
-      limit: PAGE_SIZE,
-      offset: (page - 1) * PAGE_SIZE,
+      limit: pageSize,
+      offset: (page - 1) * pageSize,
       sort: sort as NoticesQuery['sort'],
     };
 
@@ -123,7 +134,31 @@ export default function Notice() {
     fetchNotices({
       ...params,
     });
-  }, [sort, page, filters]);
+  }, [sort, page, filters, pageSize]);
+
+  // 추천 공고는 필터와 무관하게 최초 한번 로드
+  useEffect(() => {
+    const fetchFeatured = async () => {
+      try {
+        const res = await listNoticesAll({ limit: 20, sort: 'time' });
+        const data = res.data as NoticeListResponse;
+        const items = Array.isArray(data.items) ? data.items : [];
+        const cards = items.map(normalizeNotice);
+        const featured = cards
+          .filter((c) => c.shopAddress?.includes('서울시 중구'))
+          .sort((a, b) => {
+            const aDate = a.startsAt ? new Date(a.startsAt).getTime() : Infinity;
+            const bDate = b.startsAt ? new Date(b.startsAt).getTime() : Infinity;
+            return aDate - bDate;
+          })
+          .slice(0, 3);
+        setFeaturedNotices(featured);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchFeatured();
+  }, []);
 
   // 정렬 변경 시 페이지를 1로 리셋
   const handleSortChange = (value: string) => {
@@ -139,6 +174,7 @@ export default function Notice() {
       error={error}
       sort={sort}
       onSortChange={handleSortChange}
+      detailPathPrefix="/guest/notice"
       filterValues={filters}
       onFilterApply={(values) => {
         setFilters(values);

@@ -20,7 +20,7 @@ interface AuthGuardProps {
 export default function AuthGuard({
   children,
   allowedRoles,
-  redirectTo = '/login',
+  redirectTo = '/guest',
 }: AuthGuardProps) {
   const router = useRouter();
   const { isLoggedIn, role } = useAuth();
