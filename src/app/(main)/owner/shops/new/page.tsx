@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { ReactNode, useMemo, useRef, useState } from 'react';
 import { isAxiosError } from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -148,6 +148,7 @@ export default function ShopNewPage() {
       });
     } finally {
       setIsUploadingImage(false);
+      e.target.value = '';
     }
   };
 
@@ -294,7 +295,7 @@ export default function ShopNewPage() {
 
 type LabeledInputProps = {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
   suffix?: string;
   error?: string;
 };
