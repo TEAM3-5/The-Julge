@@ -320,7 +320,7 @@ export default function ShopDetailPage() {
     // 가게 + 공고 모두 있음
     if (viewMode === "full") {
         return (
-            <main className="w-full flex flex-col">
+            <main className="w-full flex flex-col items-center">
                 <div className="w-full bg-white flex justify-center">
                     <section className="py-15 w-full max-w-[964px] flex flex-col">
                         <ShopCard
@@ -336,12 +336,12 @@ export default function ShopDetailPage() {
                         />
                     </section>
                 </div>
-                <div className="w-full">
+                <div className="w-full max-w-[964px] flex justify-center">
                     <section className="w-full pt-15 pb-30">
                         <PostingList
                             posts={posts}
                             onCardClick={(post) => {
-                                router.push(`/owner/shops/${shop.id}/notices/${post.id}`);
+                                router.push(`/owner/postings/${post.id}`);
                             }}
                         />
                     </section>
