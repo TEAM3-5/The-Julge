@@ -11,6 +11,9 @@ import { useRouter } from 'next/navigation';
 import { FormProvider, useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { postingSchema, type PostingFormValues } from '@/feature/postings/newPosting/schema';
+import { useEffect, useState } from 'react';
+import { useAuthStore } from '@/stores/auth';
+import { getUser } from '@/api/users';
 
 type CreateNoticePayload = {
   hourlyPay: number;
@@ -20,6 +23,36 @@ type CreateNoticePayload = {
 };
 
 export default function NewPostingPage() {
+  const router = useRouter();
+  const { openCustom } = useModalContext();
+  const userId = useAuthStore((state) => state.user?.id);
+
+  const [shopId, setShopId] = useState<string | null>(null);
+  const [shopError, setShopError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    async function fetchShop(id: string) {
+      try {
+        setShopError(null);
+        const res = await getUser(id);
+        const shopItem = res.data?.item?.shop?.item;
+
+        if (!shopItem?.id) {
+          setShopError('등록된 가게가 없습니다. 먼저 가게를 등록해 주세요.');
+          return;
+        }
+        setShopId(shopItem.id);
+      } catch (err) {
+        console.error(err);
+        setShopError('가게 정보를 불러오지 못했습니다.');
+      }
+    }
+
+    fetchShop(userId);
+  }, [userId, setShopError, setShopId]);
+
   const methods = useForm<PostingFormValues>({
     resolver: zodResolver(postingSchema) as Resolver<PostingFormValues>,
     mode: 'onChange',
@@ -33,12 +66,6 @@ export default function NewPostingPage() {
     handleSubmit,
     formState: { isSubmitting, isValid },
   } = methods;
-
-  const router = useRouter();
-  const { openCustom } = useModalContext();
-
-  // TODO: 실제 구현에 맞게 사장님 가게 ID를 가져오기
-  const shopId = 'SHOP_ID_PLACEHOLDER';
 
   const showPostingSuccessModal = () => {
     openCustom((close) => (
@@ -67,14 +94,16 @@ export default function NewPostingPage() {
   };
 
   const onSubmit = async (data: PostingFormValues) => {
-    if (!shopId) {
+    if (!userId || !shopId) {
       console.error('shopId가 없습니다. shopId를 가져오는 로직을 확인해주세요.');
+      setShopError('가게 정보를 불러오지 못해 공고를 등록할 수 없습니다.');
       return;
     }
 
     const payload: CreateNoticePayload = {
       hourlyPay: data.hourlyPay,
-      startsAt: data.startsAt,
+      // date input 값(YYYY-MM-DD)을 RFC3339 형태로 변환
+      startsAt: new Date(data.startsAt).toISOString(),
       workhour: data.workhour,
       description: data.description,
     };
@@ -146,9 +175,15 @@ export default function NewPostingPage() {
           />
         </div>
 
+        {(!userId || shopError) && (
+          <p className="text-sm text-red-500">
+            {shopError ?? '로그인 정보가 없어 가게를 찾을 수 없습니다.'}
+          </p>
+        )}
+
         {/* 버튼 영역 */}
         <div className="flex justify-center">
-          <Button type="submit" disabled={!isValid || isSubmitting}>
+          <Button type="submit" disabled={!isValid || isSubmitting || !userId || !shopId}>
             {isSubmitting ? '등록 중...' : '등록하기'}
           </Button>
         </div>
