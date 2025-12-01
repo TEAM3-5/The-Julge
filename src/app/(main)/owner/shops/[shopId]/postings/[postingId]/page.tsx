@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Image from "next/image";
+import { useEffect, useMemo, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 
-import Button from "@/components/common/Button";
-import PostClock from "@/components/post/icon/PostClock";
-import PostPath from "@/components/post/icon/PostPath";
+import Button from '@/components/common/Button';
+import PostClock from '@/components/post/icon/PostClock';
+import PostPath from '@/components/post/icon/PostPath';
 
-import { Table } from "@/components/common/Table";
-import { Pagination } from "@/components/pagination/Pagination";
+import { Table } from '@/components/common/Table';
+import { Pagination } from '@/components/pagination/Pagination';
 
-import { useAuthStore } from "@/stores/auth";
-import { listNoticesAll } from "@/api/notices";
-import { listApplicationsByNotice } from "@/api/applications";
-import { useModalContext } from "@/components/modal/ModalProvider";
-import { useToast } from "@/components/toast/toastProvider";
-import PostArrow from "@/components/post/icon/PostArrow";
+import { useAuthStore } from '@/stores/auth';
+import { listNoticesAll } from '@/api/notices';
+import { listApplicationsByNotice } from '@/api/applications';
+import { useModalContext } from '@/components/modal/ModalProvider';
+import { useToast } from '@/components/toast/toastProvider';
+import PostArrow from '@/components/post/icon/PostArrow';
 
 // 타입 정의
 
@@ -60,7 +60,7 @@ type ApplicationUserItem = {
 
 type ApplicationItem = {
   id: string;
-  status: "pending" | "approved" | "rejected";
+  status: 'pending' | 'approved' | 'rejected';
   user?: { item?: ApplicationUserItem | null } | null;
 };
 
@@ -72,7 +72,7 @@ type ApplicationListData = {
   items?: ApplicationListItem[];
 };
 
-type ApplicantRowStatus = "pending" | "approved" | "rejected";  // 대기(거절하기, 승인하기 버튼) / 승인완료 / 거절 분기
+type ApplicantRowStatus = 'pending' | 'approved' | 'rejected'; // 대기(거절하기, 승인하기 버튼) / 승인완료 / 거절 분기
 
 type ApplicantRow = {
   id: string;
@@ -87,10 +87,10 @@ function formatDateTime(iso: string) {
   try {
     const d = new Date(iso);
     const yyyy = d.getFullYear();
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const dd = String(d.getDate()).padStart(2, "0");
-    const hh = String(d.getHours()).padStart(2, "0");
-    const min = String(d.getMinutes()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
   } catch {
     return iso;
@@ -99,10 +99,10 @@ function formatDateTime(iso: string) {
 
 // 시급 변동량 계산 함수
 function calcHourlyDiffBadge(hourlyPay: number, originalHourlyPay: number) {
-  if (!originalHourlyPay || originalHourlyPay <= 0) return "";
+  if (!originalHourlyPay || originalHourlyPay <= 0) return '';
   const ratio = (hourlyPay / originalHourlyPay - 1) * 100;
   const rounded = Math.round(ratio);
-  if (rounded <= 0) return "";
+  if (rounded <= 0) return '';
   return `기존 시급보다 ${rounded}%`;
 }
 
@@ -111,11 +111,12 @@ function calcHourlyDiffBadge(hourlyPay: number, originalHourlyPay: number) {
  */
 export default function OwnerPostingDetailPage() {
   const router = useRouter();
-  const { id: rawId } = useParams<{ id: string }>();
-  const noticeId = Array.isArray(rawId) ? rawId[0] : rawId;
+  const params = useParams() as { postingId?: string | string[]; shopId?: string | string[] };
+  const rawNoticeId = params.postingId;
+  const postingId = Array.isArray(rawNoticeId) ? rawNoticeId[0] : (rawNoticeId ?? '');
 
   const user = useAuthStore((state) => state.user);
-  const userId = user?.id ?? "";
+  const userId = user?.id ?? '';
 
   const { openAction } = useModalContext();
   const { showToast } = useToast();
@@ -134,8 +135,8 @@ export default function OwnerPostingDetailPage() {
 
   useEffect(() => {
     if (!userId) return;
-    if (!noticeId) {
-      setErrorMessage("공고 정보가 올바르지 않습니다.");
+    if (!postingId) {
+      setErrorMessage('공고 정보가 올바르지 않습니다.');
       setIsLoading(false);
       return;
     }
@@ -149,9 +150,9 @@ export default function OwnerPostingDetailPage() {
         const noticeRes = await listNoticesAll();
         const data = noticeRes.data as unknown as NoticeListData;
 
-        const target = data.items?.find((entry) => entry.item?.id === noticeId);
+        const target = data.items?.find((entry) => entry.item?.id === postingId);
         if (!target) {
-          throw new Error("해당 공고를 찾을 수 없습니다.");
+          throw new Error('해당 공고를 찾을 수 없습니다.');
         }
 
         const n = target.item;
@@ -171,29 +172,25 @@ export default function OwnerPostingDetailPage() {
 
             return {
               id: app.id,
-              name: userItem?.name ?? "이름 없음",
-              intro: userItem?.bio ?? "자기소개가 없습니다.",
-              phone: userItem?.phone ?? "전화번호 미입력",
-              status: app.status ?? "pending",
+              name: userItem?.name ?? '이름 없음',
+              intro: userItem?.bio ?? '자기소개가 없습니다.',
+              phone: userItem?.phone ?? '전화번호 미입력',
+              status: app.status ?? 'pending',
             };
           }) ?? [];
 
         setApplicants(mapped);
       } catch (error: unknown) {
         console.error(error);
-        let msg = "공고 정보를 불러오는 중 오류가 발생했습니다.";
+        let msg = '공고 정보를 불러오는 중 오류가 발생했습니다.';
 
-        if (
-          typeof error === "object" &&
-          error !== null &&
-          "response" in error
-        ) {
+        if (typeof error === 'object' && error !== null && 'response' in error) {
           const errWithResponse = error as {
             response?: { data?: { message?: string } };
           };
 
           const apiMessage = errWithResponse.response?.data?.message;
-          if (typeof apiMessage === "string" && apiMessage.length > 0) {
+          if (typeof apiMessage === 'string' && apiMessage.length > 0) {
             msg = apiMessage;
           }
         } else if (error instanceof Error && error.message) {
@@ -206,7 +203,7 @@ export default function OwnerPostingDetailPage() {
     }
 
     fetchData();
-  }, [userId, noticeId]);
+  }, [userId, postingId]);
 
   /* ------------------------- 테이블 페이징 ------------------------- */
 
@@ -228,18 +225,16 @@ export default function OwnerPostingDetailPage() {
 
   const handleApprove = (id: string) => {
     openAction({
-      title: "신청을 승인하시겠어요?",
-      confirmText: "예",
-      cancelText: "아니오",
+      title: '신청을 승인하시겠어요?',
+      confirmText: '예',
+      cancelText: '아니오',
       onConfirm: () => {
         // TODO: 승인 API 연동
         setApplicants((prev) =>
-          prev.map((row) =>
-            row.id === id ? { ...row, status: "approved" } : row,
-          ),
+          prev.map((row) => (row.id === id ? { ...row, status: 'approved' } : row)),
         );
-        showToast("신청이 승인되었습니다.", {
-          variant: "success",
+        showToast('신청이 승인되었습니다.', {
+          variant: 'success',
           duration: 2000,
         });
       },
@@ -248,18 +243,16 @@ export default function OwnerPostingDetailPage() {
 
   const handleReject = (id: string) => {
     openAction({
-      title: "신청을 거절하시겠어요?",
-      confirmText: "예",
-      cancelText: "아니오",
+      title: '신청을 거절하시겠어요?',
+      confirmText: '예',
+      cancelText: '아니오',
       onConfirm: () => {
         // TODO: 거절/취소 API 연동
         setApplicants((prev) =>
-          prev.map((row) =>
-            row.id === id ? { ...row, status: "rejected" } : row,
-          ),
+          prev.map((row) => (row.id === id ? { ...row, status: 'rejected' } : row)),
         );
-        showToast("신청이 거절되었습니다.", {
-          variant: "error",
+        showToast('신청이 거절되었습니다.', {
+          variant: 'error',
           duration: 2000,
         });
       },
@@ -286,9 +279,7 @@ export default function OwnerPostingDetailPage() {
       <main className="w-full bg-white flex flex-col items-center">
         <section className="py-15 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">공고 상세</span>
-          <p className="mt-4 tj-body1 text-gray-50">
-            공고 정보를 불러오는 중입니다...
-          </p>
+          <p className="mt-4 tj-body1 text-gray-50">공고 정보를 불러오는 중입니다...</p>
         </section>
       </main>
     );
@@ -300,14 +291,10 @@ export default function OwnerPostingDetailPage() {
         <section className="py-15 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">공고 상세</span>
           <p className="mt-4 tj-body1 text-red-500">
-            {errorMessage ?? "공고 정보를 불러오는 중 문제가 발생했습니다."}
+            {errorMessage ?? '공고 정보를 불러오는 중 문제가 발생했습니다.'}
           </p>
           <div className="mt-6">
-            <Button
-              type="button"
-              size="medium"
-              onClick={() => router.push("/owner")}
-            >
+            <Button type="button" size="medium" onClick={() => router.push('/owner')}>
               내 가게로 돌아가기
             </Button>
           </div>
@@ -318,25 +305,16 @@ export default function OwnerPostingDetailPage() {
 
   /* ------------------------- 실제 화면 ------------------------- */
 
-  const fullAddress = shop.address2
-    ? `${shop.address1} ${shop.address2}`
-    : shop.address1;
+  const fullAddress = shop.address2 ? `${shop.address1} ${shop.address2}` : shop.address1;
 
-  const startsAtText = `${formatDateTime(
-    notice.startsAt,
-  )} (${notice.workhour}시간)`;
+  const startsAtText = `${formatDateTime(notice.startsAt)} (${notice.workhour}시간)`;
 
-  const wageDiffBadge = calcHourlyDiffBadge(
-    notice.hourlyPay,
-    shop.originalHourlyPay,
-  );
+  const wageDiffBadge = calcHourlyDiffBadge(notice.hourlyPay, shop.originalHourlyPay);
 
   return (
     <main className="w-full flex flex-col items-center">
-
       {/* 가게 공고 상세 카드 */}
       <section className="w-full max-w-[964px] py-15 flex flex-col gap-6">
-
         {/* 가게 카테고리/이름 */}
         <div className="flex flex-col gap-2">
           <span className="tj-body1-bold text-primary">{shop.category}</span>
@@ -346,24 +324,17 @@ export default function OwnerPostingDetailPage() {
         {/* 가게 상세 카드 */}
         <section className="rounded-[12px] border border-gray-20 bg-white px-6 py-6 flex gap-6">
           <div className="relative w-[539px] h-[308px] overflow-hidden rounded-[12px]">
-            <Image
-              src={shop.imageUrl}
-              alt={shop.name}
-              fill
-              className="object-cover"
-              unoptimized
-            />
+            <Image src={shop.imageUrl} alt={shop.name} fill className="object-cover" unoptimized />
           </div>
 
           <div className="flex flex-col justify-between w-[346px] pt-4">
             <div className="flex flex-col gap-3">
-
               <div className="flex flex-col gap-2">
                 <span className="tj-body1-bold text-primary">시급</span>
 
                 <div className="flex flex-row gap-2 items-center">
                   <p className="tj-h1 text-gray-black">
-                    {notice.hourlyPay.toLocaleString("ko-KR")}원
+                    {notice.hourlyPay.toLocaleString('ko-KR')}원
                   </p>
 
                   {!wageDiffBadge || (
@@ -375,7 +346,6 @@ export default function OwnerPostingDetailPage() {
                 </div>
               </div>
 
-
               <div className="flex items-center gap-1.5 tj-body1 text-gray-50">
                 <PostClock className="w-5 h-5 text-red-30" />
                 <span>{startsAtText}</span>
@@ -386,9 +356,7 @@ export default function OwnerPostingDetailPage() {
                 <span>{fullAddress}</span>
               </div>
 
-              <p className="tj-body1 text-gray-black">
-                {shop.description}
-              </p>
+              <p className="tj-body1 text-gray-black">{shop.description}</p>
             </div>
 
             <div className="flex justify-end">
@@ -396,7 +364,7 @@ export default function OwnerPostingDetailPage() {
                 type="button"
                 variant="outline"
                 size="medium"
-                href={`/owner/shops/${shop.id}/edit`}
+                href={`/owner/shops/${shop.id}/postings/${postingId}/edit`}
                 className="w-full min-w-[180px]"
               >
                 공고 편집하기
@@ -408,9 +376,7 @@ export default function OwnerPostingDetailPage() {
         {/* 공고 설명 카드 */}
         <div className="rounded-[12px] bg-gray-10 p-8 flex flex-col gap-3">
           <p className="tj-body1-bold text-gray-black">공고 설명</p>
-          <p className="tj-body1 text-gray-black whitespace-pre-line">
-            {notice.description}
-          </p>
+          <p className="tj-body1 text-gray-black whitespace-pre-line">{notice.description}</p>
         </div>
       </section>
 
@@ -419,31 +385,43 @@ export default function OwnerPostingDetailPage() {
         <p className="tj-h1 text-black">신청자 목록</p>
 
         {applicants.length === 0 ? (
-          <p className="tj-body1 text-gray-50">
-            아직 이 공고에 신청한 사람이 없습니다.
-          </p>
+          <p className="tj-body1 text-gray-50">아직 이 공고에 신청한 사람이 없습니다.</p>
         ) : (
           <>
             <div className="flex flex-col justify-center">
               <Table>
                 <Table.Head>
                   <Table.Row>
-                    <Table.HeaderCell className="w-[228px] bg-red-10 px-[12px] py-[20px]">신청자</Table.HeaderCell>
-                    <Table.HeaderCell className="w-[300px] bg-red-10 px-[12px] py-[20px]">소개</Table.HeaderCell>
-                    <Table.HeaderCell className="w-[200px] bg-red-10 px-[12px] py-[20px]">전화번호</Table.HeaderCell>
-                    <Table.HeaderCell className="text-left bg-red-10 px-[12px] py-[20px]">상태</Table.HeaderCell>
+                    <Table.HeaderCell className="w-[228px] bg-red-10 px-[12px] py-[20px]">
+                      신청자
+                    </Table.HeaderCell>
+                    <Table.HeaderCell className="w-[300px] bg-red-10 px-[12px] py-[20px]">
+                      소개
+                    </Table.HeaderCell>
+                    <Table.HeaderCell className="w-[200px] bg-red-10 px-[12px] py-[20px]">
+                      전화번호
+                    </Table.HeaderCell>
+                    <Table.HeaderCell className="text-left bg-red-10 px-[12px] py-[20px]">
+                      상태
+                    </Table.HeaderCell>
                   </Table.Row>
                 </Table.Head>
                 <Table.Body>
                   {pageRows.map((row) => {
-                    const isApproved = row.status === "approved";
-                    const isRejected = row.status === "rejected";
+                    const isApproved = row.status === 'approved';
+                    const isRejected = row.status === 'rejected';
 
                     return (
                       <Table.Row key={row.id}>
-                        <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">{row.name}</Table.Cell>
-                        <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">{row.intro}</Table.Cell>
-                        <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">{row.phone}</Table.Cell>
+                        <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
+                          {row.name}
+                        </Table.Cell>
+                        <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
+                          {row.intro}
+                        </Table.Cell>
+                        <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
+                          {row.phone}
+                        </Table.Cell>
                         <Table.Cell className="text-left px-[12px] py-[20px]">
                           {isApproved ? (
                             <span className="inline-flex rounded-[20px] bg-blue-10 px-[10px] py-[6px] tj-body2-bold text-blue-20">
@@ -473,7 +451,6 @@ export default function OwnerPostingDetailPage() {
                               >
                                 승인하기
                               </Button>
-
                             </div>
                           )}
                         </Table.Cell>
