@@ -21,6 +21,8 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
+          git config --unset-all http.https://github.com/.extraheader || true
+
           git remote add fork https://chldntjr1321:${PERSONAL_FORK_TOKEN}@github.com/chldntjr1321/The-Julge.git
 
           echo ">>> fork remote:"
