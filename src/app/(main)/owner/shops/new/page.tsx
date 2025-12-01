@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState, useEffect } from 'react';
+import { ReactNode, useMemo, useRef, useState } from 'react';
 import { isAxiosError } from 'axios';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -14,6 +14,7 @@ import { AREAS } from '@/constants/areas';
 import type { ShopCreatePayload } from '@/types/shop';
 import { shopRegisterSchema, type ShopFormValues } from '@/feature/shops/schema';
 import { useToast } from '@/components/toast/toastProvider';
+import { createImagePresignedUrl } from '@/api/images';
 
 const CATEGORIES = [
   { value: '한식', label: '한식' },
@@ -23,8 +24,38 @@ const CATEGORIES = [
   { value: '분식', label: '분식' },
 ];
 
+// presigned URL 발급 + S3 업로드
+async function uploadImageToS3(file: File): Promise<string> {
+  const { data } = await createImagePresignedUrl({
+    name: file.name,
+  });
+
+  const presignedUrl = (data as { item: { url: string } }).item?.url;
+
+  if (!presignedUrl) {
+    throw new Error('이미지 업로드 URL을 받아오지 못했습니다.');
+  }
+
+  // presigned URL로 실제 S3에 업로드
+  const uploadRes = await fetch(presignedUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': file.type,
+    },
+    body: file,
+  });
+
+  if (!uploadRes.ok) {
+    throw new Error('이미지 업로드에 실패했습니다.');
+  }
+
+  const s3Url = presignedUrl.split('?')[0];
+  return s3Url;
+}
+
 export default function ShopNewPage() {
   const router = useRouter();
+  const { showToast } = useToast();
 
   const {
     register,
@@ -47,24 +78,17 @@ export default function ShopNewPage() {
     mode: 'onChange',
   });
 
-  const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { showToast } = useToast();
 
-  // API에서 주소는 한글 시군구 전체 문자열을 요구하므로 value/label을 동일하게 사용
   const areaOptions = useMemo(
     () => AREAS.map((opt) => ({ value: opt.label, label: opt.label })),
     [],
   );
   const imageUrl = useWatch({ control, name: 'imageUrl' });
-  useEffect(() => {
-    return () => {
-      if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
-    };
-  }, [imageObjectUrl]);
 
   const onSubmit = async (data: ShopFormValues) => {
-    const imageUrl = data.imageUrl?.trim();
+    const trimmedImageUrl = data.imageUrl?.trim();
 
     const payload: ShopCreatePayload = {
       name: data.name,
@@ -72,7 +96,10 @@ export default function ShopNewPage() {
       address1: data.address1,
       address2: data.address2,
       description: data.description ?? '',
-      imageUrl: imageUrl && imageUrl.length > 0 ? imageUrl : 'https://via.placeholder.com/400',
+      imageUrl:
+        trimmedImageUrl && trimmedImageUrl.length > 0
+          ? trimmedImageUrl
+          : 'https://via.placeholder.com/400',
       originalHourlyPay: data.originalHourlyPay ?? 0,
     };
 
@@ -86,7 +113,9 @@ export default function ShopNewPage() {
       if (status === 409) {
         showToast('이미 등록한 가게가 있습니다.', { variant: 'error' });
       } else if (status === 401) {
-        showToast('로그인이 필요합니다. 다시 로그인해주세요.', { variant: 'error' });
+        showToast('로그인이 필요합니다. 다시 로그인해주세요.', {
+          variant: 'error',
+        });
       } else {
         showToast('가게 등록에 실패했습니다.', { variant: 'error' });
       }
@@ -94,14 +123,28 @@ export default function ShopNewPage() {
   };
 
   const handlePickImage = () => fileInputRef.current?.click();
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (imageObjectUrl) URL.revokeObjectURL(imageObjectUrl);
-    const objectUrl = URL.createObjectURL(file);
-    setValue('imageFile', file);
-    setValue('imageUrl', objectUrl);
-    setImageObjectUrl(objectUrl);
+
+    setIsUploadingImage(true);
+    try {
+      // 1) presigned URL 발급 + 2) S3 업로드
+      const uploadedUrl = await uploadImageToS3(file);
+
+      // 3) 폼에 S3 최종 URL 저장
+      setValue('imageFile', file);
+      setValue('imageUrl', uploadedUrl);
+    } catch (error) {
+      console.error('이미지 업로드 실패', error);
+      showToast('이미지 업로드에 실패했습니다. 다시 시도해주세요.', {
+        variant: 'error',
+      });
+    } finally {
+      setIsUploadingImage(false);
+      e.target.value = '';
+    }
   };
 
   return (
@@ -205,9 +248,12 @@ export default function ShopNewPage() {
                 type="button"
                 onClick={handlePickImage}
                 className="flex flex-col items-center gap-[11px]"
+                disabled={isUploadingImage}
               >
                 <Image src="/icons/icon-photo.png" alt="" width={32} height={32} />
-                <p className="tj-body1-bold">이미지 추가하기</p>
+                <p className="tj-body1-bold">
+                  {isUploadingImage ? '이미지 업로드 중...' : '이미지 추가하기'}
+                </p>
               </button>
             </div>
           )}
@@ -233,7 +279,7 @@ export default function ShopNewPage() {
         </div>
 
         <div className="flex justify-center">
-          <Button type="submit" disabled={isSubmitting} className="px-16">
+          <Button type="submit" disabled={isSubmitting || isUploadingImage} className="px-16">
             {isSubmitting ? '등록 중...' : '등록하기'}
           </Button>
         </div>
@@ -244,7 +290,7 @@ export default function ShopNewPage() {
 
 type LabeledInputProps = {
   label: string;
-  children: React.ReactNode;
+  children: ReactNode;
   suffix?: string;
   error?: string;
 };
