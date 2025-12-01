@@ -3,10 +3,26 @@
 import Image from 'next/image';
 import { useState } from 'react';
 import { AREAS } from '@/constants/areas';
-// import Input from '@/components/common/Input';
+import Input from '@/components/common/Input';
 // import DateInput from '@/components/date/DateInput';
-export default function Filter() {
-  const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+type FilterProps = {
+  onClose?: () => void;
+  initialAddresses?: string[];
+  initialStartsAt?: string;
+  initialHourlyPayGte?: string;
+  onApply?: (values: { addresses: string[]; startsAt: string; hourlyPayGte: string }) => void;
+};
+
+export default function Filter({
+  onClose,
+  initialAddresses = [],
+  initialStartsAt = '',
+  initialHourlyPayGte = '',
+  onApply,
+}: FilterProps) {
+  const [selectedAreas, setSelectedAreas] = useState<string[]>(initialAddresses);
+  const [startsAt, setStartsAt] = useState<string>(initialStartsAt);
+  const [hourlyPay, setHourlyPay] = useState<string>(initialHourlyPayGte);
 
   const handleSelectArea = (area: string) => {
     setSelectedAreas((prev) =>
@@ -22,7 +38,7 @@ export default function Filter() {
     <div className="rounded-[10px] py-[24px] px-[20px] w-full max-w-[390px] shadow-xl bg-white">
       <div className="flex justify-between items-center mb-[24px]">
         <h2 className="tj-h3">상세필터</h2>
-        <button>
+        <button onClick={onClose} aria-label="닫기">
           <Image src="/icons/icon-close-filter.svg" alt="요소 제거" width={24} height={24} />
         </button>
       </div>
@@ -65,13 +81,59 @@ export default function Filter() {
             ))}
           </div>
         </section>
-        <section className="flex flex-col gap-y-[12px]">{/* <DateInput /> */}</section>
         <section className="flex flex-col gap-y-[12px]">
-          <h3 className="th-body1">금액</h3>
-          <div>
-            {/* <Input label="" value={amount} onChange={(e) => setAmount(e.target.value)} showUnit /> */}
+          <Input
+            id="filter-starts-at"
+            label="시작일"
+            type="date"
+            placeholder="입력"
+            value={startsAt}
+            onChange={(e) => setStartsAt(e.target.value)}
+            className="flex-1"
+          />
+        </section>
+        <section className="flex flex-col gap-y-[12px]">
+          <div className="flex items-center gap-3">
+            <Input
+              id="filter-hourly-pay"
+              label="금액"
+              type="number"
+              placeholder="입력"
+              value={hourlyPay}
+              onChange={(e) => setHourlyPay(e.target.value)}
+              unit="원"
+              className="flex-1"
+            />
+            <span className="mt-7 text-gray-50">이상부터</span>
           </div>
         </section>
+
+        <div className="flex gap-3 pt-2">
+          <button
+            type="button"
+            className="flex-1 h-12 rounded-md border border-red-30 text-red-40 tj-body1-bold"
+            onClick={() => {
+              setSelectedAreas([]);
+              setHourlyPay('');
+            }}
+          >
+            초기화
+          </button>
+          <button
+            type="button"
+            className="flex-1 h-12 rounded-md bg-red-40 text-white tj-body1-bold"
+            onClick={() => {
+              onApply?.({
+                addresses: selectedAreas,
+                startsAt,
+                hourlyPayGte: hourlyPay,
+              });
+              onClose?.();
+            }}
+          >
+            적용하기
+          </button>
+        </div>
       </div>
     </div>
   );

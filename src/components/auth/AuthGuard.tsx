@@ -25,8 +25,7 @@ export default function AuthGuard({
   const router = useRouter();
   const { isLoggedIn, role } = useAuth();
 
-  const persist =
-    (useAuthStore as typeof useAuthStore & { persist?: PersistStore }).persist;
+  const persist = (useAuthStore as typeof useAuthStore & { persist?: PersistStore }).persist;
 
   //  초기값을 무조건 false 로 두고, 실제 hydration 이 끝난 뒤에만 true 로 변경
   //  (초기 렌더에서 hasHydrated() 가 true 라고 나와도, useAuth 쪽 state 가
