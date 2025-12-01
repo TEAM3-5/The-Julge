@@ -5,6 +5,10 @@ const remotePatterns: NonNullable<NextConfig['images']>['remotePatterns'] = [
     protocol: 'https',
     hostname: 'encrypted-tbn0.gstatic.com',
   },
+  {
+    protocol: 'https',
+    hostname: 'via.placeholder.com',
+  },
 ];
 
 // 환경 변수가 있을 때만 S3 호스트를 등록한다.
