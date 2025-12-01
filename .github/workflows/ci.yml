@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_S3_HOSTNAME: ${{ vars.NEXT_PUBLIC_S3_HOSTNAME }}
 
     steps:
       - name: Checkout
