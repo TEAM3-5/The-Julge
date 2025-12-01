@@ -9,6 +9,8 @@ on:
 jobs:
   sync:
     runs-on: ubuntu-latest
+    env:
+      PERSONAL_FORK_TOKEN: ${{ secrets.PERSONAL_FORK_TOKEN }}
 
     steps:
       - name: Checkout
@@ -19,10 +21,10 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          git remote add fork https://chldntjr1321:${{ secrets.PERSONAL_FORK_TOKEN }}@github.com/chldntjr1321/The-Julge.git
+          git remote add fork https://chldntjr1321:${PERSONAL_FORK_TOKEN}@github.com/chldntjr1321/The-Julge.git
 
-          # 현재 push 이벤트가 발생한 브랜치 이름(dev 또는 main)
+          echo ">>> fork remote:"
+          git remote get-url fork
+
           BRANCH="${{ github.ref_name }}"
-
-          # 동일한 브랜치명으로 개인 레포에 push
           git push fork HEAD:$BRANCH
