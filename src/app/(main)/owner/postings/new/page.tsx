@@ -31,10 +31,7 @@ export default function NewPostingPage() {
   const [shopError, setShopError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) {
-      setShopError('로그인 정보가 없어 가게를 찾을 수 없습니다.');
-      return;
-    }
+    if (!userId) return;
 
     async function fetchShop(id: string) {
       try {
@@ -54,7 +51,7 @@ export default function NewPostingPage() {
     }
 
     fetchShop(userId);
-  }, [userId]);
+  }, [userId, setShopError, setShopId]);
 
   const methods = useForm<PostingFormValues>({
     resolver: zodResolver(postingSchema) as Resolver<PostingFormValues>,
@@ -97,7 +94,7 @@ export default function NewPostingPage() {
   };
 
   const onSubmit = async (data: PostingFormValues) => {
-    if (!shopId) {
+    if (!userId || !shopId) {
       console.error('shopId가 없습니다. shopId를 가져오는 로직을 확인해주세요.');
       setShopError('가게 정보를 불러오지 못해 공고를 등록할 수 없습니다.');
       return;
@@ -178,11 +175,15 @@ export default function NewPostingPage() {
           />
         </div>
 
-        {shopError && <p className="text-sm text-red-500">{shopError}</p>}
+        {(!userId || shopError) && (
+          <p className="text-sm text-red-500">
+            {shopError ?? '로그인 정보가 없어 가게를 찾을 수 없습니다.'}
+          </p>
+        )}
 
         {/* 버튼 영역 */}
         <div className="flex justify-center">
-          <Button type="submit" disabled={!isValid || isSubmitting || !shopId}>
+          <Button type="submit" disabled={!isValid || isSubmitting || !userId || !shopId}>
             {isSubmitting ? '등록 중...' : '등록하기'}
           </Button>
         </div>
