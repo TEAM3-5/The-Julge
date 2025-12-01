@@ -29,4 +29,4 @@ jobs:
           git remote get-url fork
 
           BRANCH="${{ github.ref_name }}"
-          git push --force-with-lease fork HEAD:$BRANCH
+          git push --force fork HEAD:$BRANCH
