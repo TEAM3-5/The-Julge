@@ -396,7 +396,7 @@ export default function OwnerPostingDetailPage() {
                 type="button"
                 variant="outline"
                 size="medium"
-                href={`/owner/postings/${notice.id}/edit`}
+                href={`/owner/shops/${shop.id}/edit`}
                 className="w-full min-w-[180px]"
               >
                 공고 편집하기
