@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { listNoticesAll, type NoticesQuery } from '@/api/notices';
 import type { NoticeListResponse, NoticeListItem } from '@/types/notice';
 import { NoticeListSection, type NoticeCard } from '@/components/notice/NoticeListSection';
@@ -64,7 +64,7 @@ export default function Notice() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchNotices = async (params?: NoticesQuery) => {
+  const fetchNotices = useCallback(async (params?: NoticesQuery) => {
     try {
       setLoading(true);
       const res = await listNoticesAll(params);
@@ -86,7 +86,7 @@ export default function Notice() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [pageSize, sort]);
 
   // 화면 크기에 따라 페이지당 개수 설정 (모바일 6개, PC 9개)
   useEffect(() => {
@@ -134,7 +134,7 @@ export default function Notice() {
     fetchNotices({
       ...params,
     });
-  }, [sort, page, filters, pageSize]);
+  }, [sort, page, filters, pageSize, fetchNotices]);
 
   // 추천 공고는 필터와 무관하게 최초 한번 로드
   useEffect(() => {
