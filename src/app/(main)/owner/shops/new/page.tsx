@@ -26,13 +26,9 @@ const CATEGORIES = [
 
 // presigned URL 발급 + S3 업로드
 async function uploadImageToS3(file: File): Promise<string> {
-  // 1) presigned URL 발급
   const { data } = await createImagePresignedUrl({
-    // ⚠️ 부트캠프 API 문서: { name: 파일이름 } 만 보냄
     name: file.name,
   });
-
-  console.log('presigned /images response:', data);
 
   const presignedUrl = (data as { item: { url: string } }).item?.url;
 
@@ -40,7 +36,7 @@ async function uploadImageToS3(file: File): Promise<string> {
     throw new Error('이미지 업로드 URL을 받아오지 못했습니다.');
   }
 
-  // 2) presigned URL로 실제 S3에 업로드
+  // presigned URL로 실제 S3에 업로드
   const uploadRes = await fetch(presignedUrl, {
     method: 'PUT',
     headers: {
@@ -53,7 +49,6 @@ async function uploadImageToS3(file: File): Promise<string> {
     throw new Error('이미지 업로드에 실패했습니다.');
   }
 
-  // 3) 쿼리스트링 제거한 S3 최종 URL을 반환
   const s3Url = presignedUrl.split('?')[0];
   return s3Url;
 }
@@ -284,7 +279,7 @@ export default function ShopNewPage() {
         </div>
 
         <div className="flex justify-center">
-          <Button type="submit" disabled={isSubmitting} className="px-16">
+          <Button type="submit" disabled={isSubmitting || isUploadingImage} className="px-16">
             {isSubmitting ? '등록 중...' : '등록하기'}
           </Button>
         </div>
