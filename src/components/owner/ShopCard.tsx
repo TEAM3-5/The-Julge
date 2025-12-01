@@ -32,7 +32,13 @@ export function ShopCard({
     // 주소 표시 문자열
     const fullLocation = detailLocationText
         ? `${locationText} ${detailLocationText}`
-        :   locationText
+        : locationText;
+
+    // DNS 안 되는 도메인 fallback 처리
+    const safeThumbnailUrl = thumbnailUrl.includes("via.placeholder.com")
+        ? "https://placehold.co/400x300?text=Shop" // 다른 정상 도메인
+        : thumbnailUrl;
+
     return (
         <section className={`flex flex-col gap-6 ${className ?? ""}`}>
             <span className="tj-h1 text-gray-black">{heading}</span>
@@ -40,10 +46,11 @@ export function ShopCard({
             <div className="flex flex-row justify-between bg-red-10 rounded-[12px] p-6">
                 <div className="relative overflow-hidden rounded-[12px] w-[539px] h-[308px]">
                     <Image
-                        src={thumbnailUrl}
+                        src={safeThumbnailUrl}
                         alt={name}
-                        fill
+                        fill    
                         className="object-cover"
+                        unoptimized
                     />
                 </div>
 
@@ -63,13 +70,13 @@ export function ShopCard({
                     </div>
 
                     <div className="flex gap-2 justify-between">
-                            <Button variant="outline" size="medium" href={editHref} className="flex-1">
-                                편집하기
-                            </Button>
+                        <Button variant="outline" size="medium" href={editHref} className="flex-1">
+                            편집하기
+                        </Button>
 
-                            <Button size="medium" href={createPostingHref} className="flex-1">
-                                공고 등록하기
-                            </Button>
+                        <Button size="medium" href={createPostingHref} className="flex-1">
+                            공고 등록하기
+                        </Button>
                     </div>
                 </div>
             </div>

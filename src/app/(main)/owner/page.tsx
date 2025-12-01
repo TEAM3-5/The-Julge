@@ -87,8 +87,8 @@ export default function OwnerPage() {
   // 1) 로그인 안 된 경우
   if (!userId) {
     return (
-      <main className="w-full max-w-[964px] flex flex-col items-start">
-        <section className="py-15">
+      <main className="w-full bg-white flex flex-col items-center">
+        <section className="py-15 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 가게</span>
           <p className="mt-4 tj-body1 text-red-500">
             로그인 정보가 없습니다. 먼저 로그인해 주세요.
@@ -101,8 +101,8 @@ export default function OwnerPage() {
   // 2) 로딩 중
   if (viewState === "idle" || viewState === "loading") {
     return (
-      <main className="w-full max-w-[964px] flex flex-col items-start">
-        <section className="py-15">
+      <main className="w-full bg-white flex flex-col items-center">
+        <section className="py-15 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 가게</span>
           <p className="mt-4 tj-body1 text-gray-50">
             내 가게 정보를 확인하는 중입니다...
@@ -115,8 +115,8 @@ export default function OwnerPage() {
   // 3) 에러
   if (viewState === "error") {
     return (
-      <main className="w-full max-w-[964px] flex flex-col items-start">
-        <section className="py-15">
+      <main className="w-full bg-white flex flex-col items-center">
+        <section className="py-15 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 가게</span>
           <p className="mt-4 tj-body1 text-red-500">
             {errorMessage ?? "내 가게 정보를 확인하는 중 문제가 발생했습니다."}
@@ -129,13 +129,13 @@ export default function OwnerPage() {
   // 4) 가게 없음 → 가게 등록 유도
   if (viewState === "noShop") {
     return (
-      <main className="w-full max-w-[964px] flex flex-col items-start">
-        <section className="py-15">
+      <main className="w-full bg-white flex flex-col items-center">
+        <section className="py-15 w-full max-w-[964px] flex flex-col">
           <EmptySection
             title="내 가게"
             description="내 가게를 소개하고 공고도 등록해 보세요."
             buttonLabel="가게 등록하기"
-            href="/owner/shop/new"
+            href="/owner/shops/[shopId]/new"
           />
         </section>
       </main>
