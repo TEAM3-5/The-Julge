@@ -174,7 +174,9 @@ export function NoticeListSection({
                 <Button
                   size="medium"
                   type="button"
-                  className="bg-red-30"
+                  variant="outline"
+                  btnColor="gray"
+                  className="h-[39px]"
                   onClick={() => setIsFilterOpen(true)}
                 >
                   상세 필터
@@ -183,7 +185,6 @@ export function NoticeListSection({
 
               {isFilterOpen && (
                 <>
-                  {/* 간단한 외부 클릭 닫기용 오버레이 */}
                   <div
                     className="fixed inset-0 z-20"
                     onClick={() => setIsFilterOpen(false)}

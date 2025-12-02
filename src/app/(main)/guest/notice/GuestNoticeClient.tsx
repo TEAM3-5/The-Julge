@@ -226,7 +226,7 @@ export default function GuestNoticeClient() {
           setPage(1);
         }}
         showFeatured={false}
-        showFilterButton={false}
+        showFilterButton
         pagination={{ currentPage: page, totalPages, onPageChange: setPage }}
       />
     </Suspense>
