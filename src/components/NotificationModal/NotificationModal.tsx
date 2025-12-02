@@ -112,7 +112,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
 
     return (
         // 임시 절대위치 -- 아이콘 아래 위치하게
-        <div className="fixed z-[1000] flex items-start justify-center sm:justify-end
+        <div className="fixed z-[1000] flex items-start justify-center sm:justify-end w-full h-full
             sm:top-[62px] sm:right-[495px]
         ">
 
