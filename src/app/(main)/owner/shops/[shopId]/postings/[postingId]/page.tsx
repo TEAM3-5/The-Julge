@@ -372,7 +372,7 @@ export default function OwnerPostingDetailPage() {
   return (
     <main className="w-full flex flex-col items-center">
       {/* 가게 공고 상세 카드 */}
-      <section className="w-full max-w-[964px] py-15 flex flex-col gap-6">
+      <section className="flex flex-col justify-center w-full max-w-[964px] px-6 gap-[32px]">
         {/* 가게 카테고리/이름 */}
         <div className="flex flex-col gap-2">
           <span className="tj-body1-bold text-primary">{shop.category}</span>
@@ -380,12 +380,12 @@ export default function OwnerPostingDetailPage() {
         </div>
 
         {/* 가게 상세 카드 */}
-        <section className="rounded-[12px] border border-gray-20 bg-white px-6 py-6 flex gap-6">
-          <div className="relative w-[539px] h-[308px] overflow-hidden rounded-[12px]">
+        <section className="rounded-[12px] border border-gray-20 bg-white px-6 py-6 flex flex-col md:flex-row gap-6">
+          <div className="relative w-full md:w-[539px] sm:h-[308px] h-[178px] overflow-hidden rounded-[12px]">
             <Image src={shop.imageUrl} alt={shop.name} fill className="object-cover" unoptimized />
           </div>
 
-          <div className="flex flex-col justify-between w-[346px] pt-4">
+          <div className="flex flex-col justify-between w-full md:w-[346px] gap-10 md:gap-4 pt-4">
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-2">
                 <span className="tj-body1-bold text-primary">시급</span>
@@ -439,7 +439,7 @@ export default function OwnerPostingDetailPage() {
       </section>
 
       {/* 신청자 목록 TABLE */}
-      <section className="flex flex-col gap-8 w-full max-w-[964px] overflow-hidden ph-15">
+      <section className="flex flex-col gap-8 w-full max-w-[964px] py-15 px-6 overflow-hidden ph-15">
         <p className="tj-h1 text-black">신청자 목록</p>
 
         {applicants.length === 0 ? (
@@ -450,13 +450,19 @@ export default function OwnerPostingDetailPage() {
               <Table>
                 <Table.Head>
                   <Table.Row>
-                    <Table.HeaderCell className="w-[228px] bg-red-10 px-[12px] py-[20px]">
+                    <Table.HeaderCell className="w-28 md:w-[228px] bg-red-10 px-[12px] py-[20px]">
                       신청자
                     </Table.HeaderCell>
-                    <Table.HeaderCell className="w-[300px] bg-red-10 px-[12px] py-[20px]">
+                    <Table.HeaderCell
+                      hideBelow="sm"
+                      className="w-[300px] bg-red-10 px-[12px] py-[20px]"
+                    >
                       소개
                     </Table.HeaderCell>
-                    <Table.HeaderCell className="w-[200px] bg-red-10 px-[12px] py-[20px]">
+                    <Table.HeaderCell
+                      hideBelow="md"
+                      className="w-[200px] bg-red-10 px-[12px] py-[20px]"
+                    >
                       전화번호
                     </Table.HeaderCell>
                     <Table.HeaderCell className="text-left bg-red-10 px-[12px] py-[20px]">
@@ -474,10 +480,16 @@ export default function OwnerPostingDetailPage() {
                         <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
                           {row.name}
                         </Table.Cell>
-                        <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
+                        <Table.Cell
+                          hideBelow="sm"
+                          className="tj-body1 text-gray-black px-[12px] py-[20px]"
+                        >
                           {row.intro}
                         </Table.Cell>
-                        <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
+                        <Table.Cell
+                          hideBelow="md"
+                          className="tj-body1 text-gray-black px-[12px] py-[20px]"
+                        >
                           {row.phone}
                         </Table.Cell>
                         <Table.Cell className="text-left px-[12px] py-[20px]">

@@ -254,10 +254,7 @@ export default function MemberProfilePage() {
           setViewMode('full');
         }
       } catch (error: unknown) {
-        const msg = getErrorMessage(
-          error,
-          '내 프로필 정보를 불러오는 중 오류가 발생했습니다.',
-        );
+        const msg = getErrorMessage(error, '내 프로필 정보를 불러오는 중 오류가 발생했습니다.');
         setErrorMessage(msg);
         setViewMode('error');
       }
@@ -285,12 +282,12 @@ export default function MemberProfilePage() {
   // ----- 공통 프로필 카드 ----- //
 
   const ProfileCard = (
-    <section className="py-15 w-full bg-white flex flex-col items-center">
-      <div className="flex flex-row gap-45 w-full max-w-[964px]">
+    <section className="py-15 px-6 w-full bg-white flex flex-col items-center">
+      <div className="flex flex-col justify-between md:flex-row gap-y-6 gap-4 md:gap-20 w-full max-w-[964px]">
         <span className="tj-h1 text-black">내 프로필</span>
 
-        <div className="flex flex-col w-full max-w-[665px] rounded-[12px] bg-red-10 p-8">
-          <div className="flex justify-between items-start">
+        <div className="flex flex-col w-full max-w-[768px] md:max-w-[665px] rounded-[12px] bg-red-10 p-8">
+          <div className="relative flex justify-between items-start">
             <div className="flex flex-col max-w-[392px] gap-7">
               <div className="flex flex-col gap-3">
                 <div className="flex flex-col gap-2">
@@ -315,9 +312,7 @@ export default function MemberProfilePage() {
                 </div>
               </div>
 
-              <p className="tj-body1 text-black">
-                {profileBio || '열심히 일하겠습니다'}
-              </p>
+              <p className="tj-body1 text-black">{profileBio || '열심히 일하겠습니다'}</p>
             </div>
 
             <Button
@@ -325,7 +320,7 @@ export default function MemberProfilePage() {
               variant="outline"
               size="medium"
               onClick={() => router.push('/member/profile/edit')}
-              className="w-[169px]"
+              className="w-[169px] absolute right-0 top-0"
             >
               편집하기
             </Button>
@@ -342,9 +337,7 @@ export default function MemberProfilePage() {
       <main className="w-full bg-white flex flex-col items-center">
         <section className="py-15 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 프로필</span>
-          <p className="mt-4 tj-body1 text-red-40">
-            로그인 정보가 없습니다. 먼저 로그인해 주세요.
-          </p>
+          <p className="mt-4 tj-body1 text-red-40">로그인 정보가 없습니다. 먼저 로그인해 주세요.</p>
         </section>
       </main>
     );
@@ -421,20 +414,26 @@ export default function MemberProfilePage() {
       {ProfileCard}
 
       {/* 신청 내역 테이블 섹션 */}
-      <section className="py-15 w-full flex flex-col items-center gap-8">
+      <section className="py-15 px-6 w-full flex flex-col items-center gap-8">
         <div className="flex flex-col gap-8 w-full max-w-[964px]">
           <span className="tj-h1 text-black">신청 내역</span>
 
           <Table>
             <Table.Head>
               <Table.Row>
-                <Table.HeaderCell className="w-[260px] bg-red-10 px-[12px] py-[20px]">
+                <Table.HeaderCell className="w-28 md:w-[228px] bg-red-10 px-[12px] py-[20px]">
                   가게
                 </Table.HeaderCell>
-                <Table.HeaderCell className="w-[320px] bg-red-10 px-[12px] py-[20px]">
+                <Table.HeaderCell
+                  hideBelow="sm"
+                  className="w-[320px] bg-red-10 px-[12px] py-[20px]"
+                >
                   일자
                 </Table.HeaderCell>
-                <Table.HeaderCell className="w-[160px] bg-red-10 px-[12px] py-[20px]">
+                <Table.HeaderCell
+                  hideBelow="md"
+                  className="w-[160px] bg-red-10 px-[12px] py-[20px]"
+                >
                   시급
                 </Table.HeaderCell>
                 <Table.HeaderCell className="text-left bg-red-10 px-[12px] py-[20px]">
@@ -452,10 +451,16 @@ export default function MemberProfilePage() {
                     <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
                       {row.shopName}
                     </Table.Cell>
-                    <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
+                    <Table.Cell
+                      hideBelow="sm"
+                      className="tj-body1 text-gray-black px-[12px] py-[20px]"
+                    >
                       {row.scheduleText}
                     </Table.Cell>
-                    <Table.Cell className="tj-body1 text-gray-black px-[12px] py-[20px]">
+                    <Table.Cell
+                      hideBelow="md"
+                      className="tj-body1 text-gray-black px-[12px] py-[20px]"
+                    >
                       {row.hourlyPay.toLocaleString('ko-KR')}원
                     </Table.Cell>
                     <Table.Cell className="text-left px-[12px] py-[20px]">

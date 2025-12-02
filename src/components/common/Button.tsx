@@ -22,7 +22,7 @@ type CustomButtonProps = {
 const sizeStyles = {
   small: 'px-[12px] py-[8px] tj-caption',
   medium: 'px-[20px] py-[10px] tj-body2-bold',
-  large: 'px-[136px] py-3.5 tj-body1-bold',
+  large: 'md:w-full md:max-w-[312px] py-3.5 tj-body1-bold',
 } as const;
 
 export type ButtonProps = CustomButtonProps & NativeButtonProps;

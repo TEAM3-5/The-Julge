@@ -327,7 +327,11 @@ export default function ShopEditPage({ params }: ShopEditPageProps) {
         </div>
 
         <div className="flex justify-center">
-          <Button type="submit" disabled={isSubmitting || isUploadingImage} className="px-16">
+          <Button
+            type="submit"
+            disabled={isSubmitting || isUploadingImage}
+            className="w-full md:w-auto px-16"
+          >
             {isSubmitting ? '수정 중...' : '수정하기'}
           </Button>
         </div>

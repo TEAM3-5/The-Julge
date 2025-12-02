@@ -88,7 +88,7 @@ export default function OwnerPage() {
   if (!userId) {
     return (
       <main className="w-full bg-white flex flex-col items-center">
-        <section className="py-15 w-full max-w-[964px] flex flex-col">
+        <section className="py-15 px-6 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 가게</span>
           <p className="mt-4 tj-body1 text-red-500">
             로그인 정보가 없습니다. 먼저 로그인해 주세요.
@@ -102,7 +102,7 @@ export default function OwnerPage() {
   if (viewState === 'idle' || viewState === 'loading') {
     return (
       <main className="w-full bg-white flex flex-col items-center">
-        <section className="py-15 w-full max-w-[964px] flex flex-col">
+        <section className="py-15 px-6 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 가게</span>
           <p className="mt-4 tj-body1 text-gray-50">내 가게 정보를 확인하는 중입니다...</p>
         </section>
@@ -114,7 +114,7 @@ export default function OwnerPage() {
   if (viewState === 'error') {
     return (
       <main className="w-full bg-white flex flex-col items-center">
-        <section className="py-15 w-full max-w-[964px] flex flex-col">
+        <section className="py-15 px-6 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 가게</span>
           <p className="mt-4 tj-body1 text-red-500">
             {errorMessage ?? '내 가게 정보를 확인하는 중 문제가 발생했습니다.'}
@@ -128,7 +128,7 @@ export default function OwnerPage() {
   if (viewState === 'noShop') {
     return (
       <main className="w-full bg-white flex flex-col items-center">
-        <section className="py-15 w-full max-w-[964px] flex flex-col">
+        <section className="py-15 px-6 w-full max-w-[964px] flex flex-col">
           <EmptySection
             title="내 가게"
             description="내 가게를 소개하고 공고도 등록해 보세요."
