@@ -8,6 +8,7 @@ import Button from '@/components/common/Button';
 import { ModalBase } from '@/components/modal/ModalBase';
 import { getNotice } from '@/api/notices';
 import { createApplication } from '@/api/applications';
+import { useAuth } from '@/contexts/AuthContext';
 
 type NoticeDetail = {
   id: string;
@@ -23,8 +24,6 @@ type NoticeDetail = {
 
 type NoticeDetailClientProps = {
   noticeId: string;
-  // 프로필 유무 판단용. 프로필이 없으면 모달을 띄운다.
-  profileId?: string | null;
 };
 
 const formatStartsAt = (startsAt?: string, workhour?: number) => {
@@ -41,7 +40,7 @@ const formatStartsAt = (startsAt?: string, workhour?: number) => {
   return workhour ? `${text} (${workhour}시간)` : text;
 };
 
-export default function NoticeDetailClient({ noticeId, profileId }: NoticeDetailClientProps) {
+export default function NoticeDetailClient({ noticeId }: NoticeDetailClientProps) {
   const [notice, setNotice] = useState<NoticeDetail | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +56,10 @@ export default function NoticeDetailClient({ noticeId, profileId }: NoticeDetail
   const params = useParams<{ id: string }>();
   const shopId = searchParams.get('shopId') ?? undefined;
   const resolvedNoticeId = noticeId || params?.id;
+
+  // 프로필 id 대신 userid로 테스트
+  const { user } = useAuth();
+  const profileId = user?.id ?? null;
 
   // 신청하기 / 취소하기 버튼 클릭 핸들러
   const handleApplyClick = async () => {
