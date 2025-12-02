@@ -8,7 +8,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 export const metadata = {
   title: 'The Julge',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/jg-favicon.ico',
   },
 };
 

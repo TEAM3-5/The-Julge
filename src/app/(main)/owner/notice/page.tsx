@@ -5,6 +5,7 @@ import { listNoticesAll, type NoticesQuery } from '@/api/notices';
 import type { NoticeListResponse, NoticeListItem } from '@/types/notice';
 import { NoticeListSection, type NoticeCard } from '@/components/notice/NoticeListSection';
 import { AREAS } from '@/constants/areas';
+import { useSearchParams } from 'next/navigation';
 
 const formatStartsAt = (startsAt?: string, workhour?: number) => {
   if (!startsAt) return '날짜/시간 정보 없음';
@@ -21,7 +22,7 @@ const formatStartsAt = (startsAt?: string, workhour?: number) => {
 const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   const notice = item.item;
   const shop = notice.shop?.item;
-  const title = notice.description || shop?.name || '공고';
+  const title = shop?.name || notice.description || '공고';
   const shopName = shop?.name;
   const shopAddress = shop?.address1;
   const shopId = shop?.id ? String(shop.id) : undefined;
@@ -32,7 +33,7 @@ const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   const original = Number(shop?.originalHourlyPay) || 0;
   const wageBadgeText =
     original > 0 && hourlyPay > original
-      ? `기존 시급보다 ${Math.round(((hourlyPay - original) / original) * 100)}%`
+      ? `시급 ${Math.round(((hourlyPay - original) / original) * 100)}%`
       : undefined;
 
   return {
@@ -65,6 +66,8 @@ export default function Notice() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const keyword = searchParams.get('keyword') ?? '';
 
   const fetchNotices = useCallback(
     async (params?: NoticesQuery) => {
@@ -146,15 +149,33 @@ export default function Notice() {
 
     const run = async () => {
       const res = await fetchNotices(params);
+      if (!res) return;
 
-      if (selectedLabels.length === 0 || !res) return;
+      let filtered = res.cards;
+
+      // 서버 페이징 결과 그대로 사용 (추가 필터 없을 때)
+      if (!keyword.trim() && selectedLabels.length === 0) {
+        setNotices(filtered);
+        setTotalPages(res.totalPages);
+        return;
+      }
+
+      // 키워드가 있을 때 제목/가게명 포함 여부로 필터
+      if (keyword.trim()) {
+        const k = keyword.toLowerCase();
+        filtered = filtered.filter((card) =>
+          (card.shopName ?? card.title).toLowerCase().includes(k),
+        );
+      }
 
       // 여러 주소 선택 시 OR 필터링
-      const filtered = res.cards.filter((card) =>
-        selectedLabels.some(
-          (label) => card.shopAddress?.includes(label) || card.locationText.includes(label),
-        ),
-      );
+      if (selectedLabels.length > 0) {
+        filtered = filtered.filter((card) =>
+          selectedLabels.some(
+            (label) => card.shopAddress?.includes(label) || card.locationText.includes(label),
+          ),
+        );
+      }
 
       setNotices(filtered);
       const count = filtered.length;
@@ -162,7 +183,12 @@ export default function Notice() {
     };
 
     run();
-  }, [sort, page, filters, pageSize, fetchNotices]);
+  }, [sort, page, filters, pageSize, fetchNotices, keyword]);
+
+  // 검색어 변경 시 첫 페이지로
+  useEffect(() => {
+    setPage(1);
+  }, [keyword]);
 
   // 추천 공고는 필터와 무관하게 최초 한번 로드
   useEffect(() => {
@@ -173,7 +199,7 @@ export default function Notice() {
         const items = Array.isArray(data.items) ? data.items : [];
         const cards = items.map(normalizeNotice);
         const featured = cards
-          .filter((c) => c.shopAddress?.includes('서울시 중구'))
+          .filter((c) => c.shopAddress?.includes('서울시 송파구'))
           .sort((a, b) => {
             const aDate = a.startsAt ? new Date(a.startsAt).getTime() : Infinity;
             const bDate = b.startsAt ? new Date(b.startsAt).getTime() : Infinity;
@@ -201,7 +227,8 @@ export default function Notice() {
       error={error}
       sort={sort}
       onSortChange={handleSortChange}
-      detailPathPrefix="/owner/notice"
+      detailPathPrefix="/member/notice"
+      keyword={keyword}
       filterValues={filters}
       onFilterApply={(values) => {
         setFilters(values);
