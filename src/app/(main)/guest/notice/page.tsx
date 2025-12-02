@@ -5,6 +5,7 @@ import { listNoticesAll, type NoticesQuery } from '@/api/notices';
 import type { NoticeListResponse, NoticeListItem } from '@/types/notice';
 import { NoticeListSection, type NoticeCard } from '@/components/notice/NoticeListSection';
 import { AREAS } from '@/constants/areas';
+import { useSearchParams } from 'next/navigation';
 
 const formatStartsAt = (startsAt?: string, workhour?: number) => {
   if (!startsAt) return '날짜/시간 정보 없음';
@@ -31,7 +32,7 @@ const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   const original = Number(shop?.originalHourlyPay) || 0;
   const wageBadgeText =
     original > 0 && hourlyPay > original
-      ? `기존 시급보다 ${Math.round(((hourlyPay - original) / original) * 100)}%`
+      ? `시급 ${Math.round(((hourlyPay - original) / original) * 100)}%`
       : undefined;
 
   return {
@@ -63,35 +64,40 @@ export default function Notice() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const keyword = searchParams.get('keyword') ?? '';
 
-  const fetchNotices = useCallback(async (params?: NoticesQuery) => {
-    try {
-      setLoading(true);
-      const res = await listNoticesAll(params);
-      const data = res.data as NoticeListResponse;
-      const items = Array.isArray(data.items) ? data.items : [];
-      const cards = items.map(normalizeNotice);
+  const fetchNotices = useCallback(
+    async (params?: NoticesQuery) => {
+      try {
+        setLoading(true);
+        const res = await listNoticesAll(params);
+        const data = res.data as NoticeListResponse;
+        const items = Array.isArray(data.items) ? data.items : [];
+        const cards = items.map(normalizeNotice);
 
-      if (sort === 'shop') {
-        cards.sort((a, b) => a.title.localeCompare(b.title, 'ko', { sensitivity: 'base' }));
+        if (sort === 'shop') {
+          cards.sort((a, b) => a.title.localeCompare(b.title, 'ko', { sensitivity: 'base' }));
+        }
+
+        const count = typeof data.count === 'number' ? data.count : items.length;
+        const size = params?.limit ?? pageSize;
+        const totalPagesCalc = Math.max(1, Math.ceil(count / size));
+
+        setNotices(cards);
+        setTotalPages(totalPagesCalc);
+
+        return { cards, totalPages: totalPagesCalc };
+      } catch (err) {
+        setError('공고를 불러오지 못했습니다.');
+        console.error(err);
+        return null;
+      } finally {
+        setLoading(false);
       }
-
-      const count = typeof data.count === 'number' ? data.count : items.length;
-      const size = params?.limit ?? pageSize;
-      const totalPagesCalc = Math.max(1, Math.ceil(count / size));
-
-      setNotices(cards);
-      setTotalPages(totalPagesCalc);
-
-      return { cards, totalPages: totalPagesCalc };
-    } catch (err) {
-      setError('공고를 불러오지 못했습니다.');
-      console.error(err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [pageSize, sort]);
+    },
+    [pageSize, sort],
+  );
 
   // 화면 크기에 따라 페이지당 개수 설정 (모바일 6개, PC 9개)
   useEffect(() => {
@@ -141,14 +147,26 @@ export default function Notice() {
 
     const run = async () => {
       const res = await fetchNotices(params);
+      if (!res) return;
 
-      if (selectedLabels.length === 0 || !res) return;
+      let filtered = res.cards;
 
-      const filtered = res.cards.filter((card) =>
-        selectedLabels.some(
-          (label) => card.shopAddress?.includes(label) || card.locationText.includes(label),
-        ),
-      );
+      if (keyword.trim()) {
+        const k = keyword.toLowerCase();
+        filtered = filtered.filter(
+          (card) =>
+            card.title.toLowerCase().includes(k) ||
+            (card.shopName && card.shopName.toLowerCase().includes(k)),
+        );
+      }
+
+      if (selectedLabels.length > 0) {
+        filtered = filtered.filter((card) =>
+          selectedLabels.some(
+            (label) => card.shopAddress?.includes(label) || card.locationText.includes(label),
+          ),
+        );
+      }
 
       setNotices(filtered);
       const count = filtered.length;
@@ -156,7 +174,11 @@ export default function Notice() {
     };
 
     run();
-  }, [sort, page, filters, pageSize, fetchNotices]);
+  }, [sort, page, filters, pageSize, fetchNotices, keyword]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [keyword]);
 
   // 추천 공고는 필터와 무관하게 최초 한번 로드
   useEffect(() => {
@@ -197,6 +219,7 @@ export default function Notice() {
       sort={sort}
       onSortChange={handleSortChange}
       detailPathPrefix="/guest/notice"
+      keyword={keyword}
       filterValues={filters}
       onFilterApply={(values) => {
         setFilters(values);
