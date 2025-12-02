@@ -159,9 +159,8 @@ export default function GuestNoticeClient() {
 
       if (keyword.trim()) {
         const k = keyword.toLowerCase();
-        filtered = filtered.filter(
-          (card) =>
-            (card.shopName ?? card.title).toLowerCase().includes(k),
+        filtered = filtered.filter((card) =>
+          (card.shopName ?? card.title).toLowerCase().includes(k),
         );
       }
 
@@ -194,7 +193,7 @@ export default function GuestNoticeClient() {
         const items = Array.isArray(data.items) ? data.items : [];
         const cards = items.map(normalizeNotice);
         const featured = cards
-          .filter((c) => c.shopAddress?.includes('서울시 중구'))
+          .filter((c) => c.shopAddress?.includes('서울시 송파구'))
           .sort((a, b) => {
             const aDate = a.startsAt ? new Date(a.startsAt).getTime() : Infinity;
             const bDate = b.startsAt ? new Date(b.startsAt).getTime() : Infinity;
