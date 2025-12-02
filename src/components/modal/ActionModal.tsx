@@ -9,7 +9,7 @@ export type ActionModalProps = {
   isOpen: boolean;
   onClose: () => void;
 
-  onConfirm: () => void; // "예" 눌렀을 때 실행할 콜백
+  onConfirm?: () => void | Promise<void>;
   
   title?: ReactNode;
   confirmText?: string;
@@ -34,9 +34,12 @@ export function ActionModal({
 }: ActionModalProps) {
   if (!isOpen) return null;
 
-  const handleConfirmClick = () => {
-    onConfirm();
-    onClose();
+const handleConfirmClick = async () => {
+    try {
+      await onConfirm?.();
+    } finally {
+      onClose();
+    }
   };
 
   return (
