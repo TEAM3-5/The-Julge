@@ -52,7 +52,7 @@ function getMobileBadgeColorClass(isInactive: boolean, percent: number): string 
   if (percent >= 30) return 'text-red-30';
   if (percent > 0) return 'text-red-20';
 
-  return 'text-red-20';
+  return '';
 }
 
 export const PostCard = memo(function PostCard({
@@ -187,7 +187,7 @@ export const PostCard = memo(function PostCard({
             <span className="block md:hidden tj-h4">{wage.toLocaleString()}원</span>
           </p>
 
-          {wageBadgeText && (
+          {wageBadgeText && increasePercent > 0 && (
             <>
               <div
                 className={`
