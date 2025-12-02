@@ -22,7 +22,7 @@ const formatStartsAt = (startsAt?: string, workhour?: number) => {
 const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   const notice = item.item;
   const shop = notice.shop?.item;
-  const title = notice.description || shop?.name || '공고';
+  const title = shop?.name || notice.description || '공고';
   const shopAddress = shop?.address1;
   const shopId = shop?.id ? String(shop.id) : undefined;
   const scheduleText = formatStartsAt(notice.startsAt, notice.workhour);
@@ -161,8 +161,7 @@ export default function GuestNoticeClient() {
         const k = keyword.toLowerCase();
         filtered = filtered.filter(
           (card) =>
-            card.title.toLowerCase().includes(k) ||
-            (card.shopName && card.shopName.toLowerCase().includes(k)),
+            (card.shopName ?? card.title).toLowerCase().includes(k),
         );
       }
 
