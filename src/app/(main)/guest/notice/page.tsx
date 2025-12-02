@@ -76,13 +76,18 @@ export default function Notice() {
         cards.sort((a, b) => a.title.localeCompare(b.title, 'ko', { sensitivity: 'base' }));
       }
 
-      setNotices(cards);
       const count = typeof data.count === 'number' ? data.count : items.length;
       const size = params?.limit ?? pageSize;
-      setTotalPages(Math.max(1, Math.ceil(count / size)));
+      const totalPagesCalc = Math.max(1, Math.ceil(count / size));
+
+      setNotices(cards);
+      setTotalPages(totalPagesCalc);
+
+      return { cards, totalPages: totalPagesCalc };
     } catch (err) {
       setError('공고를 불러오지 못했습니다.');
       console.error(err);
+      return null;
     } finally {
       setLoading(false);
     }
@@ -113,10 +118,13 @@ export default function Notice() {
       sort: sort as NoticesQuery['sort'],
     };
 
-    if (filters.addresses.length > 0) {
-      const first = filters.addresses[0];
-      const areaLabel = AREAS.find((a) => a.value === first)?.label;
-      if (areaLabel) params.address = areaLabel;
+    const selectedLabels = filters.addresses
+      .map((value) => AREAS.find((a) => a.value === value)?.label)
+      .filter(Boolean) as string[];
+
+    // 주소가 하나일 때만 API에 전달
+    if (selectedLabels.length === 1) {
+      params.address = selectedLabels[0];
     }
     if (filters.startsAt) {
       const dt = new Date(filters.startsAt);
@@ -131,9 +139,23 @@ export default function Notice() {
       }
     }
 
-    fetchNotices({
-      ...params,
-    });
+    const run = async () => {
+      const res = await fetchNotices(params);
+
+      if (selectedLabels.length === 0 || !res) return;
+
+      const filtered = res.cards.filter((card) =>
+        selectedLabels.some(
+          (label) => card.shopAddress?.includes(label) || card.locationText.includes(label),
+        ),
+      );
+
+      setNotices(filtered);
+      const count = filtered.length;
+      setTotalPages(Math.max(1, Math.ceil(count / pageSize)));
+    };
+
+    run();
   }, [sort, page, filters, pageSize, fetchNotices]);
 
   // 추천 공고는 필터와 무관하게 최초 한번 로드

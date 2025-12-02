@@ -66,29 +66,37 @@ export default function Notice() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchNotices = useCallback(async (params?: NoticesQuery) => {
-    try {
-      setLoading(true);
-      const res = await listNoticesAll(params);
-      const data = res.data as NoticeListResponse;
-      const items = Array.isArray(data.items) ? data.items : [];
-      const cards = items.map(normalizeNotice);
+  const fetchNotices = useCallback(
+    async (params?: NoticesQuery) => {
+      try {
+        setLoading(true);
+        const res = await listNoticesAll(params);
+        const data = res.data as NoticeListResponse;
+        const items = Array.isArray(data.items) ? data.items : [];
+        const cards = items.map(normalizeNotice);
 
-      if (sort === 'shop') {
-        cards.sort((a, b) => a.title.localeCompare(b.title, 'ko', { sensitivity: 'base' }));
+        if (sort === 'shop') {
+          cards.sort((a, b) => a.title.localeCompare(b.title, 'ko', { sensitivity: 'base' }));
+        }
+
+        const count = typeof data.count === 'number' ? data.count : items.length;
+        const size = params?.limit ?? pageSize;
+        const totalPagesCalc = Math.max(1, Math.ceil(count / size));
+
+        setNotices(cards);
+        setTotalPages(totalPagesCalc);
+
+        return { cards, totalPages: totalPagesCalc };
+      } catch (err) {
+        setError('공고를 불러오지 못했습니다.');
+        console.error(err);
+        return null;
+      } finally {
+        setLoading(false);
       }
-
-      setNotices(cards);
-      const count = typeof data.count === 'number' ? data.count : items.length;
-      const size = params?.limit ?? pageSize;
-      setTotalPages(Math.max(1, Math.ceil(count / size)));
-    } catch (err) {
-      setError('공고를 불러오지 못했습니다.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, [pageSize, sort]);
+    },
+    [pageSize, sort],
+  );
 
   // 화면 크기에 따라 페이지당 개수 설정 (모바일 6개, PC 9개)
   useEffect(() => {
@@ -109,16 +117,19 @@ export default function Notice() {
   }, []);
 
   useEffect(() => {
+    const selectedLabels = filters.addresses
+      .map((value) => AREAS.find((a) => a.value === value)?.label)
+      .filter(Boolean) as string[];
+
     const params: NoticesQuery = {
       limit: pageSize,
       offset: (page - 1) * pageSize,
       sort: sort as NoticesQuery['sort'],
     };
 
-    if (filters.addresses.length > 0) {
-      const first = filters.addresses[0];
-      const areaLabel = AREAS.find((a) => a.value === first)?.label;
-      if (areaLabel) params.address = areaLabel;
+    // 주소가 하나일 때만 API에 전달, 여러 개면 클라이언트에서 후처리
+    if (selectedLabels.length === 1) {
+      params.address = selectedLabels[0];
     }
     if (filters.startsAt) {
       const dt = new Date(filters.startsAt);
@@ -133,9 +144,24 @@ export default function Notice() {
       }
     }
 
-    fetchNotices({
-      ...params,
-    });
+    const run = async () => {
+      const res = await fetchNotices(params);
+
+      if (selectedLabels.length === 0 || !res) return;
+
+      // 여러 주소 선택 시 OR 필터링
+      const filtered = res.cards.filter((card) =>
+        selectedLabels.some(
+          (label) => card.shopAddress?.includes(label) || card.locationText.includes(label),
+        ),
+      );
+
+      setNotices(filtered);
+      const count = filtered.length;
+      setTotalPages(Math.max(1, Math.ceil(count / pageSize)));
+    };
+
+    run();
   }, [sort, page, filters, pageSize, fetchNotices]);
 
   // 추천 공고는 필터와 무관하게 최초 한번 로드

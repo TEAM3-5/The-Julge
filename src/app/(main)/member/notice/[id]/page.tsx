@@ -1,10 +1,9 @@
 import NoticeDetailClient from '@/components/notice/NoticeDetailClient';
 
 type PageProps = {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 };
 
-export default async function Page({ params }: PageProps) {
-  const { id } = await params;
-  return <NoticeDetailClient noticeId={id} />;
+export default function Page({ params }: PageProps) {
+  return <NoticeDetailClient noticeId={params.id} />;
 }

@@ -70,17 +70,19 @@ export default function NoticeDetailClient({ noticeId }: NoticeDetailClientProps
             ? data.shop.item.imageUrl
             : '/images/no-image.png';
 
+        const hourlyPay = Number(data.hourlyPay) || 0;
+        const originalHourlyPay = Number(data.shop?.item?.originalHourlyPay) || 0;
+
         setNotice({
           id: data.id,
           title: data.shop?.item?.name ?? data.description ?? '공고',
-          wage: Number(data.hourlyPay) || 0,
-          wageBadgeText: data.shop?.item?.originalHourlyPay
-            ? `기존 시급보다 ${Math.round(
-                ((Number(data.hourlyPay) - Number(data.shop.item.originalHourlyPay)) /
-                  Number(data.shop.item.originalHourlyPay)) *
-                  100,
-              )}%`
-            : undefined,
+          wage: hourlyPay,
+          wageBadgeText:
+            originalHourlyPay > 0 && hourlyPay > originalHourlyPay
+              ? `기존 시급보다 ${Math.round(
+                  ((hourlyPay - originalHourlyPay) / originalHourlyPay) * 100,
+                )}%`
+              : undefined,
           startsAt: data.startsAt,
           workhour: data.workhour,
           location: data.shop?.item?.address1 ?? data.shop?.item?.address2,
