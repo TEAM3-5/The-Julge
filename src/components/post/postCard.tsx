@@ -100,8 +100,8 @@ export const PostCard = memo(function PostCard({
               ${isInactive ? 'text-gray-30' : 'text-gray-black'}
             `}
           >
-            <span className="block md:hidden tj-body1-bold">{title}</span>
-            <span className="hidden md:block tj-h3">{title}</span>
+            <span className="block md:hidden tj-body1-bold truncate">{title}</span>
+            <span className="hidden md:block tj-h3 truncate">{title}</span>
           </h3>
           <p
             className={`
