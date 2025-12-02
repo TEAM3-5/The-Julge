@@ -79,9 +79,7 @@ export default function NoticeDetailClient({ noticeId }: NoticeDetailClientProps
           wage: hourlyPay,
           wageBadgeText:
             originalHourlyPay > 0 && hourlyPay > originalHourlyPay
-              ? `기존 시급보다 ${Math.round(
-                  ((hourlyPay - originalHourlyPay) / originalHourlyPay) * 100,
-                )}%`
+              ? `시급 ${Math.round(((hourlyPay - originalHourlyPay) / originalHourlyPay) * 100)}%`
               : undefined,
           startsAt: data.startsAt,
           workhour: data.workhour,
