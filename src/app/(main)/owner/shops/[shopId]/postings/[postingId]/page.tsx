@@ -204,10 +204,8 @@ export default function OwnerPostingDetailPage() {
             const app = entry.item;
             const userItem = app.user?.item ?? null;
             const apiStatus = app.status;
-            const rowStatus: ApplicantRowStatus =
-              apiStatus === "accepted" || apiStatus === "rejected"
-                ? apiStatus
-                : "pending";
+            const rowStatus: ApplicantRowStatus = (
+              apiStatus === 'accepted' || apiStatus === 'rejected') ? apiStatus : 'pending';
 
             return {
               id: app.id,
