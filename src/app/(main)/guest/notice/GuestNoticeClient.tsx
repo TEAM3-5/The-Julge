@@ -151,6 +151,12 @@ export default function GuestNoticeClient() {
 
       let filtered = res.cards;
 
+      if (!keyword.trim() && selectedLabels.length === 0) {
+        setNotices(filtered);
+        setTotalPages(res.totalPages);
+        return;
+      }
+
       if (keyword.trim()) {
         const k = keyword.toLowerCase();
         filtered = filtered.filter(

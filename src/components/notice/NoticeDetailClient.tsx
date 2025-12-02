@@ -206,9 +206,9 @@ export default function NoticeDetailClient({ noticeId }: NoticeDetailClientProps
                     <p className="tj-h1 text-gray-black">{notice.wage.toLocaleString()}원</p>
                   </div>
                   {notice.wageBadgeText && (
-                    <span className="tj-body2-bold inline-flex items-center gap-1 rounded-full bg-red-40 px-3 py-2 text-white">
+                    <span className="tj-body2-bold inline-flex items-center gap-1 rounded-full border border-red-40 px-3 py-2 text-red-40">
                       {notice.wageBadgeText}
-                      <Image src="/icons/icon-arrow-up-bold.png" alt="" width={20} height={20} />
+                      <Image src="/icons/icon-arrow-up-red.png" alt="" width={14} height={14} />
                     </span>
                   )}
                 </div>
