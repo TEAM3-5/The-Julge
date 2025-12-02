@@ -79,11 +79,13 @@ function isUserDetailResponse(data: unknown): data is UserDetailResponse {
   const item = obj.item as {
     id?: unknown;
     email?: unknown;
+    type?: unknown;
   };
 
   const isString = (v: unknown) => typeof v === 'string';
+  const isValidType = item.type === 'employee' || item.type === 'employer';
 
-  return isString(item.id) && isString(item.email);
+  return isString(item.id) && isString(item.email) && isValidType;
 }
 
 function isUserApplicationsResponse(data: unknown): data is UserApplicationsResponse {
@@ -187,10 +189,7 @@ export default function MemberProfilePage() {
               const shopItem = app.shop.item;
               const noticeItem = app.notice.item;
 
-              const status =
-                app.status === 'accepted' || app.status === 'rejected'
-                  ? (app.status as ApplicationRowStatus)
-                  : ('pending' as ApplicationRowStatus);
+              const status = app.status as ApplicationRowStatus;
 
               return {
                 id: app.id,
