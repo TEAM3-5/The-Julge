@@ -5,7 +5,10 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useParams } from 'next/navigation';
 import { isAxiosError } from 'axios';
 import Button from '@/components/common/Button';
+import { ModalBase } from '@/components/modal/ModalBase';
 import { getNotice } from '@/api/notices';
+import { createApplication } from '@/api/applications';
+import { useAuth } from '@/contexts/AuthContext';
 
 type NoticeDetail = {
   id: string;
@@ -43,10 +46,65 @@ export default function NoticeDetailClient({ noticeId }: NoticeDetailClientProps
   const [error, setError] = useState<string | null>(null);
   const [imgSrc, setImgSrc] = useState('/images/no-image.png');
 
+  // 신청 관련 상태
+  const [applyLoading, setApplyLoading] = useState(false);
+  const [applyError, setApplyError] = useState<string | null>(null);
+  const [isApplied, setIsApplied] = useState(false); // 신청 완료 여부
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // 프로필 안내 모달
+
   const searchParams = useSearchParams();
   const params = useParams<{ id: string }>();
   const shopId = searchParams.get('shopId') ?? undefined;
   const resolvedNoticeId = noticeId || params?.id;
+
+  // 프로필 id 대신 userid로 테스트
+  const { user } = useAuth();
+  const profileId = user?.id ?? null;
+
+  // 신청하기 / 취소하기 버튼 클릭 핸들러
+  const handleApplyClick = async () => {
+    // 1) 프로필이 없으면 모달만 띄우고 끝
+    if (!profileId) {
+      setIsProfileModalOpen(true);
+      return;
+    }
+
+    // 2) 필수 파라미터 없으면 에러 메시지만 표시
+    if (!shopId || !resolvedNoticeId) {
+      setApplyError('가게 ID와 공고 ID가 없습니다. 잠시 후 다시 시도해 주세요.');
+      return;
+    }
+
+    // 3) 이미 신청 완료 상태라면 지금 단계에서는 UI만 토글 (추후 취소 API 연결 가능)
+    if (isApplied) {
+      // TODO: 나중에 취소 API (cancelApplication) 연결
+      setIsApplied(false);
+      return;
+    }
+
+    // 4) 신청하기 API 호출
+    try {
+      setApplyLoading(true);
+      setApplyError(null);
+
+      // TODO: Swagger 문서 참고해서 실제 body 스펙 채우기
+      const body = {};
+
+      await createApplication(shopId, resolvedNoticeId, body);
+
+      // 신청 완료 상태로 전환 (페이지 이동 없음)
+      setIsApplied(true);
+    } catch (err: unknown) {
+      console.error(err);
+      if (isAxiosError(err)) {
+        setApplyError(err.response?.data?.message ?? '신청에 실패했습니다. 다시 시도해 주세요.');
+      } else {
+        setApplyError('신청에 실패했습니다. 다시 시도해 주세요.');
+      }
+    } finally {
+      setApplyLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!shopId || !resolvedNoticeId) {
@@ -120,63 +178,98 @@ export default function NoticeDetailClient({ noticeId }: NoticeDetailClientProps
   }
 
   return (
-    <div className="w-full max-w-[964px] mx-auto flex flex-col gap-y-30">
-      <section>
-        <div className="flex flex-col gap-6 px-6">
-          <div className="flex flex-col gap-2">
-            <span className="tj-body2 text-primary">식당</span>
-            <h1 className="tj-h2 text-gray-black">{notice.title}</h1>
-          </div>
-
-          <div className="flex flex-col gap-6 rounded-xl border border-gray-20 bg-white p-6 md:flex-row">
-            <div className="relative h-[260px] w-full overflow-hidden rounded-xl md:w-[360px]">
-              <Image
-                src={imgSrc}
-                alt={notice.title}
-                fill
-                className="object-cover"
-                sizes="(min-width: 768px) 360px, 100vw"
-                onError={() => setImgSrc('/images/no-image.png')}
-              />
+    <>
+      <div className="w-full max-w-[964px] mx-auto flex flex-col gap-y-30">
+        <section>
+          <div className="flex flex-col gap-6 px-6">
+            <div className="flex flex-col gap-2">
+              <span className="tj-body2 text-primary">식당</span>
+              <h1 className="tj-h2 text-gray-black">{notice.title}</h1>
             </div>
 
-            <div className="flex flex-1 flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <p className="tj-body2 text-primary">시급</p>
-                  <p className="tj-h1 text-gray-black">{notice.wage.toLocaleString()}원</p>
-                </div>
-                {notice.wageBadgeText && (
-                  <span className="tj-body2-bold inline-flex items-center gap-1 rounded-full border border-red-40 px-3 py-2 text-red-40">
-                    {notice.wageBadgeText}
-                    <Image src="/icons/icon-arrow-up-red.png" alt="" width={14} height={14} />
-                  </span>
-                )}
+            <div className="flex flex-col gap-6 rounded-xl border border-gray-20 bg-white p-6 md:flex-row">
+              <div className="relative h-[260px] w-full overflow-hidden rounded-xl md:w-[360px]">
+                <Image
+                  src={imgSrc}
+                  alt={notice.title}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 768px) 360px, 100vw"
+                  onError={() => setImgSrc('/images/no-image.png')}
+                />
               </div>
 
-              <div className="space-y-2 text-sm text-gray-50">
-                <div className="flex items-center gap-2">
-                  <Image src="/icons/icon-clock-primary.png" alt="" width={20} height={20} />
-                  <span>{formatStartsAt(notice.startsAt, notice.workhour)}</span>
+              <div className="flex flex-1 flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <p className="tj-body2 text-primary">시급</p>
+                    <p className="tj-h1 text-gray-black">{notice.wage.toLocaleString()}원</p>
+                  </div>
+                  {notice.wageBadgeText && (
+                    <span className="tj-body2-bold inline-flex items-center gap-1 rounded-full bg-red-40 px-3 py-2 text-white">
+                      {notice.wageBadgeText}
+                      <Image src="/icons/icon-arrow-up-bold.png" alt="" width={20} height={20} />
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Image src="/icons/icon-location-primary.png" alt="" width={20} height={20} />
-                  <span>{notice.location ?? '위치 정보 없음'}</span>
-                </div>
-              </div>
 
-              <Button size="medium" className="bg-primary text-white w-full md:w-fit">
-                신청하기
-              </Button>
+                <div className="space-y-2 text-sm text-gray-50">
+                  <div className="flex items-center gap-2">
+                    <Image src="/icons/icon-clock-primary.png" alt="" width={20} height={20} />
+                    <span>{formatStartsAt(notice.startsAt, notice.workhour)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image src="/icons/icon-location-primary.png" alt="" width={20} height={20} />
+                    <span>{notice.location ?? '위치 정보 없음'}</span>
+                  </div>
+                </div>
+
+                <Button
+                  size="large"
+                  variant={isApplied ? 'outline' : 'primary'}
+                  className="w-full md:w-fit"
+                  onClick={handleApplyClick}
+                  disabled={applyLoading}
+                >
+                  {applyLoading ? '신청 중...' : isApplied ? '취소하기' : '신청하기'}
+                </Button>
+                {applyError && <p className="mt-2 text-sm text-red-40">{applyError}</p>}
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-gray-10 p-8 text-gray-50">
+              <h3 className="tj-body1-bold text-gray-black mb-2">공고 설명</h3>
+              <p className="whitespace-pre-wrap">{notice.description ?? '설명 없음'}</p>
             </div>
           </div>
+        </section>
+      </div>
 
-          <div className="rounded-xl bg-gray-10 p-8 text-gray-50">
-            <h3 className="tj-body1-bold text-gray-black mb-2">공고 설명</h3>
-            <p className="whitespace-pre-wrap">{notice.description ?? '설명 없음'}</p>
-          </div>
+      {/* 프로필 안내 모달*/}
+      <ModalBase isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)}>
+        <div className="w-[320px] md:w-[360px] rounded-[16px] bg-white flex flex-col items-center">
+          {/* 상단 경고 아이콘 (SVG 이미지) */}
+          <Image
+            src="/images/ModalConfirm.svg"
+            alt="경고 아이콘"
+            width={40}
+            height={40}
+            className="mb-4"
+          />
+          <p className="tj-body1 text-gray-black mb-8 text-center">
+            내 프로필을 먼저 등록해 주세요.
+          </p>
+          <Button
+            size="medium"
+            variant="outline"
+            btnColor="primary"
+            className="w-[80px]"
+            onClick={() => setIsProfileModalOpen(false)}
+          >
+            확인
+          </Button>
         </div>
-      </section>
-    </div>
+      </ModalBase>
+    </>
   );
 }

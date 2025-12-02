@@ -5,7 +5,9 @@ import { USER_ROLE } from '@/constants/auth';
 export default function MemberLayout({ children }: PropsWithChildren) {
   return (
     <AuthGuard allowedRoles={[USER_ROLE.MEMBER]}>
-      <div>{children}</div>
+      <div className="min-h-screen w-full bg-gray-5 flex justify-center">
+        {children}
+      </div>
     </AuthGuard>
   );
 }
