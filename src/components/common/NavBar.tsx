@@ -99,7 +99,7 @@ export default function NavBar() {
 
   return (
     <header className="flex justify-center items-center w-full bg-white py-[15px]">
-      <div className="w-full max-w-240 px-4 sm:px-6 lg:px-12 flex flex-col gap-3">
+      <div className="w-full max-w-252 px-4 sm:px-6 lg:px-12 flex flex-col gap-3">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-6 flex-1 min-w-0">
             <Image

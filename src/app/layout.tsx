@@ -5,6 +5,13 @@ import { ToastProvider } from '@/components/toast/toastProvider';
 import { ModalProvider } from '@/components/modal/ModalProvider';
 import { AuthProvider } from '@/contexts/AuthContext';
 
+export const metadata = {
+  title: 'The Julge',
+  icons: {
+    icon: '/favicon.ico',
+  },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko" className={spoqa.className}>
