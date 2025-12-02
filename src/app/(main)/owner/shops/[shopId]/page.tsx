@@ -81,7 +81,7 @@ function mapNoticeToPostingItem(notice: Notice, shop: Shop): PostingItem {
     const diffRatio = (notice.hourlyPay / shop.originalHourlyPay - 1) * 100;
     const rounded = Math.round(diffRatio);
     if (rounded > 0) {
-      wageBadgeText = `기존 시급보다 ${rounded}%`;
+      wageBadgeText = `시급 ${rounded}%`;
     }
   }
 
