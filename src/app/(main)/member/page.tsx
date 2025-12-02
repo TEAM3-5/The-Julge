@@ -7,7 +7,6 @@ import Button from '@/components/common/Button';
 import { EmptySection } from '@/components/common/EmptySection';
 import { Table } from '@/components/common/Table';
 import { Pagination } from '@/components/pagination/Pagination';
-import { useModalContext } from '@/components/modal/ModalProvider';
 import Image from 'next/image';
 import Path from '@/components/post/icon/PostPath';
 
