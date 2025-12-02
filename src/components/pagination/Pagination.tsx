@@ -8,17 +8,17 @@ import { usePagination } from '@/hooks/usePagination';
  * 숫자 버튼 컴포넌트
  */
 type NumberButtonProps = {
-  page: number;         // 버튼에 표시될 페이지 번호
-  isActive: boolean;    // 현재 페이지 활성화 여부(선택된 페이지인지)
-  href?: string;        // 제공되면 Link로 렌더링할 href
+  page: number; // 버튼에 표시될 페이지 번호
+  isActive: boolean; // 현재 페이지 활성화 여부(선택된 페이지인지)
+  href?: string; // 제공되면 Link로 렌더링할 href
   onClick?: () => void; // 버튼 클릭 시 호출될 콜백
 };
 
 function NumberButton({ page, isActive, href, onClick }: NumberButtonProps) {
   // 활성/비활성 상태에 따른 색상 변경
-  const classes = `inline-flex items-center justify-center w-10 h-10 rounded-[4px] tj-body2 ${isActive 
-    ? 'bg-red-30 text-white' 
-    : 'text-gray-black hover:bg-gray-100'}`;
+  const classes = `inline-flex items-center justify-center w-10 h-10 rounded-[4px] tj-body2 ${
+    isActive ? 'border border-primary text-primary bg-red-5' : 'text-gray-black hover:bg-gray-100'
+  }`;
 
   // href가 있으면 Link로 렌더링
   if (href) {
@@ -53,53 +53,33 @@ function NumberButton({ page, isActive, href, onClick }: NumberButtonProps) {
  */
 type ArrowButtonProps = {
   direction: 'prev' | 'next'; // 화살표 방향(이전 또는 다음)
-  disabled: boolean;          // 버튼 비활성화 여부
-  href?: string;              // 제공되면 Link로 렌더링할 href
-  onClick?: () => void;       // 버튼 클릭 시 호출될 콜백
+  disabled: boolean; // 버튼 비활성화 여부
+  href?: string; // 제공되면 Link로 렌더링할 href
+  onClick?: () => void; // 버튼 클릭 시 호출될 콜백
 };
 
 function ArrowButton({ direction, disabled, href, onClick }: ArrowButtonProps) {
   // 방향에 따라 왼쪽 또는 오른쪽 아이콘 선택
   const icon =
     direction === 'prev' ? (
-      <Image
-        src="/icons/icon-page-left.svg"
-        alt="이전 페이지"
-        width={16}
-        height={16}
-      />
+      <Image src="/icons/icon-page-left.svg" alt="이전 페이지" width={16} height={16} />
     ) : (
-      <Image
-        src="/icons/icon-page-right.svg"
-        alt="다음 페이지"
-        width={16}
-        height={16}
-      />
+      <Image src="/icons/icon-page-right.svg" alt="다음 페이지" width={16} height={16} />
     );
 
   const ariaLabel = direction === 'prev' ? '이전 페이지' : '다음 페이지';
 
   // 비활성 여부에 따라 스타일 분기
-  const classes = `flex items-center justify-center w-10 h-10 ${disabled 
-    ? 'opacity-40 cursor-not-allowed' 
-    : 'text-gray-black'}`;
+  const classes = `flex items-center justify-center w-10 h-10 ${
+    disabled ? 'opacity-40 cursor-not-allowed' : 'text-gray-black'
+  }`;
 
-  const content = (
-    <span className="inline-flex items-center justify-center w-5 h-5">
-      {icon}
-    </span>
-  );
+  const content = <span className="inline-flex items-center justify-center w-5 h-5">{icon}</span>;
 
   // Link 기반 이동
   if (href && !disabled) {
     return (
-      <Link
-        href={href}
-        scroll={false}
-        aria-label={ariaLabel}
-        className={classes}
-        onClick={onClick}
-      >
+      <Link href={href} scroll={false} aria-label={ariaLabel} className={classes} onClick={onClick}>
         {content}
       </Link>
     );
@@ -123,12 +103,12 @@ function ArrowButton({ direction, disabled, href, onClick }: ArrowButtonProps) {
  * Pagination 메인 컴포넌트
  */
 type PaginationProps = {
-  currentPage: number;                    // 현재 페이지 (1부터 시작)
-  totalPages: number;                     // 전체 페이지 수
-  onPageChange?: (page: number) => void;  // 페이지 변경 콜백 (href가 없을 때 사용)
+  currentPage: number; // 현재 페이지 (1부터 시작)
+  totalPages: number; // 전체 페이지 수
+  onPageChange?: (page: number) => void; // 페이지 변경 콜백 (href가 없을 때 사용)
   hrefBuilder?: (page: number) => string; // 페이지별 링크 생성 함수 (존재하면 Link로 렌더링)
-  maxPageButtons?: number;                // 가운데에 표시될 최대 페이지 수
-  className?: string;                     // 추가로 적용시킬 Tailwind 클래스
+  maxPageButtons?: number; // 가운데에 표시될 최대 페이지 수
+  className?: string; // 추가로 적용시킬 Tailwind 클래스
 };
 
 export function Pagination({
@@ -164,8 +144,7 @@ export function Pagination({
   const isLast = safeCurrentPage === safeTotalPages;
 
   // hrefBuilder가 있으면 page -> URL을 만들어 주는 헬퍼
-  const buildHref = (page: number) =>
-    hrefBuilder ? hrefBuilder(page) : undefined;
+  const buildHref = (page: number) => (hrefBuilder ? hrefBuilder(page) : undefined);
 
   /**
    * 페이지 변경 핸들러
@@ -180,7 +159,8 @@ export function Pagination({
   };
 
   return (
-    <nav aria-label="Pagination"
+    <nav
+      aria-label="Pagination"
       className={`flex items-center justify-center gap-0.5${className ? ` ${className}` : ''}`}
     >
       {/* 이전 화살표 */}

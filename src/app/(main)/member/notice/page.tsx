@@ -153,6 +153,13 @@ export default function Notice() {
 
       let filtered = res.cards;
 
+      // 서버 페이징 결과 그대로 사용 (추가 필터 없을 때)
+      if (!keyword.trim() && selectedLabels.length === 0) {
+        setNotices(filtered);
+        setTotalPages(res.totalPages);
+        return;
+      }
+
       // 키워드가 있을 때 제목/가게명 포함 여부로 필터
       if (keyword.trim()) {
         const k = keyword.toLowerCase();
