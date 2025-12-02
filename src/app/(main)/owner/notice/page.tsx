@@ -201,7 +201,7 @@ export default function Notice() {
       error={error}
       sort={sort}
       onSortChange={handleSortChange}
-      detailPathPrefix="/member/notice"
+      detailPathPrefix="/owner/notice"
       filterValues={filters}
       onFilterApply={(values) => {
         setFilters(values);
