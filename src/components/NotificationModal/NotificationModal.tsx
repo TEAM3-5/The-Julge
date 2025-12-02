@@ -111,7 +111,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
     const totalCount = alerts.length;
 
     return (
-        // 임시 mt, mr 아이콘 아래 위치하게
+        // 임시 절대위치 -- 아이콘 아래 위치하게
         <div className="fixed z-[1000] flex items-start justify-center sm:justify-end
             sm:top-[62px] sm:right-[495px]
         ">
