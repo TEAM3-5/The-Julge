@@ -113,7 +113,7 @@ export function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
     return (
         // 임시 mt, mr 아이콘 아래 위치하게
         <div className="fixed z-[1000] flex items-start justify-center sm:justify-end
-            sm:ml-[1000px] sm:mt-[62px]
+            sm:top-[62px] sm:right-[495px]
         ">
 
             <section
