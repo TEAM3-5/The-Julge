@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { listNoticesAll, type NoticesQuery } from '@/api/notices';
 import type { NoticeListResponse, NoticeListItem } from '@/types/notice';
 import { NoticeListSection, type NoticeCard } from '@/components/notice/NoticeListSection';
@@ -23,7 +23,6 @@ const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   const notice = item.item;
   const shop = notice.shop?.item;
   const title = notice.description || shop?.name || '공고';
-  const shopName = shop?.name;
   const shopAddress = shop?.address1;
   const shopId = shop?.id ? String(shop.id) : undefined;
   const scheduleText = formatStartsAt(notice.startsAt, notice.workhour);
@@ -39,7 +38,6 @@ const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   return {
     id: notice.id,
     title,
-    shopName,
     shopAddress,
     shopId,
     startsAt: notice.startsAt,
@@ -52,7 +50,7 @@ const normalizeNotice = (item: NoticeListItem): NoticeCard => {
   };
 };
 
-export default function Notice() {
+export default function GuestNoticeClient() {
   const [sort, setSort] = useState<string>('time');
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
@@ -104,7 +102,7 @@ export default function Notice() {
   // 화면 크기에 따라 페이지당 개수 설정 (모바일 6개, PC 9개)
   useEffect(() => {
     const updatePageSize = () => {
-      const mobile = typeof window !== 'undefined' ? window.innerWidth < 1024 : false;
+      const mobile = typeof window !== 'undefined' ? window.innerWidth < 768 : false;
       const nextSize = mobile ? 6 : 9;
       setPageSize((prev) => {
         if (prev !== nextSize) {
@@ -120,17 +118,17 @@ export default function Notice() {
   }, []);
 
   useEffect(() => {
-    const selectedLabels = filters.addresses
-      .map((value) => AREAS.find((a) => a.value === value)?.label)
-      .filter(Boolean) as string[];
-
     const params: NoticesQuery = {
       limit: pageSize,
       offset: (page - 1) * pageSize,
       sort: sort as NoticesQuery['sort'],
     };
 
-    // 주소가 하나일 때만 API에 전달, 여러 개면 클라이언트에서 후처리
+    const selectedLabels = filters.addresses
+      .map((value) => AREAS.find((a) => a.value === value)?.label)
+      .filter(Boolean) as string[];
+
+    // 주소가 하나일 때만 API에 전달
     if (selectedLabels.length === 1) {
       params.address = selectedLabels[0];
     }
@@ -153,7 +151,6 @@ export default function Notice() {
 
       let filtered = res.cards;
 
-      // 키워드가 있을 때 제목/가게명 포함 여부로 필터
       if (keyword.trim()) {
         const k = keyword.toLowerCase();
         filtered = filtered.filter(
@@ -163,7 +160,6 @@ export default function Notice() {
         );
       }
 
-      // 여러 주소 선택 시 OR 필터링
       if (selectedLabels.length > 0) {
         filtered = filtered.filter((card) =>
           selectedLabels.some(
@@ -180,7 +176,6 @@ export default function Notice() {
     run();
   }, [sort, page, filters, pageSize, fetchNotices, keyword]);
 
-  // 검색어 변경 시 첫 페이지로
   useEffect(() => {
     setPage(1);
   }, [keyword]);
@@ -215,23 +210,25 @@ export default function Notice() {
   };
 
   return (
-    <NoticeListSection
-      notices={notices}
-      featuredNotices={featuredNotices}
-      loading={loading}
-      error={error}
-      sort={sort}
-      onSortChange={handleSortChange}
-      detailPathPrefix="/member/notice"
-      keyword={keyword}
-      filterValues={filters}
-      onFilterApply={(values) => {
-        setFilters(values);
-        setPage(1);
-      }}
-      showFeatured
-      showFilterButton
-      pagination={{ currentPage: page, totalPages, onPageChange: setPage }}
-    />
+    <Suspense fallback={<p className="px-6 py-10 text-gray-50">공고를 불러오는 중...</p>}>
+      <NoticeListSection
+        notices={notices}
+        featuredNotices={featuredNotices}
+        loading={loading}
+        error={error}
+        sort={sort}
+        onSortChange={handleSortChange}
+        detailPathPrefix="/guest/notice"
+        keyword={keyword}
+        filterValues={filters}
+        onFilterApply={(values) => {
+          setFilters(values);
+          setPage(1);
+        }}
+        showFeatured={false}
+        showFilterButton={false}
+        pagination={{ currentPage: page, totalPages, onPageChange: setPage }}
+      />
+    </Suspense>
   );
 }

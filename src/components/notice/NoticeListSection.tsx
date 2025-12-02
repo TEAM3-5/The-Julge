@@ -48,6 +48,7 @@ type NoticeListSectionProps = {
   };
   onFilterApply?: (values: { addresses: string[]; startsAt: string; hourlyPayGte: string }) => void;
   detailPathPrefix?: string;
+  keyword?: string;
   showFeatured?: boolean;
   showFilterButton?: boolean;
   pagination?: PaginationProps;
@@ -56,6 +57,7 @@ type NoticeListSectionProps = {
 const swiperConfig: SwiperOptions = {
   spaceBetween: 14,
   slidesPerView: 1.2,
+  allowTouchMove: true,
   loop: true,
   slidesOffsetBefore: 24,
   slidesOffsetAfter: 24,
@@ -65,12 +67,16 @@ const swiperConfig: SwiperOptions = {
     500: {
       slidesPerView: 2.2,
       spaceBetween: 8,
+      allowTouchMove: true,
+      loop: true,
       slidesOffsetBefore: 24,
       slidesOffsetAfter: 24,
     },
     768: {
       slidesPerView: 2.4,
       spaceBetween: 14,
+      allowTouchMove: true,
+      loop: true,
       slidesOffsetBefore: 24,
       slidesOffsetAfter: 24,
     },
@@ -102,13 +108,16 @@ export function NoticeListSection({
   filterValues,
   onFilterApply,
   detailPathPrefix = '/member/notice',
+  keyword,
   showFeatured = false,
   showFilterButton = false,
   pagination,
 }: NoticeListSectionProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const featured = showFeatured
+  const showFeaturedSection = showFeatured && !keyword;
+
+  const featured = showFeaturedSection
     ? featuredNotices && featuredNotices.length > 0
       ? featuredNotices
       : notices.slice(0, 4)
@@ -118,7 +127,7 @@ export function NoticeListSection({
   return (
     <div className="w-full">
       {/* 맞춤 공고 로그인 되어(/member 경로) 있거나, 맞춤 공고가 1개 이상일 때 보이게 */}
-      {showFeatured && featured.length > 0 && (
+      {showFeaturedSection && featured.length > 0 && (
         <section className="bg-red-10 py-10 w-full">
           <div className="mx-auto flex max-w-[964px] flex-col gap-6">
             <h2 className="tj-h2 text-gray-black px-6">맞춤 공고</h2>
@@ -149,7 +158,9 @@ export function NoticeListSection({
       <section className="bg-white py-10">
         <div className="mx-auto flex max-w-[964px] flex-col gap-6 px-6">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-            <h2 className="tj-h2 text-gray-black">전체 공고</h2>
+            <h2 className="tj-h2 text-gray-black">
+              {keyword ? `"${keyword}"에 대한 공고 목록` : '전체 공고'}
+            </h2>
             <div className="relative flex items-center gap-2">
               {onSortChange && (
                 <Dropdown
