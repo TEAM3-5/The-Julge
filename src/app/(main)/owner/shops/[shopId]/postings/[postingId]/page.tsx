@@ -13,7 +13,7 @@ import { Pagination } from '@/components/pagination/Pagination';
 
 import { useAuthStore } from '@/stores/auth';
 import { listNoticesAll } from '@/api/notices';
-import { listApplicationsByNotice } from '@/api/applications';
+import { listApplicationsByNotice, updateApplicationStatus } from '@/api/applications';
 import { useModalContext } from '@/components/modal/ModalProvider';
 import { useToast } from '@/components/toast/toastProvider';
 import PostArrow from '@/components/post/icon/PostArrow';
@@ -58,9 +58,11 @@ type ApplicationUserItem = {
   bio?: string;
 };
 
+type ApplicationStatusApi = "pending" | "accepted" | "rejected" | "canceled";
+
 type ApplicationItem = {
   id: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: ApplicationStatusApi;
   user?: { item?: ApplicationUserItem | null } | null;
 };
 
@@ -72,7 +74,7 @@ type ApplicationListData = {
   items?: ApplicationListItem[];
 };
 
-type ApplicantRowStatus = 'pending' | 'approved' | 'rejected'; // 대기(거절하기, 승인하기 버튼) / 승인완료 / 거절 분기
+type ApplicantRowStatus = "pending" | "accepted" | "rejected"; // 대기(거절하기, 승인하기 버튼) / 승인완료 / 거절 분기
 
 type ApplicantRow = {
   id: string;
@@ -104,6 +106,30 @@ function calcHourlyDiffBadge(hourlyPay: number, originalHourlyPay: number) {
   const rounded = Math.round(ratio);
   if (rounded <= 0) return '';
   return `기존 시급보다 ${rounded}%`;
+}
+
+// Notice 목록 타입 가드 (as any 방지용)
+function isNoticeListData(data: unknown): data is NoticeListData {
+  if (!data || typeof data !== "object") return false;
+  const obj = data as { items?: unknown };
+  if (!Array.isArray(obj.items)) return false;
+  return obj.items.every((entry) => {
+    if (!entry || typeof entry !== "object") return false;
+    const e = entry as { item?: unknown };
+    return !!e.item && typeof e.item === "object";
+  });
+}
+
+// Application 목록 타입 가드
+function isApplicationListData(data: unknown): data is ApplicationListData {
+  if (!data || typeof data !== "object") return false;
+  const obj = data as { items?: unknown };
+  if (!Array.isArray(obj.items)) return false;
+  return obj.items.every((entry) => {
+    if (!entry || typeof entry !== "object") return false;
+    const e = entry as { item?: unknown };
+    return !!e.item && typeof e.item === "object";
+  });
 }
 
 /**
@@ -148,7 +174,11 @@ export default function OwnerPostingDetailPage() {
 
         // 1) 전체 공고 조회 후 현재 공고 찾기
         const noticeRes = await listNoticesAll();
-        const data = noticeRes.data as unknown as NoticeListData;
+        const data = noticeRes.data as unknown;
+
+        if (!isNoticeListData(data)) {
+          throw new Error("예상치 못한 공고 목록 응답 형식입니다.");
+        }
 
         const target = data.items?.find((entry) => entry.item?.id === postingId);
         if (!target) {
@@ -163,36 +193,43 @@ export default function OwnerPostingDetailPage() {
 
         // 2) 신청자 목록 조회
         const appsRes = await listApplicationsByNotice(s.id, n.id);
-        const appsData = appsRes.data as unknown as ApplicationListData;
+        const appsData = appsRes.data as unknown;
+
+        if (!isApplicationListData(appsData)) {
+          throw new Error("예상치 못한 지원 목록 응답 형식입니다.");
+        }
 
         const mapped: ApplicantRow[] =
           appsData.items?.map((entry) => {
             const app = entry.item;
             const userItem = app.user?.item ?? null;
+            const apiStatus = app.status;
+            let rowStatus: ApplicantRowStatus = "pending";
+            if (apiStatus === "accepted") rowStatus = "accepted";
+            else if (apiStatus === "rejected") rowStatus = "rejected";
+            else rowStatus = "pending";
 
             return {
               id: app.id,
               name: userItem?.name ?? '이름 없음',
               intro: userItem?.bio ?? '자기소개가 없습니다.',
               phone: userItem?.phone ?? '전화번호 미입력',
-              status: app.status ?? 'pending',
+              status: rowStatus,
             };
           }) ?? [];
 
         setApplicants(mapped);
       } catch (error: unknown) {
         console.error(error);
-        let msg = '공고 정보를 불러오는 중 오류가 발생했습니다.';
+        let msg = "공고 정보를 불러오는 중 오류가 발생했습니다.";
 
-        if (typeof error === 'object' && error !== null && 'response' in error) {
-          const errWithResponse = error as {
-            response?: { data?: { message?: string } };
-          };
+        type ErrorWithResponse = {
+          response?: { data?: { message?: string } };
+        };
 
-          const apiMessage = errWithResponse.response?.data?.message;
-          if (typeof apiMessage === 'string' && apiMessage.length > 0) {
-            msg = apiMessage;
-          }
+        if (typeof error === "object" && error !== null && "response" in error) {
+          const e = error as ErrorWithResponse;
+          msg = e.response?.data?.message ?? msg;
         } else if (error instanceof Error && error.message) {
           msg = error.message;
         }
@@ -223,38 +260,74 @@ export default function OwnerPostingDetailPage() {
 
   /* ------------------------- 승인 / 거절 핸들러 ------------------------- */
 
-  const handleApprove = (id: string) => {
+const handleApprove = (applicationId: string) => {
+    if (!shop || !notice) return;
     openAction({
-      title: '신청을 승인하시겠어요?',
-      confirmText: '예',
-      cancelText: '아니오',
-      onConfirm: () => {
-        // TODO: 승인 API 연동
-        setApplicants((prev) =>
-          prev.map((row) => (row.id === id ? { ...row, status: 'approved' } : row)),
-        );
-        showToast('신청이 승인되었습니다.', {
-          variant: 'success',
-          duration: 2000,
-        });
+      title: "신청을 승인하시겠어요?",
+      confirmText: "예",
+      cancelText: "아니오",
+      onConfirm: async () => {
+        try {
+          await updateApplicationStatus(
+            shop.id,
+            notice.id,
+            applicationId,
+            "accepted",
+          );
+
+          setApplicants((prev) =>
+            prev.map((row) =>
+              row.id === applicationId ? { ...row, status: "accepted" } : row,
+            ),
+          );
+
+          showToast("신청이 승인되었습니다.", {
+            variant: "success",
+            duration: 2000,
+          });
+        } catch (error) {
+          console.error(error);
+          showToast("승인 처리 중 오류가 발생했습니다.", {
+            variant: "error",
+            duration: 2000,
+          });
+        }
       },
     });
   };
 
-  const handleReject = (id: string) => {
+  const handleReject = (applicationId: string) => {
+    if (!shop || !notice) return;
     openAction({
-      title: '신청을 거절하시겠어요?',
-      confirmText: '예',
-      cancelText: '아니오',
-      onConfirm: () => {
-        // TODO: 거절/취소 API 연동
-        setApplicants((prev) =>
-          prev.map((row) => (row.id === id ? { ...row, status: 'rejected' } : row)),
-        );
-        showToast('신청이 거절되었습니다.', {
-          variant: 'error',
-          duration: 2000,
-        });
+      title: "신청을 거절하시겠어요?",
+      confirmText: "예",
+      cancelText: "아니오",
+      onConfirm: async () => {
+        try {
+          await updateApplicationStatus(
+            shop.id,
+            notice.id,
+            applicationId,
+            "rejected",
+          );
+
+          setApplicants((prev) =>
+            prev.map((row) =>
+              row.id === applicationId ? { ...row, status: "rejected" } : row,
+            ),
+          );
+
+          showToast("신청이 거절되었습니다.", {
+            variant: "error",
+            duration: 2000,
+          });
+        } catch (error) {
+          console.error(error);
+          showToast("거절 처리 중 오류가 발생했습니다.", {
+            variant: "error",
+            duration: 2000,
+          });
+        }
       },
     });
   };
@@ -408,8 +481,8 @@ export default function OwnerPostingDetailPage() {
                 </Table.Head>
                 <Table.Body>
                   {pageRows.map((row) => {
-                    const isApproved = row.status === 'approved';
-                    const isRejected = row.status === 'rejected';
+                    const isApproved = row.status === "accepted";
+                    const isRejected = row.status === "rejected";
 
                     return (
                       <Table.Row key={row.id}>
