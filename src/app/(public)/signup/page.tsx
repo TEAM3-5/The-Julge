@@ -91,6 +91,32 @@ export default function SignupPage() {
     ));
   };
 
+  const showSignupSuccessModal = () => {
+    openCustom((close) => (
+      <div className="flex w-full flex-col justify-center items-center relative">
+        <div className="flex flex-col items-center gap-4">
+          <p className="text-[18px] text-center text-gray-black px-[162px] py-[108px]">
+            가입이 완료되었습니다!
+          </p>
+        </div>
+
+        <div className="flex w-full">
+          <Button
+            type="button"
+            size="medium"
+            onClick={() => {
+              close();
+              router.push('/login');
+            }}
+            className="absolute right-3 bottom-3 px-[46px] py-[14px] rounded-[8px]"
+          >
+            확인
+          </Button>
+        </div>
+      </div>
+    ));
+  };
+
   const onSubmit = async (data: SignupFormValues) => {
     try {
       // 회원가입 API 요청
@@ -100,9 +126,8 @@ export default function SignupPage() {
         type: mapMemberTypeToApiType(data.memberType),
       });
 
-      // 회원가입 성공 시 alert 후, 로그인 페이지로 이동
-      alert('가입이 완료되었습니다.');
-      router.push('/login');
+      // 회원가입 성공 시 모달로 안내 후 로그인 페이지로 이동
+      showSignupSuccessModal();
     } catch (error) {
       console.error(error);
 
