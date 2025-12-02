@@ -17,13 +17,24 @@ export default function NavBar() {
   // 알림 개수 (나중에 API 붙일 예정)
   const [alertCount] = useState(0);
 
-  // ✅ 로고 클릭: 로그인 여부에 따라 기본 리스트로 이동
   const handleMainPage = () => {
+    if (!isLoggedIn) {
+      router.push('/guest/notice');
+      return;
+    }
+
+    if (role === USER_ROLE.OWNER) {
+      router.push('/owner/notice');
+      return;
+    }
+
     if (role === USER_ROLE.MEMBER) {
       router.push('/member/notice');
-    } else {
-      router.push('/guest/notice');
+      return;
     }
+
+    // 혹시 role이 비정상적으로 들어온 경우 대비
+    router.push('/guest/notice');
   };
 
   // ✅ 왼쪽 메뉴 버튼: 로그인 X → /login, 로그인 O → 내 프로필/내 가게
@@ -46,7 +57,7 @@ export default function NavBar() {
     if (isLoggedIn) {
       clearAuth();
     }
-    router.push('/posts');
+    router.push('/guest/notice');
   };
 
   // (추후 구현용) 알림 아이콘 클릭
