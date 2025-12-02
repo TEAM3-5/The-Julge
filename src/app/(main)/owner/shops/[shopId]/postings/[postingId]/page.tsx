@@ -200,21 +200,22 @@ export default function OwnerPostingDetailPage() {
         }
 
         const mapped: ApplicantRow[] =
-          appsData.items?.map((entry) => {
-            const app = entry.item;
-            const userItem = app.user?.item ?? null;
-            const apiStatus = app.status;
-            const rowStatus: ApplicantRowStatus = (
-              apiStatus === 'accepted' || apiStatus === 'rejected') ? apiStatus : 'pending';
+          appsData.items
+            // 알바가 스스로 취소한 지원(canceled)은 목록에서 제외
+            ?.filter((entry) => entry.item.status !== "canceled")
+            .map((entry) => {
+              const app = entry.item;
+              const userItem = app.user?.item ?? null;
+              const status = (app.status ?? "pending") as ApplicantRowStatus;
 
-            return {
-              id: app.id,
-              name: userItem?.name ?? '이름 없음',
-              intro: userItem?.bio ?? '자기소개가 없습니다.',
-              phone: userItem?.phone ?? '전화번호 미입력',
-              status: rowStatus,
-            };
-          }) ?? [];
+              return {
+                id: app.id,
+                name: userItem?.name ?? "이름 없음",
+                intro: userItem?.bio ?? "자기소개가 없습니다.",
+                phone: userItem?.phone ?? "전화번호 미입력",
+                status,
+              };
+            }) ?? [];
 
         setApplicants(mapped);
       } catch (error: unknown) {
