@@ -204,10 +204,10 @@ export default function OwnerPostingDetailPage() {
             const app = entry.item;
             const userItem = app.user?.item ?? null;
             const apiStatus = app.status;
-            let rowStatus: ApplicantRowStatus = "pending";
-            if (apiStatus === "accepted") rowStatus = "accepted";
-            else if (apiStatus === "rejected") rowStatus = "rejected";
-            else rowStatus = "pending";
+            const rowStatus: ApplicantRowStatus =
+              apiStatus === "accepted" || apiStatus === "rejected"
+                ? apiStatus
+                : "pending";
 
             return {
               id: app.id,
@@ -260,7 +260,7 @@ export default function OwnerPostingDetailPage() {
 
   /* ------------------------- 승인 / 거절 핸들러 ------------------------- */
 
-const handleApprove = (applicationId: string) => {
+  const handleApprove = (applicationId: string) => {
     if (!shop || !notice) return;
     openAction({
       title: "신청을 승인하시겠어요?",
