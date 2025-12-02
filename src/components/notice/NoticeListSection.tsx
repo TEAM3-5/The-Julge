@@ -5,6 +5,7 @@ import { Pagination as SwiperPagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import type { SwiperOptions } from 'swiper/types';
+import Link from 'next/link';
 import { PostCard } from '@/components/post/postCard';
 import Dropdown from '@/components/common/Dropdown';
 import Button from '@/components/common/Button';
@@ -14,6 +15,7 @@ import Filter from '@/components/common/Filter';
 
 export type NoticeCard = {
   id: string | number;
+  shopId?: string;
   title: string;
   shopName?: string;
   shopAddress?: string;
@@ -44,11 +46,8 @@ type NoticeListSectionProps = {
     startsAt: string;
     hourlyPayGte: string;
   };
-  onFilterApply?: (values: {
-    addresses: string[];
-    startsAt: string;
-    hourlyPayGte: string;
-  }) => void;
+  onFilterApply?: (values: { addresses: string[]; startsAt: string; hourlyPayGte: string }) => void;
+  detailPathPrefix?: string;
   showFeatured?: boolean;
   showFilterButton?: boolean;
   pagination?: PaginationProps;
@@ -102,6 +101,7 @@ export function NoticeListSection({
   onSortChange,
   filterValues,
   onFilterApply,
+  detailPathPrefix = '/member/notice',
   showFeatured = false,
   showFilterButton = false,
   pagination,
@@ -123,11 +123,24 @@ export function NoticeListSection({
           <div className="mx-auto flex max-w-[964px] flex-col gap-6">
             <h2 className="tj-h2 text-gray-black px-6">맞춤 공고</h2>
             <Swiper {...swiperConfig} className="w-full max-w-[920px] custom-swiper px-6">
-              {featured.map((post) => (
-                <SwiperSlide key={post.id} className="pb-4">
-                  <PostCard status={post.status ?? 'active'} {...post} />
-                </SwiperSlide>
-              ))}
+              {featured.map((post) => {
+                const href =
+                  detailPathPrefix && post.shopId
+                    ? `${detailPathPrefix}/${post.id}?shopId=${encodeURIComponent(post.shopId)}`
+                    : null;
+
+                return (
+                  <SwiperSlide key={post.id} className="pb-4">
+                    {href ? (
+                      <Link href={href} className="block">
+                        <PostCard status={post.status ?? 'active'} {...post} />
+                      </Link>
+                    ) : (
+                      <PostCard status={post.status ?? 'active'} {...post} />
+                    )}
+                  </SwiperSlide>
+                );
+              })}
             </Swiper>
           </div>
         </section>
@@ -165,7 +178,7 @@ export function NoticeListSection({
                     onClick={() => setIsFilterOpen(false)}
                     aria-hidden
                   />
-                  <div className="absolute right-0 top-full z-30 mt-2 w-[420px] max-w-[90vw]">
+                  <div className="absolute right-0 top-full z-30 mt-2 w-[390px] max-w-[90vw]">
                     <Filter
                       onClose={() => setIsFilterOpen(false)}
                       initialAddresses={filterValues?.addresses}
@@ -182,10 +195,21 @@ export function NoticeListSection({
             </div>
           </div>
 
-          <div className="grid gap-[8px] md:gap-[14px] sm:grid-cols-2 lg:grid-cols-3">
-            {list.map((post) => (
-              <PostCard key={post.id} status={post.status ?? 'active'} {...post} />
-            ))}
+          <div className="grid gap-[8px] md:gap-[14px] grid-cols-2 lg:grid-cols-3">
+            {list.map((post) => {
+              const href =
+                detailPathPrefix && post.shopId
+                  ? `${detailPathPrefix}/${post.id}?shopId=${encodeURIComponent(post.shopId)}`
+                  : null;
+
+              return href ? (
+                <Link key={post.id} href={href} className="block">
+                  <PostCard status={post.status ?? 'active'} {...post} />
+                </Link>
+              ) : (
+                <PostCard key={post.id} status={post.status ?? 'active'} {...post} />
+              );
+            })}
             {!loading && !error && list.length === 0 && (
               <p className="text-sm text-gray-50">표시할 공고가 없습니다.</p>
             )}
@@ -194,7 +218,7 @@ export function NoticeListSection({
           {loading && <div className="text-sm text-gray-50">공고를 불러오는 중...</div>}
           {error && <div className="text-sm text-red-40">{error}</div>}
 
-          {pagination && (
+          {pagination && pagination.totalPages > 1 && (
             <div className="flex justify-center">
               <Pagination
                 currentPage={pagination.currentPage}
@@ -205,7 +229,6 @@ export function NoticeListSection({
           )}
         </div>
       </section>
-
     </div>
   );
 }
