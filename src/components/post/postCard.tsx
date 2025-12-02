@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import React, { memo, useMemo, useState } from 'react';
+import { memo, useMemo, useState } from 'react';
 import PostArrow from './icon/PostArrow';
 import PostPath from './icon/PostPath';
 import PostClock from './icon/PostClock';
@@ -22,6 +22,38 @@ export type PostCardProps = {
   thumbnailClassName?: string;
   inactiveLabelText?: string; // 비활성화 썸네일 문구 (지난 공고/마감 완료)
 };
+
+/* ================================
+ * 시급 증가율(%)에 따른 색상 계산 헬퍼들
+ * - 증가율에 따라 red-20 / red-30 / red-40 분기
+ * ================================ */
+
+function getIncreasePercent(text?: string): number {
+  if (!text) return 0;
+  const match = text.match(/(\d+)\s*%/); // "30%" 또는 "30 %" 같은 경우
+  return match ? Number(match[1]) : 0;
+}
+
+function getDesktopBadgeClass(isInactive: boolean, percent: number): string {
+  if (isInactive) return 'bg-gray-20 text-white';
+
+  if (percent >= 50) return 'bg-red-40 text-white';
+  if (percent >= 30) return 'bg-red-30 text-white';
+  if (percent > 0) return 'bg-red-20 text-white';
+
+  // 0%거나 %가 없을 때 기본값
+  return 'bg-red-20 text-white';
+}
+
+function getMobileBadgeColorClass(isInactive: boolean, percent: number): string {
+  if (isInactive) return 'text-gray-20';
+
+  if (percent >= 50) return 'text-red-40';
+  if (percent >= 30) return 'text-red-30';
+  if (percent > 0) return 'text-red-20';
+
+  return 'text-red-20';
+}
 
 export const PostCard = memo(function PostCard({
   id,
@@ -50,6 +82,11 @@ export const PostCard = memo(function PostCard({
     const [date, ...rest] = scheduleText.split(' ');
     return [date, rest.join(' ')];
   }, [scheduleText]);
+
+  // 시급 증가율(%) 파싱 및 색상 클래스 계산
+  const increasePercent = getIncreasePercent(wageBadgeText);
+  const desktopBadgeClass = getDesktopBadgeClass(isInactive, increasePercent);
+  const mobileBadgeColorClass = getMobileBadgeColorClass(isInactive, increasePercent);
 
   return (
     <article
@@ -152,22 +189,24 @@ export const PostCard = memo(function PostCard({
 
           {wageBadgeText && (
             <>
-              {/* md(태블릿 이상) 뱃지 */}
               <div
-                className={`hidden md:flex items-center justify-center rounded-[20px] h-9 p-3
-                  ${isInactive ? 'bg-gray-20 text-white' : 'bg-red-40 text-white'}
+                className={`
+                  hidden md:flex items-center justify-center rounded-[20px] h-9 p-3
+                  ${desktopBadgeClass}
                 `}
               >
                 <span className="tj-body2-bold">{wageBadgeText}</span>
                 <PostArrow className="w-5 h-5 text-white" />
               </div>
 
-              {/* 모바일 가격 아래 문구 */}
               <div
-                className={`flex md:hidden text-center gap-0.5 ${isInactive ? 'text-gray-20' : 'text-red-40'}`}
+                className={`
+                  flex md:hidden text-center gap-0.5
+                  ${mobileBadgeColorClass}
+                `}
               >
                 <span className="tj-caption">{wageBadgeText}</span>
-                <PostArrow className={`w-4 h-4 ${isInactive ? 'text-gray-20' : 'text-red-40'}`} />
+                <PostArrow className={`w-4 h-4 ${mobileBadgeColorClass}`} />
               </div>
             </>
           )}
