@@ -175,7 +175,7 @@ export default function EditPostingPage() {
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="flex flex-col w-full justify-center px-[238px] gap-[32px]"
+        className="flex flex-col justify-center w-full max-w-[964px] px-6 gap-[32px]"
       >
         <div className="flex justify-between">
           <span className="tj-h1">공고 편집</span>
@@ -190,7 +190,7 @@ export default function EditPostingPage() {
         </div>
 
         <div className="flex flex-col gap-[24px]">
-          <div className="flex gap-[20px]">
+          <div className="gap-[20px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
             <div className="flex-1">
               <FormInput<PostingFormValues>
                 name="hourlyPay"
@@ -226,7 +226,7 @@ export default function EditPostingPage() {
         </div>
 
         <div className="flex justify-center">
-          <Button type="submit" disabled={!isValid || isSubmitting}>
+          <Button type="submit" className="w-full md:w-auto" disabled={!isValid || isSubmitting}>
             {isSubmitting ? '수정 중...' : '수정하기'}
           </Button>
         </div>
