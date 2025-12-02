@@ -2,12 +2,12 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 import Button from '@/components/common/Button';
 import { EmptySection } from '@/components/common/EmptySection';
 import { Table } from '@/components/common/Table';
 import { Pagination } from '@/components/pagination/Pagination';
-import Image from 'next/image';
 import Path from '@/components/post/icon/PostPath';
 
 import { getUser } from '@/api/users';
@@ -15,6 +15,9 @@ import { listApplicationsByUser } from '@/api/applications';
 import { useAuth } from '@/contexts/AuthContext';
 
 import type { UserDetailResponse } from '@/types/user';
+
+/** 페이지당 보여줄 신청 내역 개수 */
+const PAGE_SIZE = 5;
 
 /** 신청 내역에서 쓸 상태 */
 type ApplicationRowStatus = 'pending' | 'accepted' | 'rejected';
@@ -67,7 +70,7 @@ type UserApplicationsResponse = {
 // 화면 상태
 type ViewMode = 'loading' | 'noProfile' | 'noApplications' | 'full' | 'error';
 
-// ----- 타입 가드 -----
+// ----- 타입 가드 ----- //
 
 function isUserDetailResponse(data: unknown): data is UserDetailResponse {
   if (!data || typeof data !== 'object') return false;
@@ -81,30 +84,54 @@ function isUserDetailResponse(data: unknown): data is UserDetailResponse {
     type?: unknown;
   };
 
-  const isString = (v: unknown) => typeof v === 'string';
-  const isValidType = item.type === 'employee' || item.type === 'employer';
+  const isString = (v: unknown): v is string => typeof v === 'string';
 
-  return isString(item.id) && isString(item.email) && isValidType;
+  if (!isString(item.id) || !isString(item.email)) return false;
+  if (item.type !== 'employee' && item.type !== 'employer') return false;
+
+  return true;
 }
 
 function isUserApplicationsResponse(data: unknown): data is UserApplicationsResponse {
   if (!data || typeof data !== 'object') return false;
 
   const obj = data as { items?: unknown };
-  if (!Array.isArray(obj.items)) return false;
 
-  return obj.items.every((entry) => {
-    if (!entry || typeof entry !== 'object') return false;
-    const e = entry as { item?: unknown };
-    if (!e.item || typeof e.item !== 'object') return false;
+  // items가 존재하지만 배열이 아니면 잘못된 응답
+  if (obj.items && !Array.isArray(obj.items)) {
+    return false;
+  }
 
-    const app = e.item as { id?: unknown; status?: unknown };
-    return typeof app.id === 'string' && typeof app.status === 'string';
-  });
+  // items가 배열이면 내부 구조 검사
+  if (Array.isArray(obj.items)) {
+    return obj.items.every((entry) => {
+      if (!entry || typeof entry !== 'object') return false;
+      const e = entry as { item?: unknown };
+      if (!e.item || typeof e.item !== 'object') return false;
+
+      const app = e.item as { id?: unknown; status?: unknown };
+      return typeof app.id === 'string' && typeof app.status === 'string';
+    });
+  }
+
+  // items가 없는 경우도 유효한 응답
+  return true;
 }
 
-// ----- 헬퍼 함수 -----
+// ----- 헬퍼 함수 ----- //
 
+function getErrorMessage(error: unknown, defaultMessage: string): string {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const e = error as { response?: { data?: { message?: string } } };
+    return e.response?.data?.message ?? defaultMessage;
+  }
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+  return defaultMessage;
+}
+
+// 2023-01-12 10:00 ~ 12:00 (2시간) 형태
 function formatDateTimeRange(startsAt: string, workhour: number) {
   try {
     const start = new Date(startsAt);
@@ -114,7 +141,6 @@ function formatDateTimeRange(startsAt: string, workhour: number) {
     const hh = String(start.getHours()).padStart(2, '0');
     const min = String(start.getMinutes()).padStart(2, '0');
 
-    // 2023-01-12 10:00 ~ 12:00 (2시간) 형태
     const end = new Date(start.getTime() + workhour * 60 * 60 * 1000);
     const ehh = String(end.getHours()).padStart(2, '0');
     const emin = String(end.getMinutes()).padStart(2, '0');
@@ -125,7 +151,26 @@ function formatDateTimeRange(startsAt: string, workhour: number) {
   }
 }
 
-// ----- 페이지 컴포넌트 -----
+// 01012341234 → 010-1234-1234
+// 010-1234-1234 → 그대로 유지
+function formatPhoneNumber(raw: string) {
+  const digits = raw.replace(/\D/g, '');
+
+  // 010 으로 시작하는 11자리 휴대폰
+  if (digits.length === 11 && digits.startsWith('010')) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+  }
+
+  // 10자리 일반 번호 등
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+  }
+
+  // 형식 맞추기 어려우면 원본 유지
+  return raw;
+}
+
+// ----- 페이지 컴포넌트 ----- //
 
 export default function MemberProfilePage() {
   const router = useRouter();
@@ -143,9 +188,8 @@ export default function MemberProfilePage() {
 
   const [applications, setApplications] = useState<ApplicationRow[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5;
 
-  // ----- 데이터 로드 -----
+  // ----- 데이터 로드 ----- //
 
   useEffect(() => {
     if (!userId) return;
@@ -182,6 +226,7 @@ export default function MemberProfilePage() {
 
         const mapped: ApplicationRow[] =
           appsData.items
+            // 취소된 신청(canceled)은 제외
             ?.filter((entry) => entry.item.status !== 'canceled')
             .map((entry) => {
               const app = entry.item;
@@ -209,16 +254,10 @@ export default function MemberProfilePage() {
           setViewMode('full');
         }
       } catch (error: unknown) {
-        console.error(error);
-
-        let msg = '내 프로필 정보를 불러오는 중 오류가 발생했습니다.';
-        if (error && typeof error === 'object' && 'response' in error) {
-          const e = error as { response?: { data?: { message?: string } } };
-          msg = e.response?.data?.message ?? msg;
-        } else if (error instanceof Error && error.message) {
-          msg = error.message;
-        }
-
+        const msg = getErrorMessage(
+          error,
+          '내 프로필 정보를 불러오는 중 오류가 발생했습니다.',
+        );
         setErrorMessage(msg);
         setViewMode('error');
       }
@@ -227,23 +266,23 @@ export default function MemberProfilePage() {
     fetchData();
   }, [userId]);
 
-  // ----- 페이지네이션 -----
+  // ----- 페이지네이션 ----- //
 
   const totalPages = useMemo(() => {
     if (applications.length === 0) return 1;
-    return Math.ceil(applications.length / pageSize);
+    return Math.ceil(applications.length / PAGE_SIZE);
   }, [applications.length]);
 
   const pageRows = useMemo(() => {
-    const start = (currentPage - 1) * pageSize;
-    return applications.slice(start, start + pageSize);
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return applications.slice(start, start + PAGE_SIZE);
   }, [applications, currentPage]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  // ----- 공통 프로필 카드 컴포넌트 -----
+  // ----- 공통 프로필 카드 ----- //
 
   const ProfileCard = (
     <section className="py-15 w-full bg-white flex flex-col items-center">
@@ -262,7 +301,9 @@ export default function MemberProfilePage() {
                 {/* 전화번호 */}
                 <div className="flex flex-row gap-1.5 items-center">
                   <Image src="/icons/icon-phone.svg" alt="전화 아이콘" width={20} height={20} />
-                  <span className="tj-body1 text-gray-50">{profilePhone || '연락처 미등록'}</span>
+                  <span className="tj-body1 text-gray-50">
+                    {profilePhone ? formatPhoneNumber(profilePhone) : '연락처 미등록'}
+                  </span>
                 </div>
 
                 {/* 선호 지역 */}
@@ -274,7 +315,9 @@ export default function MemberProfilePage() {
                 </div>
               </div>
 
-              <p className="tj-body1 text-black">{profileBio || '열심히 일하겠습니다'}</p>
+              <p className="tj-body1 text-black">
+                {profileBio || '열심히 일하겠습니다'}
+              </p>
             </div>
 
             <Button
@@ -292,14 +335,14 @@ export default function MemberProfilePage() {
     </section>
   );
 
-  // ----- 렌더링 분기 -----
+  // ----- 렌더링 분기 ----- //
 
   if (!userId) {
     return (
       <main className="w-full bg-white flex flex-col items-center">
         <section className="py-15 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 프로필</span>
-          <p className="mt-4 tj-body1 text-red-500">
+          <p className="mt-4 tj-body1 text-red-40">
             로그인 정보가 없습니다. 먼저 로그인해 주세요.
           </p>
         </section>
@@ -323,7 +366,7 @@ export default function MemberProfilePage() {
       <main className="w-full bg-white flex flex-col items-center">
         <section className="py-15 w-full max-w-[964px] flex flex-col">
           <span className="tj-h1 text-gray-black">내 프로필</span>
-          <p className="mt-4 tj-body1 text-red-500">
+          <p className="mt-4 tj-body1 text-red-40">
             {errorMessage ?? '내 프로필 정보를 불러오는 중 문제가 발생했습니다.'}
           </p>
         </section>
