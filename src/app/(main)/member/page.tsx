@@ -262,9 +262,7 @@ export default function MemberProfilePage() {
                 {/* 전화번호 */}
                 <div className="flex flex-row gap-1.5 items-center">
                   <Image src="/icons/icon-phone.svg" alt="전화 아이콘" width={20} height={20} />
-                  <span className="tj-body1 text-gray-50">
-                    {profilePhone || '연락처 미등록'}
-                  </span>
+                  <span className="tj-body1 text-gray-50">{profilePhone || '연락처 미등록'}</span>
                 </div>
 
                 {/* 선호 지역 */}
@@ -276,9 +274,7 @@ export default function MemberProfilePage() {
                 </div>
               </div>
 
-              <p className="tj-body1 text-black">
-                {profileBio || '열심히 일하겠습니다'}
-              </p>
+              <p className="tj-body1 text-black">{profileBio || '열심히 일하겠습니다'}</p>
             </div>
 
             <Button
