@@ -156,7 +156,7 @@ export default function SignupPage() {
   return (
     <main className="flex min-h-screen items-center justify-center">
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-[350px]">
           <div>
             {/* 로고 */}
             <div className="flex justify-center items-center mb-8">

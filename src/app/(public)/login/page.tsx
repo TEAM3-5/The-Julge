@@ -94,9 +94,9 @@ export default function LoginPage() {
   } = methods;
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
+    <main className="flex w-full min-h-screen items-center justify-center">
       <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <form onSubmit={methods.handleSubmit(onSubmit)} className="flex flex-col gap-5 w-[350px]">
           <div>
             {/* 로고 */}
             <div className="flex justify-center items-center mb-8">
@@ -119,7 +119,7 @@ export default function LoginPage() {
                 placeholder="입력"
                 type="password"
               />
-              <Button type="submit" disabled={!isValid || isSubmitting}>
+              <Button type="submit" disabled={!isValid || isSubmitting} fullWidth>
                 {isSubmitting ? '로그인 중...' : '로그인 하기'}
               </Button>
             </div>
