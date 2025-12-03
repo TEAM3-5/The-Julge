@@ -88,7 +88,7 @@ export default function NewProfilePage() {
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="flex flex-col justify-center w-full max-w-[964px] px-6 gap-[32px]"
+        className="flex flex-col py-15 w-full max-w-[964px] px-6 gap-[32px]"
       >
         {/* 상단 타이틀 + 닫기 아이콘 */}
         <div className="flex justify-between">
