@@ -399,7 +399,7 @@ export default function MemberProfilePage() {
               title="신청 내역"
               description="아직 신청 내역이 없어요."
               buttonLabel="공고 보러가기"
-              href="/notices"
+              href="/member/notice"
             />
           </div>
         </section>
