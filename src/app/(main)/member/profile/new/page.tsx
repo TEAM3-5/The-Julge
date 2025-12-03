@@ -52,7 +52,7 @@ export default function NewProfilePage() {
             size="medium"
             onClick={() => {
               close();
-              router.push('/member/profile'); // 실제 내 프로필 페이지 경로에 맞게 수정
+              router.push('/member');
             }}
             className="absolute right-3 bottom-3 px-[46px] py-[14px] rounded-[8px]"
           >
