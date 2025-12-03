@@ -8,7 +8,7 @@ export default function Footer() {
       <div className="grid grid-cols-2 gap-y-10 mx-auto sm:grid-cols-3 w-full md:max-w-240 sm:flex-col sm:gap-4 px-6 py-9">
         <div className="select-none order-3 sm:order-1">codeit - 2025</div>
 
-        <div className="order-1 flex gap-6 sm:order-2">
+        <div className="order-1 flex sm:justify-center gap-6 sm:order-2">
           <div className="cursor-pointer select-none">Privacy Policy</div>
           <div className="cursor-pointer select-none">FAQ</div>
         </div>
