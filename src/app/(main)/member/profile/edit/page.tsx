@@ -153,12 +153,12 @@ export default function EditProfilePage() {
       <form
         onSubmit={handleSubmit(onSubmit)}
         noValidate
-        className="flex flex-col py-15 w-full max-w-[964px] px-6 gap-[32px]"
+        className="flex flex-col py-15 w-full max-w-[964px] px-6 gap-[32px] mx-auto"
       >
         {/* 상단 타이틀 + 닫기 아이콘 */}
-        <div className="flex justify-between">
-          <span className="tj-h1">내 프로필</span>
-          <button type="button" onClick={() => router.back()}>
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <span className="tj-h1 text-gray-black">내 프로필</span>
+          <button type="button" onClick={() => router.back()} className="self-start md:self-center">
             <Image src="/icons/icon-close-filter.svg" alt="닫기 아이콘" width={32} height={32} />
           </button>
         </div>
@@ -166,12 +166,12 @@ export default function EditProfilePage() {
         {/* 폼 영역 */}
         <div className="flex flex-col gap-[24px]">
           {/* 이름 / 연락처 / 선호 지역 */}
-          <div className="flex gap-[20px]">
-            <div className="flex-1">
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="flex-1 min-w-0">
               <FormInput<ProfileFormValues> name="name" label="이름*" placeholder="입력" />
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <FormInput<ProfileFormValues>
                 name="phone"
                 label="연락처*"
@@ -181,9 +181,9 @@ export default function EditProfilePage() {
               />
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex flex-col gap-2">
-                <label>선호 지역*</label>
+                <label className="tj-body1 text-gray-black">선호 지역*</label>
                 <Controller
                   name="region"
                   control={methods.control}
