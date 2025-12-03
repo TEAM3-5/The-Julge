@@ -181,7 +181,7 @@ export default function NoticeDetailClient({ noticeId }: NoticeDetailClientProps
     <>
       <div className="w-full max-w-[964px] mx-auto flex flex-col gap-y-30">
         <section>
-          <div className="flex flex-col gap-6 px-6">
+          <div className="flex flex-col gap-6 px-6 py-10">
             <div className="flex flex-col gap-2">
               <span className="tj-body2 text-primary">식당</span>
               <h1 className="tj-h2 text-gray-black">{notice.title}</h1>
