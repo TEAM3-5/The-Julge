@@ -5,7 +5,7 @@ import Image from 'next/image';
 export default function Footer() {
   return (
     <footer className="w-full bg-gray-10 text-gray-50 tj-body1-regular">
-      <div className="grid grid-cols-2 gap-0 gap-y-10 mx-auto sm:grid-cols-3 w-full md:max-w-240 sm:flex-col sm:gap-4 px-6 py-9">
+      <div className="grid grid-cols-2 gap-y-10 mx-auto sm:grid-cols-3 w-full md:max-w-240 sm:flex-col sm:gap-4 px-6 py-9">
         <div className="select-none order-3 sm:order-1">codeit - 2025</div>
 
         <div className="order-1 flex gap-6 sm:order-2">
@@ -13,7 +13,7 @@ export default function Footer() {
           <div className="cursor-pointer select-none">FAQ</div>
         </div>
 
-        <div className="order-2 flex sm:justify-end w-full gap-3 sm:order-3">
+        <div className="order-2 flex justify-end w-full gap-3 sm:order-3">
           <Image
             src="/images/email.svg"
             alt="이메일 아이콘"
