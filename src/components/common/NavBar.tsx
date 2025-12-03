@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState, type KeyboardEvent, type ChangeEvent } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { USER_ROLE } from '@/constants/auth';
+import { useNotificationModal } from '@/hooks/useNotificationModal';
 
 export default function NavBar() {
   const router = useRouter();
@@ -13,6 +14,8 @@ export default function NavBar() {
   const { isLoggedIn, role: authRole, clearAuth } = useAuth();
 
   const role = authRole;
+
+  const { open: openNotification } = useNotificationModal();
 
   // 알림 개수 (나중에 API 붙일 예정)
   const [alertCount] = useState(0);
@@ -60,11 +63,12 @@ export default function NavBar() {
     router.push('/guest/notice');
   };
 
-  // (추후 구현용) 알림 아이콘 클릭
   const handleAlarm = () => {
-    // TODO: 알림 모달 / 드롭다운 열기
-    // 일단은 콘솔 출력으로만
-    console.log('알림 아이콘 클릭');
+    if (!isLoggedIn) {
+      router.push('/login');
+      return;
+    }
+    openNotification();
   };
 
   const handleSearch = (keyword: string) => {
@@ -153,6 +157,7 @@ export default function NavBar() {
                 height={24}
                 className="cursor-pointer"
                 onClick={handleAlarm}
+                data-role="notification-icon"
               />
             )}
           </div>
