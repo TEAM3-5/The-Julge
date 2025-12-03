@@ -20,7 +20,7 @@ export default function MemberTypeRadioBtn({ selectedValue, onChange }: MemberTy
   return (
     <div className="flex flex-col gap-2">
       <p className="tj-body1">회원 유형</p>
-      <div role="radiogroup" className="flex items-center gap-4">
+      <div role="radiogroup" className="flex items-center justify-center gap-4">
         {MEMBER_TYPE_OPTIONS.map((option) => (
           <div key={option.id}>
             <label
